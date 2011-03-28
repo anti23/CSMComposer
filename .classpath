@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dcore.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/Johannes/Downloads/Bachelor/java3d-1_4_0-doc/java3d-1_4_0-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/j3dutils.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/Johannes/Downloads/Bachelor/java3d-1_4_0-doc/java3d-1_4_0-doc/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="C:/Program Files/Java/Java3D/1.5.1/lib/ext/vecmath.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/C:/Users/Johannes/Downloads/Bachelor/java3d-1_4_0-doc/java3d-1_4_0-doc/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
