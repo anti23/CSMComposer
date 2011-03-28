@@ -43,6 +43,7 @@ public class Java3DSkelet {
 	
 	public Java3DSkelet(CSMHeader header) {
 		csm_header = header;
+		connections.setHeader(header);
 		points = new Sphere[csm_header.order.length];
 		pointTransforms = new TransformGroup[csm_header.order.length];
 		init();

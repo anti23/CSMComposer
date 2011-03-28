@@ -115,7 +115,10 @@ public class Animation implements
 		return anim;
 	}
 
-	
+	public Skelett getSkelett()
+	{
+		return this.skelett;
+	}
 	// Constructs and loads CSM datastructure
 	void loadFile() throws IOException
 	{

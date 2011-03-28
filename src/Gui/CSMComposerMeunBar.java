@@ -3,7 +3,10 @@ package Gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
@@ -17,6 +20,7 @@ import datastructure.Project;
 
 import Java3D.Java3DCSMPlayer;
 import Java3D.SkeletMaker.Java3DSkeletMaker;
+import Java3D.SkeletMaker.SkeletConnections;
 import Misc.StaticTools;
 
 public class CSMComposerMeunBar extends JMenuBar{
@@ -192,6 +196,25 @@ public class CSMComposerMeunBar extends JMenuBar{
 		miTakeScreenShot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				player.captureScreen();
+			}
+		});
+		miLoadSkelet.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				File f = StaticTools.openDialog("txt", false);
+				FileInputStream fi;
+				try {
+					fi = new FileInputStream(f);
+					ObjectInputStream ois = new ObjectInputStream(fi);
+					SkeletConnections sc = (SkeletConnections) ois.readObject();
+					if (sc != null)
+					{
+						player.animation.getSkelett().setNewList(sc);
+					}
+				} catch (FileNotFoundException e) {
+				} catch (IOException e) {
+				} catch (ClassNotFoundException e) {
+				}
+				
 			}
 		});
 	}

@@ -4,11 +4,30 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import CSM.CSMHeader;
+
 public class SkeletConnections implements Serializable{
 
 	private static final long serialVersionUID = 6453290728060012118L;
 	public List<String> connectlist = new ArrayList<String>(20);
 	public int connection_count = 0;
+	CSMHeader header;
+	
+	public void setHeader(CSMHeader header)
+	{
+		this.header = header;
+	}
+	
+	public int get(int index)
+	{
+		if(header != null)
+			return header.getPos(connectlist.get(index));
+		return -1;
+	}
+	
+	public int size(){
+		return connectlist.size();
+	}
 	
 	public void connect(String a,String b)
 	   {
@@ -49,7 +68,7 @@ public class SkeletConnections implements Serializable{
 	
 	/* Initing Default Bone Connections
 	*/
-	void initConnectList()
+	public void initConnectList()
 	{
 		//head
 		connect("LFHD","LBHD"); 
@@ -134,5 +153,9 @@ public class SkeletConnections implements Serializable{
 		connect("CLAV","LSHO");
 
 		
+	}
+
+	public void add(String a) {
+		connectlist.add(a);
 	}
 }

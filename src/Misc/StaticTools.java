@@ -622,7 +622,11 @@ public class StaticTools {
 		frame = new JFrame(titel);
 		frame.addWindowListener(new WindowAdapter() {
 		      public void windowClosing(WindowEvent e) {
-			        System.exit(0);
+			        if (e.getSource().getClass() == JFrame.class)
+			        {
+			        	JFrame f = (JFrame) e.getSource();
+			        	f.dispose();
+			        }
 			  }
 		});
 		frame.setSize(500,500);

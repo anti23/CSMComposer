@@ -11,6 +11,7 @@ import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
 import CSM.CSMHeader;
 import CSM.CSMPoints;
+import Java3D.SkeletMaker.SkeletConnections;
 import Misc.StaticTools;
 import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
@@ -32,7 +33,8 @@ public class Skelett implements Serializable {
 	
 	CSMHeader csm_header;
 	
-	public List<Integer> connectlist = new ArrayList<Integer>();
+//	public List<Integer> connectlist = new ArrayList<Integer>();
+	public SkeletConnections connectlist = new SkeletConnections();
 	public boolean[] printNodeName = new boolean[100];
 
 	//public BranchGroup bg = new BranchGroup();
@@ -43,6 +45,11 @@ public class Skelett implements Serializable {
 		pointTransforms = new TransformGroup[csm_header.order.length];
 		boneTransformsAngle = new ArrayList<TransformGroup>();
 		boneTransformsLenth = new ArrayList<TransformGroup>();;
+		
+		//
+		connectlist.setHeader(header);
+		
+		//
 		init();
 		setupDefaultTpose();
 	}
@@ -235,6 +242,15 @@ public class Skelett implements Serializable {
 		
 	}
 	
+	public void setNewList(SkeletConnections newList)
+	{
+		bones.removeAllChildren();
+		boneTransformsAngle.clear();
+		boneTransformsLenth.clear();
+		connectlist = newList;
+		initBoneGroups();
+	}
+	
 	private void initBoneGroups() {
 		for (int i = 0; i < connectlist.size()/2; i++) {
 			TransformGroup leng = new TransformGroup();
@@ -247,7 +263,10 @@ public class Skelett implements Serializable {
 			c.setAppearance(StaticTools.createAppearance());
 			rot.addChild(leng);
 			leng.addChild(c);
-			skeletRoot.addChild(rot);
+			BranchGroup bg  = new BranchGroup();
+			bg.setCapability(BranchGroup.ALLOW_DETACH);
+			bg.addChild(rot);
+			bones.addChild(bg);
 		}
 	}
 
@@ -257,7 +276,7 @@ public class Skelett implements Serializable {
 		   int j = csm_header.getPos(b);
 		   if (i< 0 || j < 0)
 			   return ;
-		   connectlist.add(i);
-		   connectlist.add(j);
+		   connectlist.add(a);
+		   connectlist.add(b);
 	   }
 }
