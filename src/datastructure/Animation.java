@@ -105,6 +105,13 @@ public class Animation implements
 		anim.header.firstFrame = 0;
 		anim.header.lastFrame = lastFrame-firstFrame;
 		anim.framecount = lastFrame-firstFrame;
+		anim.previews = new HashMap<Integer, ImageIcon>();
+		Set<Integer> set =  previews.keySet();
+		for (Integer i : set) {
+			if (i > firstFrame && i < lastFrame)
+				anim.previews.put(i - firstFrame, previews.get(i));
+				
+		}
 		
 		anim.filename = "frame " + firstFrame + " to " + lastFrame + "of Animation " + filename;
 		anim.frames = new CSMPoints[lastFrame-firstFrame];
@@ -176,7 +183,7 @@ public class Animation implements
 		timer.setDelay(1000/20);
 		timer.setRepeats(true);
 		timer.start();
-		animStart = Calendar.getInstance().getTime().getTime();
+		animStart = System.currentTimeMillis();
 		/*
 		 * 
 		while (!isStopped)
@@ -211,10 +218,8 @@ public class Animation implements
 public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == timer)
 		{
-			cal = null;
-			cal = Calendar.getInstance();
-			delta =  cal.getTime().getTime() - animStart ;
-			animStart = cal.getTime().getTime();
+			delta =  System.currentTimeMillis() - animStart ;
+			animStart = System.currentTimeMillis();
 		//	System.out.println("Running for: " + delta + " Milliseconds");
 			float speedControllFactor = playbackSpeed;
 			if (!isAnimating)
@@ -405,7 +410,6 @@ public void actionPerformed(ActionEvent e) {
 		skelett = new Skelett(header);
 		skelett.loadFrame(frames[framePos].points);
 		listenerList = new EventListenerList();
-		cal = Calendar.getInstance();
 		lastLoadedFrame = header.lastFrame -1;
 		//Timer setup
 		timer = new Timer(1000/20, this);

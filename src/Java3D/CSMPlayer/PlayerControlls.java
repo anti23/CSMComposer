@@ -30,6 +30,8 @@ public interface PlayerControlls {
 	
 	// additionals
 	public float getSpeed();
-	public void setMarker(int min, int max);
+	public void setMarker(int min);
+	public int getMinMarker();
+	public int getMaxMarker();
 	
 }

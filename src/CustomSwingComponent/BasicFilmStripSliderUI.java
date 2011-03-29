@@ -416,7 +416,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 			case PreviewUpdate:
 				if(pcs.imgIcon != null && pcs.firstFrame == pcs.lastFrame)
 				{
-					System.out.println("Basic UI: recieved Preview Update frame :" + pcs.firstFrame +" " + e);
+				//	System.out.println("Basic UI: recieved Preview Update frame :" + pcs.firstFrame +" " + e);
 					previews.put(pcs.firstFrame, pcs.imgIcon);
 				}
 				break;

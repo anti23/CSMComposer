@@ -24,7 +24,7 @@ public class Arragnge extends JPanel implements MouseListener, MouseMotionListen
 	
 	Snippit[] hits;
 	
-	Dimension size = new Dimension(700,250);
+	Dimension size = new Dimension(700,150);
 	
 	public Arragnge() {
 		init();
@@ -35,8 +35,6 @@ public class Arragnge extends JPanel implements MouseListener, MouseMotionListen
 		setPreferredSize(size);
 		addMouseListener(this);
 		addMouseMotionListener(this);
-		repaint();
-		validate();
 	}
 	
 	
@@ -75,17 +73,18 @@ public class Arragnge extends JPanel implements MouseListener, MouseMotionListen
 			size.width = maxEndFrame;
 	}
 	public void mouseDragged(MouseEvent e) {
+		int x = e.getX();
 		if(hits != null )
 		{
-			for (Snippit s : hits) {
-				
-				s.moveTo(e.getX());
+			for (Snippit s : hits)
+			{
+				s.moveTo(x-s.delta);
 			}
 		}
 		repaint();
 	}
 	public void mouseMoved(MouseEvent e) {
-		System.out.println("Mouse mmoved");
+	//	System.out.println("Mouse mmoved");
 	}
 	public void mouseClicked(MouseEvent e) {
 		if(e.getButton() == MouseEvent.BUTTON3)
@@ -119,7 +118,11 @@ public class Arragnge extends JPanel implements MouseListener, MouseMotionListen
 		int framex = e.getX();
 		for (Snippit s : snippits) {
 			if(s.checkInside(framex))
+			{
+				s.delta = s.getDelta(e.getX());
 				hits.add(s);
+				
+			}
 		}
 		if (hits.size() == 0)
 			return new Snippit[0];

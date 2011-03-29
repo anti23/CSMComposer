@@ -35,6 +35,8 @@ import javax.vecmath.Vector3f;
 import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
 
+import datastructure.Config;
+
 /**
  * Diese Klasse enthaelt viele Nuetzliche statische Methoden
  * Sie stellt Java3D Appearances und primitive Shapes zur verfuegung.
@@ -57,6 +59,8 @@ public class StaticTools {
 	static float [] defaultCameraPos = {3,8,35};
 	static int defaultCameraRotate = 180; // General Y Rotation in Degree
 
+	static Config config;
+	public static final String configFileName = "CSMCConf.xml";
 
 	/*
 	 * Geklaut ;)
@@ -658,5 +662,24 @@ public class StaticTools {
 		
 		File file = chooser.getSelectedFile();
 		return file;
+	}
+
+
+	public static Config getConfig() {
+		return config;
+	}
+
+
+	public static void setConfig(Config config) {
+		StaticTools.config = config;
+	}
+	
+	public static java.io.FileFilter fileFilterIsFile(final String endswith)
+	{
+		return new java.io.FileFilter() {
+			public boolean accept(File pathname) {
+				return (pathname.isFile() && pathname.getName().endsWith(endswith));
+			}
+		};
 	}
 }

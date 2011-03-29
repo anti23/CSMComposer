@@ -12,9 +12,11 @@ public class Snippit implements Comparable<Snippit>
 	int endFrame;
 	int frameCnt;
 	ImageIcon icon;
+	String name;
 	
 	// Visual Managment
 	Rectangle bounds = new Rectangle(100,70);
+	public int delta;
 	
 	public Snippit(int frameCnt) {
 		this.frameCnt = frameCnt;
@@ -58,12 +60,21 @@ public class Snippit implements Comparable<Snippit>
 		{
 			g.drawImage(icon.getImage(), startFrame,0,100,70, null);
 		}
+		if (name != null)
+		{
+			g.drawString(name, startFrame + 100, 60);
+			System.out.println("drawing name : " + name);
+		}
 	}
 	public int compareTo(Snippit s) {
 		return s.startFrame - startFrame;
 	}
 	public boolean checkInside(int framex) {
 		return framex >= startFrame && framex <= endFrame;
+	}
+	public int getDelta(int x) {
+		
+		return  x -startFrame;
 	}
 	
 }

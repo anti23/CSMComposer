@@ -1,6 +1,7 @@
 package Gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
@@ -14,7 +15,12 @@ import CustomSwingComponent.JFilmStripSlider;
 import Gui.ArrangeingUnit.ArrangerPane;
 import Java3D.Java3DCSMPlayer;
 import Java3D.CSMPlayer.PlayerControlls;
-
+/**
+ * Diese Klass verbidet das Custom Swing Applet JFilmStrip und einige Buttons
+ * die die Restlichen Funktionen des PlayerControlls Interfaces ansprechen
+ * @author Johannes
+ *
+ */
 public class CSMPlayerControllBar extends JPanel
 {
 	private static final long serialVersionUID = 8246585468543236639L;
@@ -41,6 +47,7 @@ public class CSMPlayerControllBar extends JPanel
 	
 	private void initComponents() 
 	{
+		setSize(new Dimension(500,97));
 		setLayout(new BorderLayout());
 		filmStripSlider = new JFilmStripSlider();
 		add(filmStripSlider,BorderLayout.CENTER);
@@ -80,7 +87,7 @@ public class CSMPlayerControllBar extends JPanel
 		
 		copySelection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				arrangerPane.add(player.getAnimation());
+				arrangerPane.add(player.getAnimation().getSubSequentAnimation(player.getMinMarker(), player.getMaxMarker()));
 			}
 		});
 		pause.addActionListener(new ActionListener() {

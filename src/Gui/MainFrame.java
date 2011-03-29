@@ -7,11 +7,20 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.XMLDecoder;
+import java.beans.XMLEncoder;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import datastructure.Config;
 import datastructure.Project;
 import CSM.CSMHeader;
 import CustomSwingComponent.JFilmStripSlider;
@@ -25,7 +34,8 @@ public class MainFrame extends JFrame{
 	private static final long serialVersionUID = 4185989615854832714L;
 
 	CSMComposerMeunBar menu = new CSMComposerMeunBar();
-	
+	Config config;
+	File configFile;
 	// Data Components
 	Project project = new Project();
 	
@@ -141,14 +151,63 @@ public class MainFrame extends JFrame{
 
 	// Constructor
 	public MainFrame() {
+		loadConfig();
 		init();
 	}
 	
+
+
+	private void loadConfig() {
+		File programDir = new File(".");
+		
+		for (File  s : programDir.listFiles(new FileFilter() {
+			public boolean accept(File arg0) {
+				return arg0.toString().endsWith("CSMCConf.xml");
+			}
+		})) {
+			System.out.println(s);
+			
+			if(s.isFile())
+				configFile = s;
+		}
+		if(configFile != null) // we have a configfile in root dir
+		{
+			// we parse it
+			try {
+				FileInputStream in = new FileInputStream(configFile);
+				XMLDecoder decoder = new XMLDecoder(in);
+				config = (Config) decoder.readObject();
+			} catch (FileNotFoundException e) {
+			}
+			
+		}else
+		{
+			//we create one
+			configFile = new File("./CSMConf.xml");
+			
+		}
+	}
 	
+	private void saveConfig()
+	{
+		if(config != null && configFile != null)
+		{
+			try {
+				FileOutputStream fo = new FileOutputStream(configFile);
+				XMLEncoder encoder = new XMLEncoder(fo);
+				encoder.writeObject(config);
+			} catch (FileNotFoundException e) {
+			}
+			
+		}else 
+		{
+			System.out.println("Error Saving Config File");
+		}
+	}
 
-
-	public static void main(String[] args) {
-		new MainFrame();
+	
+	public static void main(String[] args) throws Throwable {
+		MainFrame mf = new MainFrame();
 	}
 	
 

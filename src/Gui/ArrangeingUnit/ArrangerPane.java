@@ -2,6 +2,9 @@ package Gui.ArrangeingUnit;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -21,12 +24,21 @@ public class ArrangerPane extends JPanel{
 	
 	public void add(Animation a)
 	{
-		ImageIcon icon = a.previews.get(a.previews.keySet().iterator().next());
+		Set<Integer > set = a.previews.keySet();
+		Integer[] intset = new Integer[set.size()];
+		set.toArray(intset);
+		Arrays.sort(intset);
+		ImageIcon icon = a.previews.get(intset[0]);
 		Snippit s = new Snippit(a.header.lastFrame - a.header.firstFrame, lastAddedFrameMax);
 		lastAddedFrameMax += s.frameCnt;
 		if(icon != null)
 		{
 			s.icon = icon;
+		}
+		if(a.header != null)
+		{
+			s.name =a.header.filename;
+			System.out.println("Snippit has got a filename");
 		}
 		this.a.add(s);
 		scrollpane.setVisible(false);

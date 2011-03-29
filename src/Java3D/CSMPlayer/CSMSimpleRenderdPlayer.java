@@ -204,5 +204,20 @@ public class CSMSimpleRenderdPlayer extends JPanel implements PlayerControlls, R
 		return null;
 	}
 
+	public void setMarker(int min) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public int getMinMarker() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public int getMaxMarker() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 
 }

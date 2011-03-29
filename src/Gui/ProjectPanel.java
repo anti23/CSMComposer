@@ -178,8 +178,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		try {
 			FileInputStream fi = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fi);
-			project = (Project) ois.readObject();
-			updateProjectTree();
+			setProject( (Project) ois.readObject() );
 			
 			fi.close();
 			

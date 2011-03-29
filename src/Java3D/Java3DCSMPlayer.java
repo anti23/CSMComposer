@@ -74,7 +74,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	boolean isStandAlone = false;
 	
 	//Marker
-	int markerMin,markerMax;
+	int markerMin = -1,markerMax = -1;
 	
 	// Visibility Attributes
 	boolean showEnviroment = true;
@@ -121,6 +121,12 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	 		play();
 	}
 	
+	public Animation getMarkedAnimation()
+	{
+		if (markerMin> -1 && markerMax >-1)
+			return animation.getSubSequentAnimation(markerMin, markerMax);
+		return null;
+	}
 	
 	
 	public void captureScreen()
@@ -640,11 +646,29 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 
 
-	public void setMarker(int min, int max) {
-		System.out.println("Java 3d CSM Player : set Marker : " + min + " " + max);
-		markerMin = min;
-		markerMax = max;
-		animation.getSubSequentAnimation(min, max);
+	public void setMarker(int markerFrame) {
+		if (markerFrame > markerMax)
+		{
+			markerMin = markerMax;
+			markerMax = markerFrame;
+		}else
+		{
+			markerMin = markerFrame;
+		}
+		System.out.println("min: " + markerMin + " max: " + markerMax );
+		
+	}
+
+
+
+	public int getMinMarker() {
+		return markerMin;
+	}
+
+
+
+	public int getMaxMarker() {
+		return markerMax;
 	}
 
 

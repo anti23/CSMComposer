@@ -8,7 +8,6 @@ public class Project implements Serializable {
 	private static final long serialVersionUID = -1926334169841725594L;
 	Map<String, Animation> animations = new HashMap<String, Animation>();
 	
-	
 	public void addAnimation(String fileName)
 	{
 		Animation a = new Animation(fileName);
