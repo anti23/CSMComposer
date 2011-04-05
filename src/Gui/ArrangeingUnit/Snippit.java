@@ -12,7 +12,7 @@ public class Snippit implements Comparable<Snippit>
 	int endFrame;
 	int frameCnt;
 	ImageIcon icon;
-	String name;
+	String name = null;
 	
 	// Visual Managment
 	Rectangle bounds = new Rectangle(100,70);
@@ -43,7 +43,21 @@ public class Snippit implements Comparable<Snippit>
 	{
 		updateBoundingRectangle();
 		drawPicture(g);
+		drawText(g);
 		drawBorder(g);
+	}
+	private void drawText(Graphics g) {
+		Color old = g.getColor();
+
+		System.out.println("Snippit: draw Text");
+		g.drawString("Remmi demmi ding dong" + startFrame, startFrame, 100);
+		if (name != null)
+		{
+			g.setColor(Color.BLACK);
+			g.drawString(name, startFrame + 100, 50);
+			System.out.println("drawing name : " + name);
+		}
+		g.setColor(old);
 	}
 	private void updateBoundingRectangle() {
 		bounds.width = frameCnt;
@@ -59,11 +73,6 @@ public class Snippit implements Comparable<Snippit>
 		if (icon != null)
 		{
 			g.drawImage(icon.getImage(), startFrame,0,100,70, null);
-		}
-		if (name != null)
-		{
-			g.drawString(name, startFrame + 100, 60);
-			System.out.println("drawing name : " + name);
 		}
 	}
 	public int compareTo(Snippit s) {

@@ -132,9 +132,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 					}
 					@Override
 					public boolean accept(File arg0) {
-						if (arg0.getName().endsWith("csm"))
-							return true;
-						return false;
+						return arg0.getName().endsWith("csm") || arg0.isDirectory();
 					}
 				};
 				chooser.setFileFilter(ff);

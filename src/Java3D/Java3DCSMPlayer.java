@@ -383,7 +383,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 				StaticTools.getDefaultCameraPos());
 		StaticTools.lights(root);
 		
-		view.setMinimumFrameCycleTime(100);
+	//	view.setMinimumFrameCycleTime(100);
 
 	//	objectBranch.addChild(new ColorCube());
 		root.addChild(rootTransformtGroup);

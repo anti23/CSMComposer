@@ -15,8 +15,8 @@ import datastructure.Animation;
 
 public class ArrangerPane extends JPanel{
 	private static final long serialVersionUID = 3473339410000435173L;
-	Arragnge a = new Arragnge();
-	JScrollPane scrollpane = new JScrollPane(a);
+	Arragnge arranger = new Arragnge();
+	JScrollPane scrollpane = new JScrollPane(arranger);
 	int lastAddedFrameMax = 0;
 	public ArrangerPane() {
 		init();
@@ -37,10 +37,10 @@ public class ArrangerPane extends JPanel{
 		}
 		if(a.header != null)
 		{
-			s.name =a.header.filename;
-			System.out.println("Snippit has got a filename");
+			s.name =a.header.header.get("filename");
+			System.out.println("Snippit has got a filename: " + a.header.filename);
 		}
-		this.a.add(s);
+		this.arranger.add(s);
 		scrollpane.setVisible(false);
 		scrollpane.setVisible(true);
 		

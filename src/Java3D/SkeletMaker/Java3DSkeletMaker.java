@@ -39,6 +39,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 
 import CSM.CSMHeader;
 import CSM.CSMParser;
@@ -120,9 +121,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 				}
 				@Override
 				public boolean accept(File arg0) {
-					if (arg0.getName().endsWith("csm"))
-						return true;
-					return false;
+					return arg0.getName().endsWith("csm") || arg0.isDirectory();
 				}
 			};
 			chooser.setFileFilter(ff);
@@ -320,7 +319,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 				StaticTools.getDefaultCameraPos());
 		StaticTools.lights(root);
 
-		view.setMinimumFrameCycleTime(100);
+		//view.setMinimumFrameCycleTime(100);
 	
 		root.addChild(rootTransformtGroup);
 		rootTransformtGroup.addChild(objectBranch);
