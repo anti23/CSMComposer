@@ -1,0 +1,15 @@
+Essay ueber der Motion Capturinganlage der Hochschule Aalen.
+																		(1.April 2011)
+
+Camaeras:				Vicon Mx3+
+Netzwerk Daten Sammler: Vicon MX Ultranet
+Software:				Vicon iQ 2.5
+
+Vor 2 Jahren wurde in der HTW Aalen eine MoCap anlage angeschafft. Mit dieser Anlage
+koennen bewegungen mit eine Framerate von bis zu 120.0 Bildern pro Sekunde aufgezeichnet
+werden. 
+Die anlage funktioniert optisch ueber spezielle Digitalkameras welche mit einer hohen Aufloesung
+und speziell im Infrarot Spektrun des Lichts aufzeichnen koennen. Des weiteren sind verschiedene 
+Kammeraobjektive anbringbar. Mit der Hilfe von Infrarot Leuchtdionde, dir ringfoermig um die 
+jedes Objektive angeordnet sind, erleuchten sie sich selbst den Aufzeichungs raum.
+Das MoCap system der HTW Aalen arbeitet mit einer Minimalen ausstattung, welche 6 Camera

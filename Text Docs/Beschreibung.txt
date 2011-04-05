@@ -1,0 +1,30 @@
+Bachelor Thesis
+Editor fuer Motioncaputuring Daten der Hochschule Aalen
+
+Funktion:
+Der Editor mach es moeglich die aufgenommenen Punktwolke zu editiren.
+Einschraenkung:
+Die Motioncaputinganlage der Hochschule Aalen ist nur fuer die aufzeichung eines Modells geeignet, somit 
+reduziert sich der umfang des editors auf nur ein zusammenhaengendes Skelet. Das wohl ueblichste Skelet 
+fuer motion Capturing ist das Biped (Zweibeiner). Das aufzeichungsprogramm enthaelt bereit so ein biped 
+Modell, dieses ist kompatibel mit den Piped des 3D editoerungsprogramm 3D Studio Max (mit motioncapturing-
+extension).
+
+Die Realisierung des MOCAP editors wird in java mittes java3d und swing ungesetzt.
+Engehendere Funktionen:
+Laden eines Motion Capturing Dokuments.
+Anzeigen der Punke.
+Verbinden der Punkte zu Biped Skelett.
+Zeitleiste fuer springen im animations spektrum.
+
+Schritt Zwei erweiterungsmoeglichkeiten:
+Verbinden von zwei oder mehreren MOCAP aufnahmen.
+Gelenkpunkte und abstaenden definieren.
+Einzelpunke Verschieben um definierten Gelekpunkt.
+
+Schritt Drei erweiterungsmoeglihckeiten:
+Absoultkoodinaten zweier aufnahmen gleichsetzen auf relativen mittelpunkt.
+Lineare interpolation als uebergang von zwei aufnamehn.
+Applet faehingkeit erstellen damit prgramm live im internet zu bedienen ist.
+
+SVG und 3ds Modell auf punkte mappen und animation in echzeit gerendertem fenster zu betrachten.

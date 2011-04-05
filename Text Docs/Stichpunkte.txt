@@ -1,0 +1,141 @@
+Batchelor Thesis Johannes Kessler 24738
+
+Stichpunkte
+	Editor fuer csm Motion Capturing Daten.
+	Java 1.6 mit Java 3D
+		Einfuehrung 
+			Java im vergleich mit c++
+			Java 3D performance im vergleich mit openGL
+				Java 3D arbeitet mit der Superstruktur des Szenegraphen, diese kostet performance. Allerdings muss in c++ und openGL erst eine Struktur
+				implementiert werden. Dies ist arbeitszeitaufwaendig und kann zu fehlern im programm fuehren. Performance geht in jedemfall verlohren!
+				Java 3d bietet Plattformunabhaengigkeit zu Windows Linux und Apple. Vorhandene, ausgiebig von den Java enwiklern getestete, Frameworks
+				erleichtern die Implementierung von Design Patterns. Sicherheit und Stabilitaet wird durch die Java VM gewaehrleistet.
+				Einfachs (SEHR einfach im Vergleicht zu c++ (ohne verwendung eines Frameworks wie z.B. QT4)) Multi Threading! Jedoch weiterhin die gefahr von deadlocks.
+				
+	Visualisierung
+		Animations Player
+			Riesen Ding, Java 3D, Optisch schoen. 
+			Konfigurierbare Grafik
+				Tesselation von 3D objeckten
+				Kamera Modus (Pespektivische, oder (openGL bez.) Ortho Dahrstellung )
+				Licht, Ambient, Emmisiv, Reflektiv, usw. eistellbar.
+				EXTRA, Schattenwurf. (Bring die GPU zum schmelzen! :D )
+				EXTRA, TEXTUREN, Raum Modelles (OBJ Files laden), gut und wichtig fuer orientierung
+			Kamera Steuerung
+				Standard positionen, Freidrehbar, First Person Kamera, zielkammera (gerichtet auf Punkt oder Koerperteil )
+				FOV
+				
+		Skelet Erfassung 
+			Skelet Definition
+				Im Animationsplayer koennen Punkte verbunden werden. Dazu muss der ensprechende Modus aktiviert sein.
+			Punkte und Knochen Zusammenfassen zu Koerpertiele
+				Automatisch werden Schnittmengen von Koerperteilen zu gelenken. (Winkeldaten und Dimensionszusammenhaenge (Groese der Boundingboxes im verhaeltniss zueinander))
+			Moeglichkeiten fuer spechern und Laden von Programmspezifischen Skeleten. Zudem Standard Biped skelett.
+				
+		Editor
+			Storyline Editor um Ausschnitte aus Dateien zu erzeugen
+			Mehrer Dateien oeffnen und Verwalten
+			Animationsgeschwindigeit regulieren
+			Uebergaenge erzeugen (Morphing)
+			Automatisiere erkennung von Gelenk Gruppen
+				Mit hilfe von stochastik entfernungen zwischen Punkten erkennen und vorschlaege machen welche Punkte einen Knocken definieren.
+				Dazu werden Mittlere Abstaende ueber die zeit festgestellt.
+			Dahrstellung eines einzelframes in kontext mit dem weiteren Verlauf einer Animation durch halbdurchsichtige Graustufenbilder gebracht werden.
+		3D Graphen Visualisierung
+			Plotterfenster um Mathematische Funktionen darzustellen
+			Erweiterung um einzelpunktbewegungen dahrzustellen
+		Vorschaufenster
+			Diese fenster ist eine vereinfachte Miniversion des Animationsplayers, er kann nur begrenzte dahrstellungsfromen des Animations Players
+		Absoulut verschiebung der gesammten animation
+			Verschiedene Animationsaufzeichungen starten nicht immer an der Glechen stellen im Aufnahmestudio. Neukalibrierung der Anlage fuert ebenfalls zu unteschiedlichen Absolutpositionen.
+		Generelle Skalierung der Punkte
+			Wenns perfekt klappt koennen Animationen von unterschiedlich grossen Menschen miteinander eingesetztwerden (haha ohne dass eine unteschied festzstellen sein soll, na da sind wir alle mal gespannt!)
+		
+	Seperater Viewer
+		Kleines prgramm enthaellt nur den Main Player des Editors
+		Sollte sich viellecht auch per Dateiendungszuordnug in Windows integrieren lassen
+		Scnelles Laden und abspielen der Cms datei
+		Per drag an drop dateien laden und apspielen
+		Nur steuerelenemten, forwaerts rueckwarts, schneller langsamer Pause Play Stopp, Ende
+		Eventuell Vollbild und 3 Maussteuerung
+	
+	Datenstruktur
+		Punkte
+			Physikalische Punkte
+				sind punkte die wirklich auf dem Animationsschauspieler gemessen wurden. Absolutpositionen werden in 3 Dimensionen in der csm Datei abgelegt.
+				PP werden durch Motioncapturinganlage mit fixen Namen (meist aus der Medizin) benannt. Umbenennung kann meoglich gemacht werden. (wozu auch immer!)
+				
+			Virtuelle Punkte
+				koenne durch logische/mathematische Regeln, abhaengig von anderen (ein oder mehrere) Punkten, defiinert werden.
+		Skelet
+			ist ein der Koerper der Animation. Ein Koerper besteht aus koerperteilen.
+		Koerperteil
+			Container fuer Punkte. Manche Punkte kommen in mehreren koerperteilen vor. Koerperteile werden an punkten miteinander verbunden.
+			Besitzt Bounding Box, Sphere, Cone, oder Cylinder.
+			
+	Graphical User Interface (GUI)
+		Java Core GUI
+			Mittles dem Java framework AWT wird der editor Konstruiert. Swing kann teilweise auch zur Verwendung kommen.
+		Storyline Editor
+			Eine Storyline Editor Komponente muss Implementiert werden. Dazu wird ein Container erstellt der modifizierte Scrollbars beinhaltet.
+			Dieser Contaier erbt von einem ScrollPane und verwendet das Vertical Splitbox Layout (name wird korrigiert).
+		Scrollbars (Storyline)
+			Die Modifizierte Scrollbar wird Graphisch etwas aufgepeppt. In form einer Filmstreifendahrstellung soll ein grober ueberblick ueber die Animation 
+			gezeigt werden.
+			Interaktion
+				Die scrollbar wird das essenzielle werkzeug fuer das Beschneiden und zusammefuegen von verschiedenen csm Animationen.
+				Elemente aus dem Project Treeview werden per "Drag & Drop" an die Stelle gezogen werden.
+		Scrollbar (im Haupt Animations Player geladene Animation)
+				Hier werden weitere wichtige Funktionen ermoeglicht. 
+				Funktionen
+					Markieren , mittels maus Click down, maus bewegung, und maus Release wird eine bestimmte stelle innerhalb der animation MArkiert.
+					Curser position setzten (Frame Selektieren), mit einem Click in die Scrollbar wird der Curser auf die angeclickte Stelle gesetzt. In unmittelbarer folge wird im Haupt Betrachtungs Fenster (Haupt Animations Player) der Selektierte Frame angezeigt. (Jumpto Event wird von der Scrollbar ausgeloest)
+					Zoom, es soll auf einen vorher markierten Zeitlichen Ausschnitt gezoomt werden koennen.
+		Filesystem Tree View
+			Swing JTreeView, zum Selektieren und importieren ins Project.
+		Project TreeView
+			Wird sich noch zeigen ob nicht eine andere Dahrstellungsform sinnvoller ist. Hier werden alle zu Projekt gehoerende Dateien angezeit.
+		Info Fenster
+			Info ueber Projekt 
+			
+			Info ueber selektierten Schnippsel 
+				Laenge (in Frames und zeit)
+				FPS
+				Dateigroesse
+			
+	Generelle Anforderungen an das Programm
+		Speicher/Laden von Projekten
+		Speicher Unter. 
+		EXTRA Auto Speicher (einstellbar z.B. alle 5 min)
+		EXTRA Exportieren, kopierte alle Geladene Objekte, Configurationen usw. Verwendet Relavire DateiPfade
+		EXTRA Strg Z, Strg Y, Rueckgaengig (Memento Pattern) {mal sehen ob das nicht den Rahmen sprengt!}
+		EXTRA Hilfe Dokumentation, Tutorials usw.
+		Layout veraenderbar. Verschieben der Hauptfenster Komponenten (Main Player ganz gross machen)
+		Vollbild fuer Main Player.
+		Toolbars/Toolboxes auf extrabildfschirm auslagerbar,d.h. frei von Hauptprogramm Frame.
+		Tollboxes frei arangierbar (hoffentlich easy, durch Java bereits Implementiert), dialogboxes!
+		
+		
+		ZUKUNFT und TEIL ZWEI
+			Alternative GUI
+				Alles im 3D Fenster implenetieren. Intuitive handhabung
+		
+			Animations Editor
+				Eingreifen in die animation
+				Haupsaechlich zum korrigieren von Aufzeichungsfehlern
+				Dazu
+					Winkel bewegungen dahrstellen, in einem 2- oder 3-D Plotter
+					Sehr Schwer!!!
+					
+				Importer fuer nicht CMS dateien
+					Ich glaube ich krieg dass besserhin die Punkte zu behalten als dieses Komische Programm
+					Ist aber sicher ein Thema fuer sich (aka Master Thesis, Freier Mittabeiter oder Hiwi der HTW, hehe suche einen Job!)
+					
+				Bewegungsuebergaenge aus Schnippseldatenbank
+					Endet eine Animation in stehender Position, koennte man aus einer datenbank, die auch etwas mit reverse Kniematik zu tun hat 
+					Den Uebergang in die naechste (z.B. stehende) Position aus einer datenbank rausschneiden.
+				Vorschlaege machen fuer geeignetste anschluss Schnittsposition 
+					Haltunge der Arme, Beine und des Torsos innerhalb eier Animation lassen sich ueber statischtische auswertung automatisiert Vorschlagen
+					Erspart eine menge schnippselarbeit. Das Mathe Voodoo ist sicher ne Aufgabe fuer den Thierauf (das Mathe Kong Fu Wunder).
+	
+		
