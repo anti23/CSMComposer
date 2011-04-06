@@ -30,6 +30,8 @@ public class CSMParser {
 	int maxFrames = -1 ;
 	float frameRate = -1.0f;
 	String scannedFilename = null;
+	private boolean noMoreLines = false;
+	private CSMPoints lastLine = null;
 	
 	public void scanFile(String fileName) throws FileNotFoundException
 	{
@@ -193,6 +195,11 @@ public class CSMParser {
  */
 	public CSMPoints parseFrame() {
 		
+		if(noMoreLines)
+		{
+			return lastLine;
+		}
+		
 		CSMPoints points;
 		
 		if (scannedFilename == null)
@@ -209,10 +216,16 @@ public class CSMParser {
 			lastFrameNumber = s.nextInt();
 			points = new CSMPoints(lastFrameNumber, this.order.length);
 			
-			for (int i = 0; i < order.length ; i++) {
+			for (int i = 0; i < order.length ; i++) 
+			{
 				Point3f p = new Point3f(s.nextFloat(),s.nextFloat(),s.nextFloat());
 				points.add(p);
 				if (debug)  System.out.println("Frame No.: " + lastFrameNumber+ " " + order[i] +" "+ p);
+			}
+			if (!scanner.hasNextLine())
+			{
+				noMoreLines = true;
+				lastLine = points;
 			}
 			return points;
 		}

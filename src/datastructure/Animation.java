@@ -143,7 +143,7 @@ public class Animation implements
 		pcs.header = header;
 		fireChangeEvenet(pcs);
 
-		framecount = header.lastFrame-header.firstFrame + 1;
+		framecount = header.lastFrame-header.firstFrame;
 		frames = new CSMPoints[framecount];
 		frames[0] = parser.parseFrame();
 		
@@ -156,6 +156,11 @@ public class Animation implements
 		}
 		
 		skelett = new Skelett(header);
+		// wait for first framm parsed
+		while (lastLoadedFrame < 1)
+		{
+			try {Thread.sleep(100);	} catch (InterruptedException e) {}
+		}
 		skelett.loadFrame(frames[0].points);
 
 		pcs = new PlayerControllStatus(State.AnimationLoaded);
@@ -287,14 +292,14 @@ public void actionPerformed(ActionEvent e) {
 			if (framecount < previewCount)
 				previewCount = framecount;
 			if (framecount > 0){
-				for (int i = 1; i < framecount; i++)
+				for (int i = 0; i < framecount; i++)
 				{
 					frames[i] = parser.parseFrame();
 					lastLoadedFrame = i;
 					PlayerControllStatus pcs = new PlayerControllStatus(State.LoadgingProgressUpdate);
 					pcs.firstFrame = pcs.lastFrame = i;
 					fireChangeEvenet(pcs);
-					if ((i -1 ) % (framecount/previewCount) == 0 )
+					if ((i ) % (framecount/previewCount) == 0 )
 					{
 						 new Thread(new AsyncPreviewMaking(i)).start();
 					}

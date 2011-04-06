@@ -157,7 +157,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 	 */
 	int getClosestImage(int frame)
 	{
-		if (previews.size() < 1)
+		if (previews.size() < 0)
 			return 0;
 		
 		int[] pFrames = new int[previews.size()];

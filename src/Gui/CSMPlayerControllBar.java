@@ -74,6 +74,7 @@ public class CSMPlayerControllBar extends JPanel
 		faster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				float newspeed = player.getSpeed() * 1.2f;
+				System.out.println(player.getSpeed());
 				player.changeSpeed(newspeed);
 			}
 		});

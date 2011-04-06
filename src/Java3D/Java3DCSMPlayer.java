@@ -91,22 +91,24 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		this.isStandAlone = isStandAlone;
 		if(withFileChooser)
 		{
-			JFileChooser chooser  = new JFileChooser(".");
-			FileFilter ff = new FileFilter() {
-				@Override
-				public String getDescription() {
-					return "*.csm";
-				}
-				@Override
-				public boolean accept(File arg0) {
-					if (arg0.getName().endsWith("csm"))
-						return true;
-					return false;
-				}
-			};
-			chooser.setFileFilter(ff);
-			chooser.showOpenDialog(null);
-			file = chooser.getSelectedFile();
+//			JFileChooser chooser  = new JFileChooser(".");
+//			FileFilter ff = new FileFilter() {
+//				@Override
+//				public String getDescription() {
+//					return "*.csm";
+//				}
+//				@Override
+//				public boolean accept(File arg0) {
+//					if (arg0.getName().endsWith("csm"))
+//						return true;
+//					return false;
+//				}
+//			};
+//			chooser.setFileFilter(ff);
+//			chooser.showOpenDialog(null);
+//			file = chooser.getSelectedFile();
+//			
+			file = StaticTools.openDialog("csm", false);
 			System.out.println(file.getPath());
 			a = new Animation(file.getCanonicalPath());	
 		}else 
@@ -417,14 +419,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		for (String string : args) {
 			System.out.println(string);
 		}
-		/*
-		 * 
-		Map <String,String> map =System.getenv();
-		for (String string : map.keySet()) {
-			System.out.println(string + " :  " + map.get(string));
-		}
-		System.out.println();
-		 */
  
 	Java3DCSMPlayer s = 	null; 
 	if (args.length > 0)
@@ -436,7 +430,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	 s=  new Java3DCSMPlayer(true,true);
 	
 	JFrame frame;
-	frame = new JFrame("Frame of Fame");
+	frame = new JFrame("Java 3D CSM Viewer");
 	frame.addWindowListener(new WindowAdapter() {
 	      public void windowClosing(WindowEvent e) {
 		        System.exit(0);
