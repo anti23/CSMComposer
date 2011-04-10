@@ -91,23 +91,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		this.isStandAlone = isStandAlone;
 		if(withFileChooser)
 		{
-//			JFileChooser chooser  = new JFileChooser(".");
-//			FileFilter ff = new FileFilter() {
-//				@Override
-//				public String getDescription() {
-//					return "*.csm";
-//				}
-//				@Override
-//				public boolean accept(File arg0) {
-//					if (arg0.getName().endsWith("csm"))
-//						return true;
-//					return false;
-//				}
-//			};
-//			chooser.setFileFilter(ff);
-//			chooser.showOpenDialog(null);
-//			file = chooser.getSelectedFile();
-//			
 			file = StaticTools.openDialog("csm", false);
 			System.out.println(file.getPath());
 			a = new Animation(file.getCanonicalPath());	
@@ -527,6 +510,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 
 	public void play() {
+		System.out.println("CSM Player: play : animation:"+ animation);
 		animation.play();
 		animation.isAnimating = true;
 	}

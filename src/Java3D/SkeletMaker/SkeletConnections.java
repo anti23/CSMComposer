@@ -1,6 +1,7 @@
 package Java3D.SkeletMaker;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,12 @@ public class SkeletConnections implements Serializable{
 	
 	public void connect(String a,String b)
 	   {
+		int first =findPair(a, b) ; 
+		if (first >= 0 )
+		{
+			System.out.println("Connection Allready existing first : " + first );
+			return;
+		}
 		if (a !=null && b!= null)
 		{
 		   connectlist.add(a);
@@ -39,9 +46,21 @@ public class SkeletConnections implements Serializable{
 		   
 		}else
 			System.out.println("Skelet Connection: connect: no Connection Established between: " + a + " and " + b + " !");
+		
+		if (header.getPos(a) < 0)
+			System.out.println("SkeletonConnections : Point " + a + " is not in Loaded Header");
+		if (header.getPos(b) < 0)
+			System.out.println("SkeletonConnections : Point " + b + " is not in Loaded Header");
 	   }
 	
-	public void disconnect(String a, String b)
+	
+	/**
+	 *  returns the first index nuber of the pair to search. retrun -1 if pair does not exist in list.
+	 * @param a
+	 * @param b
+	 * @return
+	 */
+	int findPair(String a, String b)
 	{
 		for (int i = 0; i < connection_count; i++) 
 		{
@@ -49,21 +68,40 @@ public class SkeletConnections implements Serializable{
 			{
 				if (connectlist.get(i*2+1).compareToIgnoreCase(b) == 0)
 				{
-					connectlist.remove(i*2);
-					connectlist.remove(i*2+1);
-					connection_count--;
+					return i*2;
 				}
 			}
 			if (connectlist.get(i*2).compareToIgnoreCase(b)== 0)
 			{
 				if (connectlist.get(i*2+1).compareToIgnoreCase(a) == 0)
 				{
-					connectlist.remove(i*2);
-					connectlist.remove(i*2+1);
-					connection_count--;
+					return i*2;
 				}
 			}
 		}
+		return -1;
+	}
+	/**
+	 * retruns 
+	 * @param a fisrt marker point
+	 * @param b secon marker point 
+	 * @return true if Disconnection was succesful, taht means if
+	 * there was a connection anyway. if false there was nothing 
+	 * to disconect and no redraw has to be maid.
+	 */
+	public boolean disconnect(String a, String b)
+	{
+		//connectionCount is half the size of the conectList
+		int first = findPair(a, b);
+		if (first > -1)
+		{
+			connectlist.remove(first+1);
+			connectlist.remove(first);
+			connection_count--;
+			System.out.println("SkeletonConnections: disconnecting: " + a + " and " + b);
+			return true;
+		}
+		return false;
 	}
 	
 	/* Initing Default Bone Connections
@@ -154,8 +192,16 @@ public class SkeletConnections implements Serializable{
 
 		
 	}
-
+	/**
+	 * @deprecated
+	 * Ths method adds a half of a connection pair threrfor it allwas should be called twice in a row.
+	 * Connection_cout will not be incremented.
+	 * 
+	 * Just for Compatibility with older Skelet structure.
+	 */
 	public void add(String a) {
 		connectlist.add(a);
 	}
+	
+	
 }

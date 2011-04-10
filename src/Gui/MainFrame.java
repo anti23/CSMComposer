@@ -24,7 +24,7 @@ import datastructure.Config;
 import datastructure.Project;
 import CSM.CSMHeader;
 import CustomSwingComponent.JFilmStripSlider;
-import Gui.ArrangeingUnit.Arragnge;
+import Gui.ArrangeingUnit.Arranger;
 import Gui.ArrangeingUnit.ArrangerPane;
 import Java3D.Java3DCSMPlayer;
 import Java3D.CSMPlayer.SimpleControllBar;

@@ -184,42 +184,26 @@ public class Animation implements
 	}
 
 	public void play() {
+		if (timer != null)
+		{
+				timer.stop();
+				timer = null;
+				System.gc();
+		}
+	
 		timer = new Timer(1000/20, this);
 		timer.setDelay(1000/20);
 		timer.setRepeats(true);
 		timer.start();
 		animStart = System.currentTimeMillis();
-		/*
-		 * 
-		while (!isStopped)
-		{
-			//pause
-			while(!isAnimating){
-				try {Thread.sleep(100);} catch (InterruptedException e){}
-				
-				//Break if isStopped
-				if (isStopped) break;
-			}
-			int stepping = 12;
-			if (framePos + stepping < frames.length)
-			{
-	//			framePos += stepping;
-				setFrame(framePos + stepping);
-			}else 
-			{
-				
-				framePos = 0;
-			}
-
-//			loadFrame();
-			try {Thread.sleep(100);
-			} catch (InterruptedException e) {	}
-		}
 		
-		 */
+		System.out.println("Animation: play : timer :" + timer + 
+				" \n \t animStart " + animStart + 
+				" \n \t listener List: " + listenerList);
 	}
 	int deltaFrame ;
 	long delta;
+	int ctr = 0 ;
 public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == timer)
 		{
@@ -237,6 +221,7 @@ public void actionPerformed(ActionEvent e) {
 
 
 	public void setFrame(int frame) {
+		System.out.println("Animation: setFrame: frame " + frame);
 		if (frame < lastLoadedFrame)
 			framePos = frame;
 		else if (frame > lastLoadedFrame)
@@ -342,7 +327,7 @@ public void actionPerformed(ActionEvent e) {
 		int frame = (((Integer)e.getSource()).intValue());
 		if (e.getSource() == Integer.class)
 		{
-			System.out.println("Setting frame to: " + frame);
+			System.out.println("Animation: sateChanged: Setting frame to: " + frame);
 			setFrame(frame);		
 		}
 	}
@@ -351,7 +336,9 @@ public void actionPerformed(ActionEvent e) {
 	public void stop() {
 		isStopped = true;
 		if (timer != null)
-		timer.stop();
+		{
+			timer.stop();
+		}
 	}
 
 
@@ -363,7 +350,16 @@ public void actionPerformed(ActionEvent e) {
 	{
 		return "Animation: " + filename + " frame count: " + framecount ;
 	}
+	
+	public CSMPoints getCurrentFrame()
+	{
+		return frames[framePos];
+	}
 
+	public CSMPoints getPoints(int index)
+	{
+		return frames[index];
+	}
 
 	public void fireChangeListenerUpdateEvents() {
 		
@@ -414,14 +410,16 @@ public void actionPerformed(ActionEvent e) {
 		previews = (Map<Integer, ImageIcon>) in.readObject();
 		skelett = new Skelett(header);
 		skelett.loadFrame(frames[framePos].points);
-		listenerList = new EventListenerList();
 		lastLoadedFrame = header.lastFrame -1;
+		listenerList = new EventListenerList();
 		//Timer setup
+		playbackSpeed = 1;
 		timer = new Timer(1000/20, this);
 		timer.setDelay(1000/20);
 		timer.setRepeats(true);
 		timer.start();
-		animStart = Calendar.getInstance().getTime().getTime();
+		isAnimating = true;
+		animStart = System.currentTimeMillis();
 		
 	}
 

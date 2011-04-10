@@ -66,11 +66,19 @@ public class Java3DSkelet {
 			pointsGroup.addChild(pointTransforms[i]);
 		}
 	}
+	public void disconnect(String a, String b)
+	{
+		if (connections.disconnect(a, b))
+		{
+			reloadConnections();
+		}
+	}
 	
 	public void connect(String a, String b, boolean store)
 	{
 		if(store)
 			connections.connect(a, b);
+		// points (sphrers) are stored in  pointsGroup in exact same order as the headers order
 		int indexA = csm_header.getPos(a);
 		int indexB = csm_header.getPos(b);
 		if (indexA < 0 || indexB < 0 || indexA > csm_header.order.length ||
@@ -89,6 +97,7 @@ public class Java3DSkelet {
 												pointTransforms[indexB],angle,stretch);
 		aim.setSchedulingBounds(StaticTools.defaultBounds);
 		BranchGroup bg = new BranchGroup();
+		bg.setCapability(BranchGroup.ALLOW_DETACH);
 		bg.addChild(angle);
 		bg.addChild(aim);
 		bones.addChild(bg);
@@ -185,6 +194,23 @@ public class Java3DSkelet {
 		}
 		
 	}
+	
+	void cleanUp()
+	{
+		bones.removeAllChildren();
+	}
+	
+	void reloadConnections()
+	{
+		cleanUp();
+		for (int i = 0; i < connections.connection_count; i++) 
+		{
+			String a = connections.connectlist.get(i*2);
+			String b = connections.connectlist.get(i*2 +1);
+			connect(a, b, false);
+		}
+
+	}
 
 	public void loadFrame(File file) {
 
@@ -192,16 +218,16 @@ public class Java3DSkelet {
 			FileInputStream fi = new FileInputStream(file);
 			ObjectInputStream in = new ObjectInputStream(fi);
 			this.connections =(SkeletConnections)in.readObject();
-			
-			for (int i = 0; i < connections.connection_count; i++) {
-				String a = connections.connectlist.get(i*2);
-				String b = connections.connectlist.get(i*2 +1);
-				connect(a, b, false);
-			}
+			reloadConnections();
+		
+			in.close();
+			fi.close();
 		} catch (IOException e) {
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
+		
+	
 		
 	}
 

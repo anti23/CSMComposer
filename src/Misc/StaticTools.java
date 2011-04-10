@@ -619,7 +619,7 @@ public class StaticTools {
 //		System.out.println("Campos: "+campos[0] + ' ' +campos[1] + ' ' + campos[2] + ' ');
 	}
 	
-	public static void Frame(Component c, String titel)
+	public static JFrame HidingFrame(Component c, String titel)
 	{
 		
 		JFrame frame;
@@ -629,13 +629,14 @@ public class StaticTools {
 			        if (e.getSource().getClass() == JFrame.class)
 			        {
 			        	JFrame f = (JFrame) e.getSource();
-			        	f.dispose();
+			        	f.setVisible(false);
 			        }
 			  }
 		});
 		frame.setSize(500,500);
 		frame.add(c);
 		frame.setVisible(true);
+		return frame;
 	}
 	
 	public static File openDialog(final String filter, boolean isSaveDialog)
@@ -661,6 +662,12 @@ public class StaticTools {
 			chooser.showOpenDialog(null);
 		
 		File file = chooser.getSelectedFile();
+		if(isSaveDialog)
+		{
+			if (!file.getName().endsWith(filter))
+				file = new File(file.getAbsolutePath() + "." +filter);
+				
+		}
 		return file;
 	}
 

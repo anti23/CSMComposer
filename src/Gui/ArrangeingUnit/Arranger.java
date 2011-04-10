@@ -15,18 +15,22 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-public class Arragnge extends JPanel implements MouseListener, MouseMotionListener{
+public class Arranger extends JPanel implements MouseListener, MouseMotionListener{
 
 	private static final long serialVersionUID = 1699180473798936300L;
 
 
 	ArrayList<Snippit> snippits = new ArrayList<Snippit>();
 	
+	int snippitsWidth = 150;
+	int spaceBetweenSnippits = 30; // later used for interleaving
+	
+	
 	Snippit[] hits;
 	
 	Dimension size = new Dimension(700,150);
 	
-	public Arragnge() {
+	public Arranger() {
 		init();
 	}
 	
@@ -37,12 +41,9 @@ public class Arragnge extends JPanel implements MouseListener, MouseMotionListen
 		addMouseMotionListener(this);
 	}
 	
-	
-	
 	@Override
 	public void paint(Graphics g) {
 		super.paint(g);
-		
 		paintSnippits(g);
 		validate();
 	}

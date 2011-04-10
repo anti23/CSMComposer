@@ -242,7 +242,7 @@ public class Skelett implements Serializable {
 		
 	}
 	
-	public void setNewList(SkeletConnections newList)
+	public void setConnections(SkeletConnections newList)
 	{
 		bones.removeAllChildren();
 		boneTransformsAngle.clear();

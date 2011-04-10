@@ -60,7 +60,7 @@ public class BasicFilmStripListener implements 	MouseListener,
 	}
 
 	public void mouseEntered(MouseEvent e) {
-		ui.filmStripSlider.requestFocus();
+		//ui.filmStripSlider.requestFocus();
 //		ui.filmStripSlider.setFocusable(true);
 		
 	}

@@ -15,7 +15,7 @@ import datastructure.Animation;
 
 public class ArrangerPane extends JPanel{
 	private static final long serialVersionUID = 3473339410000435173L;
-	Arragnge arranger = new Arragnge();
+	Arranger arranger = new Arranger();
 	JScrollPane scrollpane = new JScrollPane(arranger);
 	int lastAddedFrameMax = 0;
 	public ArrangerPane() {

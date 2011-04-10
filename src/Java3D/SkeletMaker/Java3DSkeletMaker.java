@@ -6,6 +6,7 @@ import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,7 +68,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
     //Java 3d
     Canvas3D c3d;
 	PickCanvas pickCanvasPoints;
-	PickCanvas pickCanvasBones;
 	SimpleUniverse u;
 	BranchGroup objectBranch = new BranchGroup();
 	BranchGroup root = new BranchGroup();
@@ -85,7 +85,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	TransformGroup markerBoneAngle = new TransformGroup();
 	TransformGroup markerBoneStretchZ = new TransformGroup();
 	// Selection Text
-	String markerText = "Connect?";
+	String markerText = "Drag and drop with middle Mousebutton";
 	private String markerStart;
 	private String markerEnd;
 	BranchGroup markerTextGroup = new BranchGroup();
@@ -94,7 +94,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	private boolean isStandAlone =false;
 	
 	//Options Panel
-	JPanel commandPannel = new JPanel(new FlowLayout());
+	JPanel commandPannel = new JPanel(new GridLayout(5, 1));
 	JButton setConnection = new JButton("Set Connection");
 	JButton removeConnection = new JButton("Remove Connection");
 	JButton removeAllConnections = new JButton("Remove All Connections");
@@ -107,26 +107,22 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	CSMParser parser ;
 	Java3DSkelet skelet;
 
+	private boolean curserMode = false;
+
+	
+	public Java3DSkeletMaker(CSMHeader header, CSMPoints frame, SkeletConnections connections) throws IOException
+	{
+		this(false,false);
+		loadSkeleton(header, frame, connections);
+
+	}
 	
 	public Java3DSkeletMaker(boolean isStandAlone,boolean withFileChooser) throws IOException {
 		File file = null;
 		this.isStandAlone = isStandAlone;
 		if(withFileChooser)
 		{
-			JFileChooser chooser  = new JFileChooser(".");
-			FileFilter ff = new FileFilter() {
-				@Override
-				public String getDescription() {
-					return "*.csm";
-				}
-				@Override
-				public boolean accept(File arg0) {
-					return arg0.getName().endsWith("csm") || arg0.isDirectory();
-				}
-			};
-			chooser.setFileFilter(ff);
-			chooser.showOpenDialog(null);
-			file = chooser.getSelectedFile();
+			file = StaticTools.openDialog("csm", false);
 			System.out.println(file.getPath());
 			parser = new CSMParser();
 			parser.scanFile(file.getCanonicalPath());
@@ -253,7 +249,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		commandPannel.add(removeAllConnections);
 		commandPannel.add(save);
 		commandPannel.add(load);
-		content.add(commandPannel, BorderLayout.SOUTH);
+		content.add(commandPannel, BorderLayout.WEST);
 		
 		setCommadActions();
 	}
@@ -268,10 +264,10 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		
 		save.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				File file = StaticTools.openDialog("txt",true);
+				File file = StaticTools.openDialog("sklt",true);
 				
 				try {
-					skelet.save(file.getCanonicalPath()+".txt");
+					skelet.save(file.getCanonicalPath());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -280,12 +276,33 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		
 		load.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				File file = StaticTools.openDialog("txt",false);
+				File file = StaticTools.openDialog("sklt",false);
 				skelet.loadFrame(file);
 				
 			}
 		});
+		removeConnection.addActionListener(new  ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				skelet.disconnect(markerStart, markerEnd);
+			}
+		});
+		
+		removeAllConnections.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				skelet.cleanUp();
+			}
+		});
 	}
+	
+	private void setSkelet(Java3DSkelet s)
+	{
+		if(s != null)
+		{
+			skelet = s;
+			pickGroup.addChild(skelet.getBG());
+		}
+	}
+	
 	private void init3D() {
 		root = new BranchGroup();
 		root.setCapability(BranchGroup.ALLOW_DETACH);
@@ -300,9 +317,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		pickGroup.setCapability(BranchGroup.ALLOW_CHILDREN_READ);
 		pickGroup.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
 		objectBranch.addChild(pickGroup);
-		
-		pickGroup.addChild(skelet.getBG());
-		
+		setSkelet(skelet);
 		
 		c3d = new Canvas3D(SimpleUniverse.getPreferredConfiguration());
 		c3d.addMouseListener(this);
@@ -330,7 +345,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		
 		//add objects
 		initPickCanvas();
-		initPickCanvasBones();
 		initStaticGraph();
 		initOrbitBehavoir();
 		initMarkerSphere();
@@ -341,6 +355,8 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	{
 		markerSphere = new Sphere(0.6F);
 		Appearance app = StaticTools.blue();
+		if (!app.isLive())
+			app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 		TransparencyAttributes ta = new TransparencyAttributes();
 		ta.setTransparency(0.5f);
 		ta.setTransparencyMode(TransparencyAttributes.BLENDED);
@@ -373,14 +389,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		pickCanvasPoints.setMode(PickInfo.PICK_GEOMETRY); 
 		pickCanvasPoints.setFlags(PickInfo.NODE | PickInfo.CLOSEST_INTERSECTION_POINT);
 		pickCanvasPoints.setTolerance(4.0f);
-	}
-	void initPickCanvasBones()
-	{
-		// Init Picking
-		pickCanvasBones = new PickCanvas(c3d, skelet.getBoneGroups());
-		pickCanvasBones.setMode(PickInfo.PICK_GEOMETRY); 
-		pickCanvasBones.setFlags(PickInfo.NODE | PickInfo.CLOSEST_INTERSECTION_POINT);
-		pickCanvasBones.setTolerance(4.0f);
 	}
 	
 	public Transform3D getViewingTransform()
@@ -465,45 +473,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	}
 	
 
-	public void keyPressed(KeyEvent arg0) {
-		int code = arg0.getKeyCode();
-		switch(code)
-		{
-		case KeyEvent.VK_UP: 	
-			points = parser.parseFrame();
-			skelet.loadFrame(points.points);
-			; break;
-		case KeyEvent.VK_DOWN:    ; break;
-		case KeyEvent.VK_LEFT:   ; break;
-		case KeyEvent.VK_RIGHT:   ; break;
-		case KeyEvent.VK_W:   ; break;
-		case KeyEvent.VK_S:   ; break;
-		case KeyEvent.VK_A:    ; break;
-		case KeyEvent.VK_D:  ; break;
-		case KeyEvent.VK_R:   ; break;
-		
-		case KeyEvent.VK_F: 
-			toggleFullScreen();
-			break;
-		}
-		System.out.println("Simple: keyPressed: Keycode: "+arg0.getKeyCode());
-		//getDefaultCameraPos();
-	//	System.out.println("Key: " + code);
-	}
-	
-	void pickExistingBone(PickInfo pickInfo)
-	{
-		if(pickInfo != null)
-		{
-			System.out.println("BonePciker:");
-			Shape3D shape = (Shape3D) pickInfo.getNode();
-			System.out.println(pickInfo.getNode());
-			System.out.println(pickInfo.getNode().getParent());
-			System.out.println(pickInfo.getNode().getParent().getParent());
-			System.out.println(pickInfo.getNode().getParent().getParent().getParent());
-		}
-	}
-	
 	Transform3D getTransformFromPickCanvas(PickInfo pickInfo)
 	{
 
@@ -565,6 +534,43 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		return null;
 	}
 
+	public void keyPressed(KeyEvent arg0) {
+		int code = arg0.getKeyCode();
+		switch(code)
+		{
+		case KeyEvent.VK_UP: 	
+			points = parser.parseFrame();
+			skelet.loadFrame(points.points);
+			; break;
+		case KeyEvent.VK_DOWN:    ; break;
+		case KeyEvent.VK_LEFT:   ; break;
+		case KeyEvent.VK_RIGHT:   ; break;
+		case KeyEvent.VK_W:   ; break;
+		case KeyEvent.VK_S:   ; break;
+		case KeyEvent.VK_A:    ; break;
+		case KeyEvent.VK_D:  ; break;
+		case KeyEvent.VK_R:   ; break;
+		
+		case KeyEvent.VK_ENTER:
+			skelet.connect(markerStart, markerEnd,true); 
+			break;
+		
+		case KeyEvent.VK_BACK_SPACE:
+			skelet.disconnect(markerStart,markerEnd);
+			break;
+			
+		case KeyEvent.VK_F: 
+			toggleFullScreen();
+			break;
+		}
+		System.out.println("Simple: keyPressed: Keycode: "+arg0.getKeyCode());
+		//getDefaultCameraPos();
+	//	System.out.println("Key: " + code);
+	}
+
+
+
+
 	public void keyReleased(KeyEvent arg0) {
 		
 	}
@@ -576,8 +582,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	public void mouseClicked(MouseEvent arg0) {
 		
 		pickCanvasPoints.setShapeLocation(arg0);
-		pickCanvasBones.setShapeLocation(arg0);
-		pickExistingBone(pickCanvasBones.pickClosest());
 		
 		Transform3D trafo = getTransformFromPickCanvas(pickCanvasPoints.pickClosest());
 		if(trafo != null)
@@ -632,12 +636,14 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		
 		pickCanvasPoints.setShapeLocation(arg0);
 		PickInfo pick = pickCanvasPoints.pickClosest();
-		Transform3D trafo = getTransformFromPickCanvas(pick);
-		markerStart = getStringFromSphere(pick);
-		if(trafo != null)
+		if(pick != null)
 		{
-			System.out.println("Trafo: " + trafo);
-			markerTransformGroup.setTransform(trafo);
+			Transform3D trafo = getTransformFromPickCanvas(pick);
+			markerStart = getStringFromSphere(pick);
+			if(trafo != null)
+			{
+				markerTransformGroup.setTransform(trafo);
+			}
 		}
 		
 		
@@ -671,8 +677,11 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	public void mouseDragged(MouseEvent arg0) {
 		pickCanvasPoints.setShapeLocation(arg0);
 		PickInfo pick = pickCanvasPoints.pickClosest();
-		markerEnd = getStringFromSphere(pick);
-		setMarkerBoneRotScale(pick);
+		if (pick != null && curserMode )
+		{
+			markerEnd = getStringFromSphere(pick);
+			setMarkerBoneRotScale(pick);
+		}
 		
 	}
 
@@ -712,7 +721,14 @@ void setMarkerBoneRotScale(PickInfo target)
 
 
 	public void mouseMoved(MouseEvent arg0) {
-	
-		
+	}
+
+	public void loadSkeleton(CSMHeader h, CSMPoints frame, SkeletConnections sc) {
+		skelet = new Java3DSkelet(h);
+		this.points = frame;
+		skelet.connections = sc;
+		skelet.reloadConnections();
+		skelet.loadFrame(points.points);
+		setSkelet(skelet);
 	}
 }// end class

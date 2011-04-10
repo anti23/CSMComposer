@@ -69,6 +69,7 @@ public class CSMPlayerControllBar extends JPanel
 		play.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				player.play();
+				System.out.println("CSM PlayerControllBar: play : player :" + player);
 			}
 		});
 		faster.addActionListener(new ActionListener() {

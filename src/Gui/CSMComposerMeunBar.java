@@ -10,14 +10,18 @@ import java.io.ObjectInputStream;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.filechooser.FileFilter;
 
 import datastructure.Animation;
 import datastructure.Project;
 
+import CSM.CSMHeader;
+import CSM.CSMPoints;
 import Java3D.Java3DCSMPlayer;
 import Java3D.SkeletMaker.Java3DSkeletMaker;
 import Java3D.SkeletMaker.SkeletConnections;
@@ -30,7 +34,8 @@ public class CSMComposerMeunBar extends JMenuBar{
 	// Controller objects
 	Java3DCSMPlayer player;
 	ProjectPanel projectPanel;
-	
+	Java3DSkeletMaker skeletonMaker;
+	JFrame skeletonMakerFrame;
 	
 	//Menus
 	JMenu mFile = new JMenu("File");
@@ -125,19 +130,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 	{
 		miAddCSMFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				JFileChooser chooser  = new JFileChooser(".");
-				FileFilter ff = new FileFilter() {
-					public String getDescription() {
-						return "*.csm";
-					}
-					@Override
-					public boolean accept(File arg0) {
-						return arg0.getName().endsWith("csm") || arg0.isDirectory();
-					}
-				};
-				chooser.setFileFilter(ff);
-				chooser.showOpenDialog(null);
-				File file = chooser.getSelectedFile();
+				File file = StaticTools.openDialog("csm", false);
 				if (file != null && player != null)
 				{
 					//player.loadAnimation(file.getAbsolutePath());
@@ -166,8 +159,24 @@ public class CSMComposerMeunBar extends JMenuBar{
 		miSkeleteEditor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					Java3DSkeletMaker sm = new Java3DSkeletMaker(true, true);
-					StaticTools.Frame(sm, "SkeletEditor");
+					CSMHeader h = player.animation.header;
+					CSMPoints frame = player.animation.getCurrentFrame();
+					SkeletConnections sc = player.animation.getSkelett().connectlist;
+					if (h == null || frame == null || sc == null)
+					{
+						System.out.println("CSMComposerMenuBar: miSkeletEditor: " + h + " " + FRAMEBITS + " " + sc);
+					}
+					if(skeletonMaker == null)
+					{
+						skeletonMaker = new Java3DSkeletMaker(h,frame,sc);
+						skeletonMakerFrame = StaticTools.HidingFrame(skeletonMaker, "Skeleton Editor");
+					}else 
+					{
+						skeletonMaker.loadSkeleton(h,frame,sc);
+						skeletonMakerFrame.setVisible(true);
+						
+					}
+					
 				} catch (IOException e1) {
 					e1.printStackTrace();
 				}
@@ -198,7 +207,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 		});
 		miLoadSkelet.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				File f = StaticTools.openDialog("txt", false);
+				File f = StaticTools.openDialog("sklt", false);
 				FileInputStream fi;
 				try {
 					fi = new FileInputStream(f);
@@ -206,8 +215,10 @@ public class CSMComposerMeunBar extends JMenuBar{
 					SkeletConnections sc = (SkeletConnections) ois.readObject();
 					if (sc != null)
 					{
-						player.animation.getSkelett().setNewList(sc);
+						player.animation.getSkelett().setConnections(sc);
 					}
+					ois.close();
+					fi.close();
 				} catch (FileNotFoundException e) {
 				} catch (IOException e) {
 				} catch (ClassNotFoundException e) {
@@ -220,6 +231,8 @@ public class CSMComposerMeunBar extends JMenuBar{
 	public CSMComposerMeunBar() {
 		initMenu();
 		initActions();
+		// Menue disapearin behind Java 3d Canvas FIX, at cost of performance
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 	}
 
 

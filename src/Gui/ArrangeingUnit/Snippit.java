@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 
 public class Snippit implements Comparable<Snippit>
 {
+	int width = 150; // Snippits are fied width
+	int pos; // x start value, give by  Arrager, to draw itself
 	int startFrame;
 	int endFrame;
 	int frameCnt;
@@ -15,7 +17,7 @@ public class Snippit implements Comparable<Snippit>
 	String name = null;
 	
 	// Visual Managment
-	Rectangle bounds = new Rectangle(100,70);
+	Rectangle bounds = new Rectangle(width,70);
 	public int delta;
 	
 	public Snippit(int frameCnt) {
@@ -49,19 +51,21 @@ public class Snippit implements Comparable<Snippit>
 	private void drawText(Graphics g) {
 		Color old = g.getColor();
 
-		System.out.println("Snippit: draw Text");
+		g.drawString("Start: " + startFrame , pos, 90);
+		g.drawString("End: " + (startFrame + frameCnt) , pos + width, 90);
+		
 		g.drawString("Remmi demmi ding dong" + startFrame, startFrame, 100);
 		if (name != null)
 		{
 			g.setColor(Color.BLACK);
-			g.drawString(name, startFrame + 100, 50);
+			g.drawString(name, startFrame + 100, 100);
 			System.out.println("drawing name : " + name);
 		}
 		g.setColor(old);
 	}
 	private void updateBoundingRectangle() {
-		bounds.width = frameCnt;
-		bounds.x = startFrame;
+		bounds.width = width;
+		bounds.x = pos;
 	}
 	private void drawBorder(Graphics g) {
 		Color old = g.getColor();
