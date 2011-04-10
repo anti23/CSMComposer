@@ -11,7 +11,6 @@ public class SkeletConnections implements Serializable{
 
 	private static final long serialVersionUID = 6453290728060012118L;
 	public List<String> connectlist = new ArrayList<String>(20);
-	public int connection_count = 0;
 	CSMHeader header;
 	
 	public void setHeader(CSMHeader header)
@@ -42,7 +41,6 @@ public class SkeletConnections implements Serializable{
 		{
 		   connectlist.add(a);
 		   connectlist.add(b);
-		   connection_count ++;
 		   
 		}else
 			System.out.println("Skelet Connection: connect: no Connection Established between: " + a + " and " + b + " !");
@@ -62,7 +60,7 @@ public class SkeletConnections implements Serializable{
 	 */
 	int findPair(String a, String b)
 	{
-		for (int i = 0; i < connection_count; i++) 
+		for (int i = 0; i < connectlist.size()/2; i++) 
 		{
 			if (connectlist.get(i*2).compareToIgnoreCase(a)== 0)
 			{
@@ -97,7 +95,6 @@ public class SkeletConnections implements Serializable{
 		{
 			connectlist.remove(first+1);
 			connectlist.remove(first);
-			connection_count--;
 			System.out.println("SkeletonConnections: disconnecting: " + a + " and " + b);
 			return true;
 		}

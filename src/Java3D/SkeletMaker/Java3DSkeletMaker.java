@@ -75,6 +75,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	TransformGroup rootTransformtGroup = new TransformGroup();
 	BranchGroup pickGroup =new BranchGroup();
 	BranchGroup staticGroup =new BranchGroup();
+	OrbitBehavior orbit;
 	
 	// Selection and Marker Data
 	int SelectedItem = -1;
@@ -220,11 +221,13 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 
 	private void initOrbitBehavoir()
 	{
-		OrbitBehavior orbit = 
-			new OrbitBehavior(c3d, OrbitBehavior.REVERSE_ALL|OrbitBehavior.DISABLE_ZOOM);
+		orbit = 
+			new OrbitBehavior(c3d, OrbitBehavior.REVERSE_ALL);
+//		new OrbitBehavior(c3d, OrbitBehavior.REVERSE_ALL|OrbitBehavior.DISABLE_ZOOM);
 			orbit.setSchedulingBounds(StaticTools.defaultBounds);
 			ViewingPlatform vp = u.getViewingPlatform();
 			vp.setViewPlatformBehavior(orbit);
+			
 	}
 	
 	private void initFrame()
@@ -298,6 +301,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	{
 		if(s != null)
 		{
+			pickGroup.removeChild(skelet.getBG());
 			skelet = s;
 			pickGroup.addChild(skelet.getBG());
 		}
@@ -551,6 +555,11 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		case KeyEvent.VK_D:  ; break;
 		case KeyEvent.VK_R:   ; break;
 		
+		case KeyEvent.VK_CONTROL: 
+			curserMode  = true;
+			orbit.setEnable(false);
+		break;
+		
 		case KeyEvent.VK_ENTER:
 			skelet.connect(markerStart, markerEnd,true); 
 			break;
@@ -572,6 +581,14 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 
 
 	public void keyReleased(KeyEvent arg0) {
+		int code = arg0.getKeyCode();
+		switch(code)
+		{
+			case KeyEvent.VK_CONTROL: 
+				curserMode = false;
+				orbit.setEnable(true);
+			break;
+		}
 		
 	}
 
@@ -584,7 +601,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		pickCanvasPoints.setShapeLocation(arg0);
 		
 		Transform3D trafo = getTransformFromPickCanvas(pickCanvasPoints.pickClosest());
-		if(trafo != null)
+		if(trafo != null && curserMode)
 		{
 			System.out.println("Trafo: " + trafo);
 			markerTransformGroup.setTransform(trafo);
@@ -725,10 +742,11 @@ void setMarkerBoneRotScale(PickInfo target)
 
 	public void loadSkeleton(CSMHeader h, CSMPoints frame, SkeletConnections sc) {
 		skelet = new Java3DSkelet(h);
+		header = h;
 		this.points = frame;
 		skelet.connections = sc;
-		skelet.reloadConnections();
 		skelet.loadFrame(points.points);
+		skelet.reloadConnections();
 		setSkelet(skelet);
 	}
 }// end class

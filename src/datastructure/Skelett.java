@@ -30,6 +30,7 @@ public class Skelett implements Serializable {
 	TransformGroup[] pointTransforms;
 	List<TransformGroup> boneTransformsAngle;
 	List<TransformGroup> boneTransformsLenth;
+	Point3f[] currentFrame = null;
 	
 	CSMHeader csm_header;
 	
@@ -77,6 +78,7 @@ public class Skelett implements Serializable {
 	
 	public void loadFrame(Point3f[] frame)
 	{
+		currentFrame = frame;
 		if (frame.length != points.length)
 		{
 			System.err.println("Skelett: Load Frame: points Mismatch!");
@@ -97,6 +99,10 @@ public class Skelett implements Serializable {
 		}
 		// Setting new Translation for Bones
 		for (int i = 0; i < connectlist.size()/2; i++) {
+			//preveinting that the loaded skeleton adresses points higher than existing in this header
+			if(connectlist.get(i*2) >= frame.length ||
+					connectlist.get(i*2+1) >= frame.length )
+				continue;
 			Point3f a = (Point3f) frame[connectlist.get(i*2)].clone();
 			float z = a.z;
 			a.z = a.y;
@@ -249,6 +255,8 @@ public class Skelett implements Serializable {
 		boneTransformsLenth.clear();
 		connectlist = newList;
 		initBoneGroups();
+		if(currentFrame != null)
+			loadFrame(currentFrame);
 	}
 	
 	private void initBoneGroups() {

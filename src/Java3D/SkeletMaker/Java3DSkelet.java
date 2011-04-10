@@ -13,6 +13,7 @@ import javax.media.j3d.TransformGroup;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
 import CSM.CSMHeader;
+import CSM.CSMPoints;
 import Misc.StaticTools;
 import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
@@ -48,6 +49,11 @@ public class Java3DSkelet {
 		pointTransforms = new TransformGroup[csm_header.order.length];
 		init();
 		setupInitialPointsPositions();
+	}
+	
+	public void setPoints(CSMPoints p)
+	{
+		
 	}
 	
 	private void setupInitialPointsPositions() {
@@ -203,11 +209,16 @@ public class Java3DSkelet {
 	void reloadConnections()
 	{
 		cleanUp();
-		for (int i = 0; i < connections.connection_count; i++) 
+		for (int i = 0; i < connections.connectlist.size()/2; i++) 
 		{
 			String a = connections.connectlist.get(i*2);
 			String b = connections.connectlist.get(i*2 +1);
 			connect(a, b, false);
+		}
+		for (TransformGroup tg : pointTransforms) {
+			Transform3D t = new Transform3D();
+			tg.getTransform(t);
+			tg.setTransform(t);
 		}
 
 	}
