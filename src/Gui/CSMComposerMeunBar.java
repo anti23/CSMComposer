@@ -233,6 +233,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 		initActions();
 		// Menue disapearin behind Java 3d Canvas FIX, at cost of performance
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
+		this.setDoubleBuffered(true);
 	}
 
 

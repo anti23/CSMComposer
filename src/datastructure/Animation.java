@@ -221,7 +221,7 @@ public void actionPerformed(ActionEvent e) {
 
 
 	public void setFrame(int frame) {
-		System.out.println("Animation: setFrame: frame " + frame);
+	//	System.out.println("Animation: setFrame: frame " + frame);
 		if (frame < lastLoadedFrame)
 			framePos = frame;
 		else if (frame > lastLoadedFrame)

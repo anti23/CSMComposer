@@ -2,43 +2,55 @@ package Gui.ArrangeingUnit;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
+import datastructure.Animation;
+
 public class Snippit implements Comparable<Snippit>
 {
-	int width = 150; // Snippits are fied width
+	static int idCtr = 0;
+	int id;
 	int pos; // x start value, give by  Arrager, to draw itself
+	int targetPos = -1; // x pos where to go, for animating
 	int startFrame;
-	int endFrame;
 	int frameCnt;
 	ImageIcon icon;
 	String name = null;
 	
 	// Visual Managment
-	Rectangle bounds = new Rectangle(width,70);
+	Rectangle bounds = new Rectangle(Arranger.snippitsWidth,Arranger.snippitsHeight);
 	public int delta;
+	
+	Animation animation;
+	public boolean isBeeingArranged = false;
 	
 	public Snippit(int frameCnt) {
 		this.frameCnt = frameCnt;
-		startFrame = endFrame  = 0;
+		pos = 0;
+		id = idCtr++;
 	}
-	public Snippit(int frameCnt, int start) {
-		this.frameCnt = frameCnt;
-		startFrame = start; 
-		endFrame  = start + frameCnt;
+	public Snippit(int frameCnt, int pos) {
+		this(frameCnt);
+		this.pos = pos; 
+	}
+	public Snippit(Animation a ) {
+		this(a.header.lastFrame - a.header.firstFrame );
+		this.animation = a;
+		this.pos = 0; 
 	}
 	
 	public void move(int deltaFrames)
 	{
-		startFrame += deltaFrames;
-		endFrame += deltaFrames;
+		pos += deltaFrames;
 	}
-	public void moveTo(int FramePos)
+	public void moveTo(Point p)
 	{
-		startFrame = FramePos;
-		endFrame = startFrame + frameCnt;
+		pos = p.x;
+		bounds.setLocation(p);
 		updateBoundingRectangle();
 	}
 	public void paint(Graphics g)
@@ -51,20 +63,18 @@ public class Snippit implements Comparable<Snippit>
 	private void drawText(Graphics g) {
 		Color old = g.getColor();
 
-		g.drawString("Start: " + startFrame , pos, 90);
-		g.drawString("End: " + (startFrame + frameCnt) , pos + width, 90);
+		g.drawString("Frames : " + frameCnt , bounds.x, bounds.y + 90);
+		g.drawString("End: " + (startFrame + frameCnt) , bounds.x + bounds.width, 90);
 		
-		g.drawString("Remmi demmi ding dong" + startFrame, startFrame, 100);
+		g.drawString("ID: " + id, bounds.x + 10, bounds.y + 10);
 		if (name != null)
 		{
 			g.setColor(Color.BLACK);
-			g.drawString(name, startFrame + 100, 100);
-			System.out.println("drawing name : " + name);
+			g.drawString(name, pos + 100, 100);
 		}
 		g.setColor(old);
 	}
 	private void updateBoundingRectangle() {
-		bounds.width = width;
 		bounds.x = pos;
 	}
 	private void drawBorder(Graphics g) {
@@ -76,18 +86,17 @@ public class Snippit implements Comparable<Snippit>
 	private void drawPicture(Graphics g) {
 		if (icon != null)
 		{
-			g.drawImage(icon.getImage(), startFrame,0,100,70, null);
+			g.drawImage(icon.getImage(), bounds.x,bounds.y,100,70, null);
 		}
 	}
 	public int compareTo(Snippit s) {
 		return s.startFrame - startFrame;
 	}
-	public boolean checkInside(int framex) {
-		return framex >= startFrame && framex <= endFrame;
+	public boolean checkInside(Point p) {
+		return bounds.contains(p);
 	}
 	public int getDelta(int x) {
 		
 		return  x -startFrame;
 	}
-	
 }

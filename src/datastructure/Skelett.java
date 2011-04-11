@@ -101,7 +101,8 @@ public class Skelett implements Serializable {
 		for (int i = 0; i < connectlist.size()/2; i++) {
 			//preveinting that the loaded skeleton adresses points higher than existing in this header
 			if(connectlist.get(i*2) >= frame.length ||
-					connectlist.get(i*2+1) >= frame.length )
+					connectlist.get(i*2+1) >= frame.length ||
+					i >= boneTransformsAngle.size())
 				continue;
 			Point3f a = (Point3f) frame[connectlist.get(i*2)].clone();
 			float z = a.z;
