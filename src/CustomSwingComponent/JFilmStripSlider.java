@@ -149,7 +149,7 @@ public  class JFilmStripSlider extends JComponent {
 
 		public void setMarkedArea(int minFrame,	int maxFrame) {
 			model.setMarkedArea(minFrame, maxFrame);
-			playerToControll.setMarker(minFrame);
-			playerToControll.setMarker(maxFrame);
+			playerToControll.setMinMarker(minFrame);
+			playerToControll.setMaxMarker(maxFrame);
 		}
 }

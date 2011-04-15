@@ -3,6 +3,8 @@ package datastructure;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.media.j3d.BadTransformException;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
@@ -82,7 +84,7 @@ public class Skelett implements Serializable {
 		if (frame.length != points.length)
 		{
 			System.err.println("Skelett: Load Frame: points Mismatch!");
-			return;
+		//	return;
 		}
 	// Setting new Translation for Spheres (points)
 		for (int i = 0; i < points.length; i++) {
@@ -155,7 +157,13 @@ public class Skelett implements Serializable {
 		Transform3D stretchZ = new Transform3D();
 		stretchZ.setScale(new Vector3d(1,length,1));
 		boneLength.setTransform(stretchZ);
-		boneAngle.setTransform(StaticTools.getTransform(a, b));
+		Transform3D t3d = null;
+		try {
+			t3d = StaticTools.getTransform(a, b);
+			boneAngle.setTransform(StaticTools.getTransform(a, b));
+		} catch (BadTransformException bte) {
+			System.out.println("Skelet: MoveBone: Bad Transform Exception : " + t3d);
+		}
 	}
 	
 	

@@ -60,9 +60,10 @@ public class CSMPlayerControllBar extends JPanel
 		JButton pause = new JButton("||");
 		JButton faster = new JButton(">>");
 		JButton slower = new JButton("<<");
+		JButton markAll = new JButton("Mark All");
 		JButton markMin = new JButton("[<");
 		JButton markMax = new JButton(">]");
-		JButton playMarked = new JButton("[>]");
+		JButton playSelection = new JButton("[>]");
 		
 		JButton copySelection = new JButton("copy");
 
@@ -98,6 +99,24 @@ public class CSMPlayerControllBar extends JPanel
 			}
 		});
 		
+		playSelection.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.togglePlaySelection();
+			}
+		});
+		
+		markMin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				player.setMinMarker(player.getAnimation().getFramePos());
+			}
+		});
+		markMax.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				player.setMaxMarker(player.getAnimation().getFramePos());
+			}
+		});
+		
+		
 		GridBagConstraints c = new GridBagConstraints();
 		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
@@ -121,7 +140,7 @@ public class CSMPlayerControllBar extends JPanel
 		
 		c.gridy = 1;
 		c.gridx = 1;
-		controlls.add(playMarked,c);
+		controlls.add(playSelection,c);
 		
 
 		controlls.add(copySelection);

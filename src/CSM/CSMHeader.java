@@ -11,7 +11,7 @@ public class CSMHeader implements Serializable{
 
 	public static String defaultOder = " LFHD RFHD LBHD RBHD C7 T10 CLAV STRN RBAC LSHO LUPA LELB LFRM LWRA LWRB LFIN RSHO RUPA RELB RFRM RWRA RWRB RFIN LFWT RFWT LPel RPel LBWT RBWT LTHI LKNE LSHN LANK LHEL LTOE LMT5 RTHI RKNE RSHN RANK RHEL RTOE RMT5 ";
 	
-	public Map<String, String> header = new HashMap<String, String>();
+	private Map<String, String> header = new HashMap<String, String>();
 	
 	public String filename;
 	public String date;
@@ -24,6 +24,29 @@ public class CSMHeader implements Serializable{
 	public float timeInSecs;
 	public String[] order;
 	
+	public void setHeaderMap(Map<String, String> header)
+	{
+		this.header = header;
+		for (String s : header.keySet()) {
+			if (s.equalsIgnoreCase("filename"))
+				this.filename = header.get(s);
+			if (s.equalsIgnoreCase("date"))
+				this.date = header.get(s);
+			if (s.equalsIgnoreCase("Time"))
+				this.Time = header.get(s);
+			if (s.equalsIgnoreCase("Actor"))
+				this.Actor = header.get(s);
+			
+//			if (s.equalsIgnoreCase("filename"))
+//				this.filename = header.get(s);
+			
+		}
+	}
+	
+	public Map<String, String> getHeaderMap()
+	{
+		return header;
+	}
 	
 	public int getPos(String csmOrderNameTag)
 	{

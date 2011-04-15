@@ -18,6 +18,7 @@ import javax.swing.event.ChangeListener;
 
 import CustomSwingComponent.JFilmStripSlider;
 import Java3D.CSMPlayer.PlayerControlls.playingDirection;
+import UnUsed.CSMSimpleRenderdPlayer;
 
 public class SimpleControllBar extends JPanel implements ChangeListener{
 	private static final long serialVersionUID = -7189403877971718824L;

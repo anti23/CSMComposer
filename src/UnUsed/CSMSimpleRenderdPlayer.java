@@ -1,4 +1,4 @@
-package Java3D.CSMPlayer;
+package UnUsed;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -9,7 +9,10 @@ import javax.swing.event.EventListenerList;
 
 import datastructure.Animation;
 
+import Java3D.CSMPlayer.PlayerControllStatus;
+import Java3D.CSMPlayer.PlayerControlls;
 import Java3D.CSMPlayer.PlayerControllStatus.State;
+import Java3D.CSMPlayer.PlayerControlls.playingDirection;
 
 public class CSMSimpleRenderdPlayer extends JPanel implements PlayerControlls, Runnable{
 	private static final long serialVersionUID = 4680355138781736151L;
@@ -217,6 +220,21 @@ public class CSMSimpleRenderdPlayer extends JPanel implements PlayerControlls, R
 	public int getMaxMarker() {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public void togglePlaySelection() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setMinMarker(int min) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setMaxMarker(int max) {
+		// TODO Auto-generated method stub
+		
 	}
 
 

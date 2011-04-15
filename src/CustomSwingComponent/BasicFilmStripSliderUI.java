@@ -157,7 +157,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 	 */
 	int getClosestImage(int frame)
 	{
-		if (previews.size() < 0)
+		if (previews.size() <= 0)
 			return 0;
 		
 		int[] pFrames = new int[previews.size()];
@@ -420,6 +420,10 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 					previews.put(pcs.firstFrame, pcs.imgIcon);
 				}
 				break;
+				
+			case AreaSelectionUpdate :
+				filmStripSlider.model.setMarkedArea(pcs.firstFrame,pcs.lastFrame);
+				break ;
 			}
 		}
 		filmStripSlider.fireEventChanged();

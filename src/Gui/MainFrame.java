@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.beans.XMLDecoder;
@@ -17,7 +18,9 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 
 import datastructure.Config;
@@ -52,8 +55,8 @@ public class MainFrame extends JFrame{
 	
 	// Init
 	private void init() {
-		
 		setJMenuBar(menu);
+		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		setTitle("CSM Editor");
 		setSize(600, 800);
 		setBackground(Color.darkGray);
@@ -63,7 +66,7 @@ public class MainFrame extends JFrame{
 			      }
 		});
 		setBackground(Color.green.brighter());
-		setLayout(new GridBagLayout());
+		
 		
 		initComponents();
 		menu.setPlayer(player);
@@ -75,7 +78,8 @@ public class MainFrame extends JFrame{
 	//	controll2.setPlayerToControll(player);
 		
 		//player.slider = slider;
-		addComponents();
+//		addComponentsGridBagLayout();
+		addComponentsMulipleSpimpleLayouts();
 		setVisible(true);
 	}
 	
@@ -91,6 +95,17 @@ public class MainFrame extends JFrame{
 		playerControllBar.setPlayerToControll(player);
 		playerControllBar.setArrangerPane(arrangePane);
 		
+		
+
+		splitPane.add(player, -1);
+		splitPane.add(headerView,-1);
+		splitpaneFix(splitPane);
+		splitPane.setPreferredSize(new Dimension(300, 300));
+		splitPane.setDividerLocation(600);
+		splitPane.setOneTouchExpandable(true);
+		
+		arrangePane.setProjectPanel(projectPanel);
+		
 	//	controll2 = new SimpleControllBar();
 	}
 
@@ -101,52 +116,48 @@ public class MainFrame extends JFrame{
 		pane.getRightComponent().setMaximumSize(new Dimension(0,0));
 		pane.getRightComponent().setMinimumSize(new Dimension(0,0));
 	}
-	private void addComponents() {
+	
+	private void addComponentsMulipleSpimpleLayouts()
+	{
+		setLayout(new BorderLayout());
+		add(projectPanel,BorderLayout.WEST);
+		add(player, BorderLayout.CENTER);
+		add(headerView,BorderLayout.EAST);
+		JPanel cutting = new JPanel(new GridLayout(2, 1));
+		cutting.add(playerControllBar);
+		cutting.add(arrangePane);
+		add(cutting,BorderLayout.SOUTH);
+		
+	}
+	
+	private void addComponentsGridBagLayout() {
+		setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		c.weightx = 0;
-		c.weighty = 0;
-		c.fill = GridBagConstraints.BOTH;
 		c.gridx = 0;
 		c.gridy = 0;
-		//add(selector,c);
+		c.gridwidth = 2;
+		c.fill = GridBagConstraints.BOTH;
 		add(projectPanel,c);
 		
 		
-		c.fill = GridBagConstraints.BOTH;
-		c.weightx = 1.0;
-		c.weighty = 1.0;
-		c.gridx = 1;
+		c.gridx = 2;
 		c.gridy = 0;
-		c.gridwidth = 2;
-		splitPane.add(player, -1);
-		splitPane.add(headerView,-1);
-		splitpaneFix(splitPane);
-		splitPane.setPreferredSize(new Dimension(300, 300));
-		splitPane.setDividerLocation(500);
-		splitPane.setOneTouchExpandable(true);
+		c.gridwidth = 4;
 		add(splitPane,c);
 
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.1;
-		c.weighty = 0.1;
 		c.gridx = 0;
-		c.gridwidth = 3;
 		c.gridy = 1;
+		c.gridwidth = 4;
 		add(playerControllBar,c);
 
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 0.1;
-		c.weighty = 0.1;
 		c.gridx = 0;
-		c.gridwidth = 3;
-		c.gridy = 2;
-		//add(controll2,c);
+		c.gridwidth = 4;
 		c.fill = GridBagConstraints.BOTH;
-		c.gridy = 3;
+		c.gridy = 4;
 		c.gridheight = 5;
 		add(arrangePane,c);
 		
-	//	pack();
+		//pack();
 	}
 
 	// Constructor

@@ -5,46 +5,38 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Background;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 import javax.media.j3d.ImageComponent2D;
-import javax.media.j3d.PickInfo;
-import javax.media.j3d.Shape3D;
 import javax.media.j3d.Switch;
 import javax.media.j3d.Texture;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
-import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3d;
 import CustomSwingComponent.JFilmStripSlider;
 import Java3D.CSMPlayer.PlayerControllStatus;
+import Java3D.CSMPlayer.PlayerControllStatus.State;
 import Java3D.CSMPlayer.PlayerControlls;
 import Misc.StaticTools;
 import com.sun.j3d.utils.behaviors.vp.OrbitBehavior;
+import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.image.TextureLoader;
-import com.sun.j3d.utils.pickfast.PickCanvas;
 import com.sun.j3d.utils.universe.SimpleUniverse;
 import com.sun.j3d.utils.universe.ViewingPlatform;
 
@@ -241,6 +233,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		staticGroup.addChild(originSwitch);
 		
 		BranchGroup enviroment = new BranchGroup();
+		enviroment.addChild(backgroundTextureSphere());
 		// Boden
 		float a = 50.0f;
 		LitQuad lq = new LitQuad(
@@ -356,7 +349,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		//c3d.addMouseListener(this);
 		
 		u  = new SimpleUniverse(c3d);
-		
 		content.add(BorderLayout.CENTER,c3d);
 		
 		//Setting the Camera and View Properties
@@ -623,21 +615,10 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	}
 
 
-
-	public void setMarker(int markerFrame) {
-		if (markerFrame > markerMax)
-		{
-			markerMin = markerMax;
-			markerMax = markerFrame;
-		}else
-		{
-			markerMin = markerFrame;
-		}
-		System.out.println("min: " + markerMin + " max: " + markerMax );
-		
+	public void togglePlaySelection()
+	{
+		animation.togglePlaySelection();
 	}
-
-
 
 	public int getMinMarker() {
 		return markerMin;
@@ -649,10 +630,49 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		return markerMax;
 	}
 
+	public void setMinMarker(int min) {
+		markerMin = min;
+		fireMarkerUpdate();
+	}
+
+	public void setMaxMarker(int max) {
+		markerMax = max;
+		fireMarkerUpdate();
+	}
 
 
+	private void fireMarkerUpdate() {
+		animation.setSelection(markerMin,markerMax);
+		PlayerControllStatus pcs = new PlayerControllStatus(State.AreaSelectionUpdate);
+		pcs.firstFrame = markerMin;
+		pcs.lastFrame = markerMax;
+		fireChangeEnvent(pcs);
+	}
 
 
+	public BranchGroup backgroundTextureSphere() {
+
+	    BranchGroup objRoot = new BranchGroup();
+	  
+	    Background bg = new Background();
+	    bg.setApplicationBounds(StaticTools.defaultBounds);
+	    BranchGroup backGeoBranch = new BranchGroup();
+	    Sphere sphereObj = new Sphere(1.1f, Sphere.GENERATE_NORMALS
+	        | Sphere.GENERATE_NORMALS_INWARD
+	        | Sphere.GENERATE_TEXTURE_COORDS, 45);
+	    Appearance backgroundApp = sphereObj.getAppearance();
+	    backGeoBranch.addChild(sphereObj);
+	    bg.setGeometry(backGeoBranch);
+
+	    TextureLoader tex = new TextureLoader("470.jpg", new String(
+	        "RGB"), this);
+	    if (tex != null) {
+	      backgroundApp.setTexture(tex.getTexture());
+	    }
+	    objRoot.addChild(bg);
+
+	    return objRoot;
+	}
 
 
 	

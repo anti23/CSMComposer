@@ -66,6 +66,8 @@ public class Animation implements
 	// Player Controll Attributes
 	public float playbackSpeed = 1.0f;
 	private playingDirection playbackDirection = playingDirection.FWD;
+	int markedArea[] = new int[2];
+	boolean playSelection = false;
 	
 	public Animation() {
 		header = CSMHeader.defaultHeader();
@@ -190,7 +192,9 @@ public class Animation implements
 				timer = null;
 				System.gc();
 		}
-	
+		isStopped = false;
+		isAnimating = true;
+		
 		timer = new Timer(1000/20, this);
 		timer.setDelay(1000/20);
 		timer.setRepeats(true);
@@ -199,23 +203,86 @@ public class Animation implements
 		
 		System.out.println("Animation: play : timer :" + timer + 
 				" \n \t animStart " + animStart + 
-				" \n \t listener List: " + listenerList);
+				" \n \t framepos " + framePos  +
+				" \n \t framerate " + header.framerate  
+				/*" \n \t listener List: " + listenerList*/
+				);
 	}
+	
+	public void togglePlaySelection()
+	{
+		if (playSelection)
+		{
+			playSelection = false;
+			
+		}else if (checkSelection())
+		{
+		playSelection = true;
+		}
+		play();
+	}
+	
+	private boolean checkSelection() {
+		//sort marked Area
+		if(markedArea[0] > markedArea[1])
+		{
+			int bigger = markedArea[0];
+			markedArea[0] = markedArea[1];
+			markedArea[1] = bigger;
+		}
+		if (markedArea[0] > header.firstFrame && markedArea[1] < header.lastFrame)
+			return true;
+		else
+			System.out.println("Animation: check Selection marked Area out of bound: " +markedArea );
+		return false;
+	}
+
+
+	public void stop() {
+		isStopped = true;
+		isAnimating = false;
+		if (timer != null)
+		{
+			timer.stop();
+		}
+	}
+	
+	//playback timing Attributes
 	int deltaFrame ;
-	long delta;
-	int ctr = 0 ;
-public void actionPerformed(ActionEvent e) {
+	long delta;	
+	
+	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == timer)
 		{
+			if (!isAnimating)
+			{
+				timer.setRepeats(false);
+				timer.stop();
+				return;
+			}
+			
 			delta =  System.currentTimeMillis() - animStart ;
 			animStart = System.currentTimeMillis();
 		//	System.out.println("Running for: " + delta + " Milliseconds");
+			float frameRate = header.framerate;
 			float speedControllFactor = playbackSpeed;
 			if (!isAnimating)
 				speedControllFactor = 0;
-			deltaFrame= (int) ((delta* 120 * speedControllFactor)/1000 );
+			deltaFrame= (int) ((delta* frameRate * speedControllFactor)/1000 ); //delta in millis
+																		//
 			framePos += deltaFrame;
+			
+			// Differentaite Normal Looped and Selected Area Looped Playback
+			if (playSelection)
+			{
+				if (framePos < markedArea[0])
+					framePos = markedArea[0];
+				if (framePos > markedArea[1])
+					framePos = markedArea[0];
+					
+			}
 			setFrame((framePos) % frames.length);
+			
 		}
 	}
 
@@ -333,15 +400,6 @@ public void actionPerformed(ActionEvent e) {
 	}
 
 
-	public void stop() {
-		isStopped = true;
-		if (timer != null)
-		{
-			timer.stop();
-		}
-	}
-
-
 	public void addChangeListener(ChangeListener cl) {
 		listenerList.add(ChangeListener.class, cl);
 	}
@@ -421,6 +479,40 @@ public void actionPerformed(ActionEvent e) {
 		isAnimating = true;
 		animStart = System.currentTimeMillis();
 		
+	}
+
+
+	public int getFramePos() {
+		return framePos;
+	}
+
+
+	public void setSelection(int markerMin, int markerMax) {
+		markedArea[0] = markerMin; 
+		markedArea[1] = markerMax; 
+		
+		
+	}
+
+
+	public void concat(Animation animation) {
+
+		int newlength = animation.frames.length + frames.length;
+		CSMPoints[] newframes = new CSMPoints[newlength];
+		for(int i = 0; i < frames.length; i++)
+		{
+			System.out.println(" FIRTS" + frames[i].points.length);
+			newframes[i] = frames[i];
+		}
+		for(int i = frames.length; i < newlength ; i++)
+		{
+			System.out.println(" Second" + animation.frames[i- frames.length].points.length);
+			newframes[i] = animation.frames[i - frames.length];
+		}
+		frames = newframes;
+		header.lastFrame = newlength;
+		lastLoadedFrame = frames.length -1;
+		fireChangeListenerUpdateEvents();
 	}
 
 } // End Class Animation

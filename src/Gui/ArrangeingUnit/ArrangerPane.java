@@ -22,6 +22,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import Gui.ProjectPanel;
+
 import datastructure.Animation;
 
 public class ArrangerPane extends JPanel implements MouseMotionListener{
@@ -29,9 +31,15 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 	Arranger arranger = new Arranger();
 	JScrollPane scrollpane = new JScrollPane(arranger);
 	JPanel comandPanel = new JPanel(new GridLayout(1, 3));
+	ProjectPanel projectPanel = null;
 	
 	public ArrangerPane() {
 		init();
+	}
+	
+	public void setProjectPanel(ProjectPanel pp)
+	{
+		this.projectPanel = pp;
 	}
 	
 	public void add(Animation a)
@@ -41,11 +49,11 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		set.toArray(intset);
 		Arrays.sort(intset);
 		Snippit s = new Snippit(a);
-		if(intset.length >= 0)
+		if(intset.length > 0)
 			s.icon = a.previews.get(intset[0]);
 		if(a.header != null)
 		{
-			s.name =a.header.header.get("filename");
+			s.name =a.header.filename;
 			System.out.println("Snippit has got a filename: " + a.header.filename);
 		}
 		this.arranger.add(s);
@@ -58,7 +66,11 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		JButton buildAnimation = new JButton("Build");
 		buildAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				arranger.generateAnimation();
+				Animation a = arranger.simpleGenerateAnimation();
+				if (projectPanel != null)
+				{
+					projectPanel.addAnimation("Compsition" , a);
+				}
 			}
 		});
 		comandPanel.add(buildAnimation);
@@ -96,11 +108,12 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		r = (Rectangle) scrollpane.getBounds();
 		int autoscrollBorderSpace = 10;
 		r.x += autoscrollBorderSpace;
-		r.width -= 2* autoscrollBorderSpace;		
+		r.width -= 2* autoscrollBorderSpace;	
+		System.out.println("Arranger Pane : Dragging");
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		// TODO Auto-generated method stub
+
 		
 	}
 

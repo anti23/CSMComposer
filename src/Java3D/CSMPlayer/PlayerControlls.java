@@ -22,6 +22,7 @@ public interface PlayerControlls {
 	void addChangeListener(ChangeListener cl);
 	void removeChangeListener(ChangeListener cl);
 	void toggleFullScreen();
+	void togglePlaySelection();
 	
 	// CSM Specific
 	public void loadAnimation(Animation new_anim);
@@ -30,7 +31,8 @@ public interface PlayerControlls {
 	
 	// additionals
 	public float getSpeed();
-	public void setMarker(int min);
+	public void setMinMarker(int min);
+	public void setMaxMarker(int max);
 	public int getMinMarker();
 	public int getMaxMarker();
 	

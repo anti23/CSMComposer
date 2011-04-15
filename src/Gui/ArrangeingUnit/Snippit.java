@@ -99,4 +99,7 @@ public class Snippit implements Comparable<Snippit>
 		
 		return  x -startFrame;
 	}
+	public int getId() {
+		return id;
+	}
 }

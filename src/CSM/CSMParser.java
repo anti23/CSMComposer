@@ -166,6 +166,7 @@ public class CSMParser {
 			if (firstframe != null)
 			{
 				Scanner s = new Scanner(firstframe);
+				s.useLocale(Locale.US);
 				firstFrame = s.nextInt();
 			}
 		}
@@ -175,6 +176,7 @@ public class CSMParser {
 			if (lastframe != null)
 			{
 				Scanner s = new Scanner(lastframe);
+				s.useLocale(Locale.US);
 				maxFrames = s.nextInt();
 			}
 		}
@@ -183,6 +185,7 @@ public class CSMParser {
 		if (rate != null)
 		{
 			Scanner s = new Scanner(rate);
+			s.useLocale(Locale.US);
 			frameRate = s.nextFloat();
 		}
 	}
@@ -298,7 +301,7 @@ public class CSMParser {
 				csm_Header.order = order;
 				
 				if (debug) System.out.println(csm_Header);
-				csm_Header.header = this.header;
+				csm_Header.setHeaderMap(this.header);
 				return csm_Header;
 			}
 			return null;

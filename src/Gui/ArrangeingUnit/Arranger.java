@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import CSM.CSMPoints;
+
 import datastructure.Animation;
 
 public class Arranger extends JPanel implements MouseListener, MouseMotionListener{
@@ -188,6 +190,27 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		hits.clear();
 		return result; 
 		
+	}
+	
+ 
+	public Animation simpleGenerateAnimation()
+	{
+		Animation result = null;
+		if(snippits.size() > 0 )
+			result = snippits.get(0).animation;
+		else
+		{
+			System.out.println("Arranger: simpleGenerateAnimation: nosnippits");
+		}
+		boolean skipfirst = true;
+		for (Snippit s : snippits) {
+			if(skipfirst)
+			{
+				skipfirst = false;
+			}else 
+			result.concat(s.animation);
+		}
+		return result;
 	}
 	
 	public Animation generateAnimation()

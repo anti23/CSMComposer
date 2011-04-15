@@ -37,13 +37,13 @@ public class CSMHeaderView extends JPanel {
 		if (header != null)
 		{
 			String [] colNames = {"Key","Value"};
-			Set<String> set =  header.header.keySet();
+			Set<String> set =  header.getHeaderMap().keySet();
 			String[][] data = new String[set.size()][2];
 			int rowCtr= 0;
 			for (String string : set) {
 				String [] row = new String[2];
 				row[0] = string;
-				row[1] = header.header.get(string);
+				row[1] = header.getHeaderMap().get(string);
 				data[rowCtr] = row;
 				rowCtr++;
 			}
