@@ -24,6 +24,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
@@ -102,10 +103,10 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	void initLayout()
 	{
 		setLayout(new BorderLayout());
-//		projectTree.getSelectionModel().setSelectionMode
-//		(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		setPreferredSize(new Dimension(300,500));
-		projectTree.setPreferredSize(new Dimension(500,500));
+		projectTree.getSelectionModel().setSelectionMode
+		(TreeSelectionModel.SINGLE_TREE_SELECTION);
+//		setPreferredSize(new Dimension(300,500));
+//		projectTree.setPreferredSize(new Dimension(500,500));
 		projectTree.addTreeSelectionListener(this);
 //		projectTreeScrollPane.add(projectTree);
 		buttonBar.setLayout(new FlowLayout());
@@ -158,7 +159,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		Object o =  projectTree.getLastSelectedPathComponent();
 		AnimaitonComponent ac = null;
 		Animation a = null;
-		if (o != null)
+		if (o != null && o.getClass() == AnimaitonComponent.class)
 			ac = (AnimaitonComponent) o;
 		if (ac != null)
 			a = ac.animation;
@@ -172,8 +173,33 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	public void addAnimation(String fileName, Animation animation) {
 		project.addAnimation(fileName, animation);
 		updateProjectTree();		
+		selectACinProjectTree( fileName);
 	}
 
+	
+	void selectACinProjectTree(String fileName)
+	{
+		DefaultMutableTreeNode treeRoot =  (DefaultMutableTreeNode) projectTree.getModel().getRoot();
+		DefaultMutableTreeNode child;
+		for (int i = 0; i < treeRoot.getChildCount(); i++) {
+			child = (DefaultMutableTreeNode) treeRoot.getChildAt(i);
+			if(child.getClass() == AnimaitonComponent.class)
+			{
+				System.out.println("Erfolg : i: " + i);
+				AnimaitonComponent ac = (AnimaitonComponent) child;
+				if (ac.filename.compareTo(fileName)== 0)
+				{
+					TreePath treePath = new TreePath(child.getPath());
+					 projectTree.setSelectionPath(treePath);
+					 projectTree.scrollPathToVisible(treePath);
+
+				}
+			}
+			else
+				System.out.println("Erfolg : i: " + i);
+			
+		}
+	}
 	public void addSnippit(Snippit snippit) {
 		snippitRoot.add(new DefaultMutableTreeNode(snippit));
 		updateProjectTree();		

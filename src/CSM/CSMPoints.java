@@ -35,6 +35,14 @@ public class CSMPoints implements Serializable{
 		}
 	}
 
+	public String toString()
+	{
+		String values = new String();
+		for (Point3f coord : points) {
+			values += coord;
+		}
+		return "CSMPoints: Marker Count: " + points.length + values;
+	}
 	
 	public static CSMPoints defaultTPose(){
 		CSMPoints csm_p = new CSMPoints(0, CSMHeader.defaultHeader().order.length);

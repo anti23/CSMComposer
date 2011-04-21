@@ -2,6 +2,8 @@ package CSM;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -9,13 +11,21 @@ import java.util.Scanner;
 import java.util.StringTokenizer;
 import javax.vecmath.Point3f;
 
+/**
+ * File will be read completly in statemachine.
+ * Parsed CSM Points are stored in points ArrayList.
+ * Retrieve pints with method getPoints(int frame)
+ * or getNextPoints(); 
+ * @author Johannes
+ */
+
 public class CSMParser {
 
 	CSMHeader csm_Header = null;
 	public static boolean debug = false;
 	public static int  statemachine_speed = 0;
 	
-	public enum state {START,ERROR,DOLLAR_TOKEN,KEY_VALUE,COMMENT,POINTS,END, ORDER};
+	public enum state {START,ERROR,DOLLAR_TOKEN,KEY_VALUE,COMMENT,POINTS,READ_POINTS,END, ORDER};
 	
 	boolean scanSuccesfull = false;
 	
@@ -30,13 +40,16 @@ public class CSMParser {
 	int maxFrames = -1 ;
 	float frameRate = -1.0f;
 	String scannedFilename = null;
+
+	ArrayList<CSMPoints> points = new ArrayList<CSMPoints>(); // filled and ordered in decreasing framnumber
 	private boolean noMoreLines = false;
 	private CSMPoints lastLine = null;
+	FileInputStream fis;
 	
 	public void scanFile(String fileName) throws FileNotFoundException
 	{
-		
-		 scanner = new Scanner(new FileInputStream(fileName), "UTF-8");
+		fis = new FileInputStream(fileName);
+		 scanner = new Scanner(fis, "UTF-8");
 		 scannedFilename = fileName;
 		 stateMachine();
 	}
@@ -135,13 +148,20 @@ public class CSMParser {
 				status = state.POINTS;
 				if(scanner.hasNextLine())
 				{
-					//parseFrame();
+//					parseFrame();
 					initCSMHeader();
 					status = state.END;
+//					status = state.READ_POINTS;
 				}
 				else 
 					status = state.ERROR;
+				break;
 				
+			case READ_POINTS:
+				if(scanner.hasNextLine())
+					points.add(parseFrame());
+				else 
+					status = state.END;
 				break;
 				
 			case ERROR:
@@ -190,13 +210,11 @@ public class CSMParser {
 		}
 	}
 
-
-
 /**
  * At the beginning the scanner still has the $Points Line
  * @return 
  */
-	public CSMPoints parseFrame() {
+	private CSMPoints parseFrame() {
 		
 		if(noMoreLines)
 		{
@@ -229,6 +247,11 @@ public class CSMParser {
 			{
 				noMoreLines = true;
 				lastLine = points;
+				try {
+					fis.close();
+				} catch (IOException e) {
+					System.out.println("CSMParser: parserFrame: Trouble closing the File input Stream: " + e.getMessage());
+				}
 			}
 			return points;
 		}
@@ -275,15 +298,32 @@ public class CSMParser {
 		try {
 			p.scanFile("t-pose.csm");
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		p.parseFrame();
-		
+		System.out.println(p.getNextPoints());
 	}
-
-
+	
+	int nextUnreadFrame = 0 ;
+	public CSMPoints getNextPoints()
+	{
+		return parseFrame();
+//		if (points.size() > nextUnreadFrame)
+//		{
+//			return points.get(nextUnreadFrame++);
+//		}else
+//			return points.get(points.size()-1);
+	}
+	
+	public CSMPoints getPoints(int frame)
+	{
+		if (frame < points.size() )
+			return points.get(frame);
+		else 
+		{
+			System.err.println("CSMParser: getPoints("+frame+") : Array out of bounds: points.size() = " + points.size());
+			return null;
+		}
+	}
 
 	public CSMHeader getHeader() {
 		if (csm_Header == null)

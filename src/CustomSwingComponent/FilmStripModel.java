@@ -13,9 +13,9 @@ public interface FilmStripModel {
 	// Area Marking
 	public boolean isAreaMarked();
 	public void setAreaMarked(boolean marked);
-	public void setMarkedArea(int startFrame, int endFrame);
+	public void setSelectedArea(int startFrame, int endFrame);
 	public int getMarkedFramesCount();
-	public int[] getMarkedArea();
+	public int[] getSelectedArea();
 	
 	
 	//AreaViewing

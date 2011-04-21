@@ -20,6 +20,7 @@ import javax.media.j3d.Canvas3D;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Switch;
 import javax.media.j3d.Texture;
+import javax.media.j3d.Texture2D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
@@ -28,7 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
+import javax.vecmath.Color4f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
+
 import CustomSwingComponent.JFilmStripSlider;
 import Java3D.CSMPlayer.PlayerControllStatus;
 import Java3D.CSMPlayer.PlayerControllStatus.State;
@@ -98,6 +103,9 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	 		play();
 	}
 	
+	/*
+	 * TODO: Not used in any way
+	 */
 	public Animation getMarkedAnimation()
 	{
 		if (markerMin> -1 && markerMax >-1)
@@ -159,7 +167,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			animation = null;
 		}
 		animation = new_anim;
-
+		new_anim.addChangeListener(this);
 		ballGroups.removeAllChildren();
 		ballGroups.addChild(animation.initPlayerGroup());
 		System.out.println("Simple Player: Animation thread startet!");
@@ -171,7 +179,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	public void loadAnimation(String filename) {
 		Animation a = new Animation();
-		a.addChangeListener(this);
+		
 		
 		try {
 			a.loadFile(filename);
@@ -250,7 +258,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			lq.getAppearance().setTexture(texture);
 			
 		} catch (Exception e) {
-			System.out.println("Java3dCSMPlayer: initStatic Graph: Texture Poading Problem!");
+			System.out.println("Java3dCSMPlayer: initStatic Graph: Texture loading Problem!");
 		} finally
 		{
 			enviroment.addChild(lq);
@@ -334,6 +342,14 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	private void init3D() {
 		root = new BranchGroup();
 		root.setCapability(BranchGroup.ALLOW_DETACH);
+		
+		
+		  //Background      
+	      ImageComponent2D backgroundImage = new TextureLoader("470.jpg", this).getImage();
+	      Background background = new Background(backgroundImage);
+	   //   objectBranch.addChild(background);
+	      
+	      root.addChild(backgroundTextureSphere());
 		
 		objectBranch.setCapability(BranchGroup.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
 		objectBranch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
@@ -497,11 +513,18 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	public void stop() {
 		animation.stop();
+		animation.removeChangeListener(this);
 	}
 
 
 
 	public void play() {
+		if (animation == null )
+		{
+			System.out.println("CSM Player: play: no animation loaded (animation == null)");
+			return;
+		}
+		animation.addChangeListener(this);
 		System.out.println("CSM Player: play : animation:"+ animation);
 		animation.play();
 		animation.isAnimating = true;
@@ -604,6 +627,14 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		if (ce.getSource().getClass() == PlayerControllStatus.class)
 		{
 			PlayerControllStatus pcs = (PlayerControllStatus) ce.getSource();
+			switch (pcs.status) {
+			case AnimationLoaded:
+				// TODO: Switch group for last frame skelet setup
+				break;
+
+			default:
+				break;
+			}
 			fireChangeEnvent(pcs);
 		}
 	}
@@ -643,7 +674,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	private void fireMarkerUpdate() {
 		animation.setSelection(markerMin,markerMax);
-		PlayerControllStatus pcs = new PlayerControllStatus(State.AreaSelectionUpdate);
+		PlayerControllStatus pcs = new PlayerControllStatus(State.SelectedAreaUpdate);
 		pcs.firstFrame = markerMin;
 		pcs.lastFrame = markerMax;
 		fireChangeEnvent(pcs);
@@ -657,21 +688,31 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	    Background bg = new Background();
 	    bg.setApplicationBounds(StaticTools.defaultBounds);
 	    BranchGroup backGeoBranch = new BranchGroup();
-	    Sphere sphereObj = new Sphere(1.1f, Sphere.GENERATE_NORMALS
+	    Sphere sphereObj = new Sphere(50.0f, Sphere.GENERATE_NORMALS
 	        | Sphere.GENERATE_NORMALS_INWARD
 	        | Sphere.GENERATE_TEXTURE_COORDS, 45);
 	    Appearance backgroundApp = sphereObj.getAppearance();
-	    backGeoBranch.addChild(sphereObj);
+
+	    TextureLoader tex = new TextureLoader("./sm_office-85.jpg", new String(
+	        "RGB"), null);
+	    if (tex != null) {
+	    	System.out.println("CSM Player: BackgroundTextureLoader");
+	    	Texture texture = tex.getTexture();
+	        texture.setBoundaryModeS(Texture.WRAP);
+	        texture.setBoundaryModeT(Texture.WRAP);
+	        texture.setBoundaryColor(new Color4f(0.0f, 1.0f, 0.0f, 0.0f));
+	      backgroundApp.setTexture(texture);
+	    }
+	    Transform3D rotate = new Transform3D();
+	    rotate.rotX(Math.PI);
+	    rotate.setTranslation(new Vector3f(0,0,0));
+	    TransformGroup tg = new TransformGroup(rotate);
+	    tg.addChild(sphereObj);
+	    objRoot.addChild(tg);
+	    backGeoBranch.addChild(objRoot);
 	    bg.setGeometry(backGeoBranch);
 
-	    TextureLoader tex = new TextureLoader("470.jpg", new String(
-	        "RGB"), this);
-	    if (tex != null) {
-	      backgroundApp.setTexture(tex.getTexture());
-	    }
-	    objRoot.addChild(bg);
-
-	    return objRoot;
+	    return backGeoBranch;
 	}
 
 

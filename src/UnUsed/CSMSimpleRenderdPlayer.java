@@ -237,5 +237,10 @@ public class CSMSimpleRenderdPlayer extends JPanel implements PlayerControlls, R
 		
 	}
 
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 }

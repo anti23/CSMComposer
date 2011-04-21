@@ -11,6 +11,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import datastructure.Animation;
+
 import CustomSwingComponent.JFilmStripSlider;
 import Gui.ArrangeingUnit.ArrangerPane;
 import Java3D.Java3DCSMPlayer;
@@ -58,13 +60,13 @@ public class CSMPlayerControllBar extends JPanel
 		controlls.setLayout(new GridBagLayout());
 		JButton play = new JButton(">");
 		JButton pause = new JButton("||");
+		JButton stop = new JButton("[]");
 		JButton faster = new JButton(">>");
 		JButton slower = new JButton("<<");
 		JButton markAll = new JButton("Mark All");
 		JButton markMin = new JButton("[<");
 		JButton markMax = new JButton(">]");
 		JButton playSelection = new JButton("[>]");
-		
 		JButton copySelection = new JButton("copy");
 
 		play.addActionListener(new ActionListener() {
@@ -90,12 +92,22 @@ public class CSMPlayerControllBar extends JPanel
 		
 		copySelection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				arrangerPane.add(player.getAnimation().getSubSequentAnimation(player.getMinMarker(), player.getMaxMarker()));
+				int minFrame = player.getMinMarker();
+				int maxFrame = player.getMaxMarker();
+				Animation selected = player.getAnimation().getSubSequentAnimation(minFrame,maxFrame) ; 
+				arrangerPane.add(selected);
+				player.loadAnimation(selected);
 			}
 		});
 		pause.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				player.pause();
+			}
+		});
+		
+		stop.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.stop();
 			}
 		});
 		
@@ -122,28 +134,29 @@ public class CSMPlayerControllBar extends JPanel
 		c.gridx = 0;
 		c.gridy = 0;
 		controlls.add(play,c);
-		c.gridy = 1;
+		c.gridx = 1;
 		controlls.add(pause,c);
-		c.gridy = 2;
+		c.gridx = 2;
+		controlls.add(stop,c);
+		
+		c.gridy = 1;
+		c.gridx = 0;
 		controlls.add(slower,c);
-		c.gridy = 2;
 		c.gridx = 1;
 		controlls.add(faster,c);
 		
-		c.gridy = 3;
+		c.gridy = 2;
 		c.gridx = 0;
 		controlls.add(markMin,c);
-		
-		c.gridy = 3;
 		c.gridx = 1;
 		controlls.add(markMax,c);
-		
-		c.gridy = 1;
-		c.gridx = 1;
+		c.gridx = 2;
 		controlls.add(playSelection,c);
 		
-
-		controlls.add(copySelection);
+		c.gridy = 3;
+		c.gridx = 2;
+		controlls.add(copySelection,c);
+		
 		add(controlls,BorderLayout.EAST);
 	}
 

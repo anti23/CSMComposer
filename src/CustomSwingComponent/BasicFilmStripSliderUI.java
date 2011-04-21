@@ -23,6 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ComponentUI;
+
+import datastructure.Config;
 import Java3D.CSMPlayer.PlayerControllStatus;
 import Java3D.CSMPlayer.PlayerControllStatus.State;
 
@@ -101,7 +103,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 		super.paint(g, c);
 		
 		this.bounds = c.getBounds();
-		int[] minMax = filmStripSlider.model.getMarkedArea();
+		int[] minMax = filmStripSlider.model.getSelectedArea();
 		int min = Math.min(minMax[0], minMax[1]);
 		int max = Math.max(minMax[0], minMax[1]);
 		this.paintFilmRoll(g);
@@ -118,18 +120,19 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 
 	private void paintPreviewImages(Graphics g) {
 		if(previews != null)
+			if(previews.size() > 0)
 		{
 			int default_image_length = 100;
+			int default_image_height = 70;
 			// itterates at tenth stepping between min and max
-			int lastClosest = 0;
-			for (int i = zoomFrameStart; i < zoomFrameEnd; i+=(frame_range/10)) 
+			int stepping = (frame_range/ Config.previewCount);
+			
+			for (int i = zoomFrameStart; i <= zoomFrameEnd; i+=stepping) 
 			{
-				int closest = getClosestImage(i);
-				if (closest != lastClosest)
+				if ( previews.get(i) != null)
 				{
 			//		System.out.println("Frame i: " + i + " Closest:" + closest);
-					g.drawImage(previews.get(closest).getImage(), translateFrameToPixel(closest), 20, 100, 70, null);
-					lastClosest = closest;
+					g.drawImage(previews.get(i).getImage(), translateFrameToPixel(i), 20, default_image_length, default_image_height, null);
 				}
 				
 			}
@@ -178,12 +181,15 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 			
 		}
 		
-		//System.out.println("Lower choice :" + lower + "Higher choice :" + higher);
-
-		if (frame - lower > higher - frame)
-			return higher;
+		System.out.print("Frame: "+frame+" Lower choice :" + lower + "Higher choice :" + higher);
+		int result = 0;
+		if (frame - lower >= higher - frame)
+			result =  higher;
 		else 
-			return lower;
+			result = lower;
+		
+		System.out.println("Result: " + result);
+		return result;
 	}
 
 	private void paintCurserPosition(Graphics g, int frame) {
@@ -215,7 +221,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 		g.drawLine( x+10,90,x,80 );
 		g.drawLine( x-10,90,x,80 );
 		
-		String frameName = "Frame: "+ (zoomFrameStart + translatePixelToFrame(x)) ;
+		String frameName = "Frame: "+ (zoomFrameStart + frame) ;
 		if (x < bounds.width - 7 * frameName.length())
 			g.drawString(frameName, x +10, 90);
 		else 
@@ -421,8 +427,8 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 				}
 				break;
 				
-			case AreaSelectionUpdate :
-				filmStripSlider.model.setMarkedArea(pcs.firstFrame,pcs.lastFrame);
+			case SelectedAreaUpdate :
+				filmStripSlider.model.setSelectedArea(pcs.firstFrame,pcs.lastFrame);
 				break ;
 			}
 		}

@@ -34,7 +34,7 @@ public class Skelett implements Serializable {
 	List<TransformGroup> boneTransformsLenth;
 	Point3f[] currentFrame = null;
 	
-	CSMHeader csm_header;
+	CSMHeader header;
 	
 //	public List<Integer> connectlist = new ArrayList<Integer>();
 	public SkeletConnections connectlist = new SkeletConnections();
@@ -43,24 +43,24 @@ public class Skelett implements Serializable {
 	//public BranchGroup bg = new BranchGroup();
 	
 	public Skelett(CSMHeader header) {
-		csm_header = header;
-		points = new Sphere[csm_header.order.length];
-		pointTransforms = new TransformGroup[csm_header.order.length];
+		this.header = header;
+		points = new Sphere[header.order.length]; // as many spheres as the header has markers
+		pointTransforms = new TransformGroup[header.order.length];
 		boneTransformsAngle = new ArrayList<TransformGroup>();
 		boneTransformsLenth = new ArrayList<TransformGroup>();;
 		
 		//
 		connectlist.setHeader(header);
-		
 		//
 		init();
-		setupDefaultTpose();
+		setupDefaultTpose(header);
 	}
 	
-	private void setupDefaultTpose() {
+	private void setupDefaultTpose(CSMHeader header) {
+	
 		Point3f[] tpose = CSMPoints.defaultTPose().points;
 		
-		for (int i = 0; i < points.length; i++) {
+		for (int i = 0; i < header.order.length; i++) {
 			//points[i] = new Sphere(0.5f);
 			//points[i].setAppearance(Simple.green());
 			Transform3D transform =  new Transform3D();
@@ -70,9 +70,33 @@ public class Skelett implements Serializable {
 			pointTransforms[i] = new TransformGroup(transform);
 			pointTransforms[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 //			pointTransforms[i].addChild(points[i]);
-			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), 0.5f, csm_header.order[i]));
+			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), 0.5f, header.order[i]));
+			pointTransforms[i].setUserData(header.order[i]);
+			
 			pointsGroup.addChild(pointTransforms[i]);
 		}
+	}
+	
+	/**
+	 * Returns TransformGroup for Specific Marker
+	 * @param markerName (header.order[i])
+	 * @return
+	 */
+	
+	TransformGroup getTGfromMarkerName(String markerName)
+	{
+		for (TransformGroup tg : pointTransforms) {
+			Object userData = tg.getUserData(); 
+			if(userData != null && userData.getClass() == String.class)
+			{
+				String s = (String) userData;
+				if(s.compareToIgnoreCase(markerName) == 0 )
+					return tg;
+			}
+		}
+		// hopefully we never reach this point :)
+		System.out.println("Skeleton: getTGfromMakerName: no Matchon TG found for : " + markerName);
+		return null;
 	}
 	
 	
@@ -81,23 +105,24 @@ public class Skelett implements Serializable {
 	public void loadFrame(Point3f[] frame)
 	{
 		currentFrame = frame;
-		if (frame.length != points.length)
+		if (frame.length != points.length || frame.length != header.order.length)
 		{
 			System.err.println("Skelett: Load Frame: points Mismatch!");
-		//	return;
+			return;
 		}
 	// Setting new Translation for Spheres (points)
+		Point3f p ;
 		for (int i = 0; i < points.length; i++) {
-			Point3f p = (Point3f) frame[i].clone();
+			p = (Point3f) frame[i].clone();
 			float z = p.z;
 			p.z = p.y;
 			p.y = z;
 			
-			p.scale(0.01f);
+			p.scale(Config.skeletScale);
 			Transform3D t = new  Transform3D();
 			t.setTranslation(new Vector3f(p));
 			pointTransforms[i].setTransform(t) ;
-			;
+			p =null;
 		}
 		// Setting new Translation for Bones
 		for (int i = 0; i < connectlist.size()/2; i++) {
@@ -114,8 +139,8 @@ public class Skelett implements Serializable {
 			 z = b.z;
 			b.z = b.y;
 			b.y = z;
-			a.scale(0.01f);
-			b.scale(0.01f);
+			a.scale(Config.skeletScale);
+			b.scale(Config.skeletScale);
 			moveBone(a, b, boneTransformsLenth.get(i), boneTransformsAngle.get(i));
 		}
 		
@@ -286,11 +311,16 @@ public class Skelett implements Serializable {
 			bones.addChild(bg);
 		}
 	}
+	
+	public CSMHeader getHeader()
+	{
+		return header;
+	}
 
 	void connect(String a,String b)
 	   {
-		   int i= csm_header.getPos(a);
-		   int j = csm_header.getPos(b);
+		   int i= header.getPos(a);
+		   int j = header.getPos(b);
 		   if (i< 0 || j < 0)
 			   return ;
 		   connectlist.add(a);

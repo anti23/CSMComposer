@@ -9,6 +9,10 @@ import java.util.Scanner;
 import Misc.StaticTools;
 
 public class Config implements Serializable{
+	// --------- Static Constants --------- 
+	public static int previewCount = 7;
+	public static float skeletScale = 0.01f;
+	
 	// Where to look for CSM files
 	String workingDirecttory = null;
 	// Where to store Screenshots

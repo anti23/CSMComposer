@@ -129,7 +129,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 			parser.scanFile(file.getCanonicalPath());
 			
 			header = parser.getHeader();
-			points = parser.parseFrame();
+			points = parser.getNextPoints();
 			
 			skelet = new Java3DSkelet(header);
 			skelet.loadFrame(points.points);
@@ -543,7 +543,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		switch(code)
 		{
 		case KeyEvent.VK_UP: 	
-			points = parser.parseFrame();
+			points = parser.getNextPoints();
 			skelet.loadFrame(points.points);
 			; break;
 		case KeyEvent.VK_DOWN:    ; break;

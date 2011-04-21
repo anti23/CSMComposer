@@ -19,7 +19,7 @@ public class DefaultFilmStripModel implements FilmStripModel {
 	int maximumShownFrame;
 
 	// Marking
-	int[] markedArea = {0,0};
+	int[] selectedArea = {0,0};
 	
 
 	protected void fireStateChanged() {
@@ -42,9 +42,9 @@ public class DefaultFilmStripModel implements FilmStripModel {
 
 	}
 
-	public void setMarkedArea(int startFrame, int endFrame) {
-		markedArea[0] = startFrame;
-		markedArea[1] = endFrame;
+	public void setSelectedArea(int startFrame, int endFrame) {
+		selectedArea[0] = startFrame;
+		selectedArea[1] = endFrame;
 	}
 
 	public int getMarkedFramesCount() {
@@ -52,8 +52,8 @@ public class DefaultFilmStripModel implements FilmStripModel {
 		return 0;
 	}
 
-	public int[] getMarkedArea() {
-		return markedArea;
+	public int[] getSelectedArea() {
+		return selectedArea;
 	}
 
 	public void addChangeListener(ChangeListener cl) {

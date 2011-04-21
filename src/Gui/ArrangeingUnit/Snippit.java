@@ -1,6 +1,7 @@
 package Gui.ArrangeingUnit;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -62,11 +63,15 @@ public class Snippit implements Comparable<Snippit>
 	}
 	private void drawText(Graphics g) {
 		Color old = g.getColor();
-
-		g.drawString("Frames : " + frameCnt , bounds.x, bounds.y + 90);
+		Font oldFont = g.getFont();
+		Font idFont = new Font(g.getFont().getFamily(), Font.BOLD, g.getFont().getSize());
+		g.setFont(idFont);
+		String s_id = String.valueOf(id);
+		g.drawString(s_id, bounds.x, bounds.y);
+		g.setFont(oldFont);
+		g.drawString("Frames : " + frameCnt , bounds.x  + s_id.length() * s_id.length() * idFont.getSize() , bounds.y);
 		g.drawString("End: " + (startFrame + frameCnt) , bounds.x + bounds.width, 90);
 		
-		g.drawString("ID: " + id, bounds.x + 10, bounds.y + 10);
 		if (name != null)
 		{
 			g.setColor(Color.BLACK);

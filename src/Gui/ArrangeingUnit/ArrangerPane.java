@@ -19,6 +19,7 @@ import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
@@ -78,20 +79,24 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 	void init(){
 		initCommandPanel();
 		setLayout(new BorderLayout());
+		JLabel heading = new JLabel("Arranging Unit");
+		heading.setAlignmentX(JLabel.CENTER_ALIGNMENT);
+		add(heading,BorderLayout.NORTH);
 		add(scrollpane,BorderLayout.CENTER);
 		add(comandPanel,BorderLayout.WEST);
-		scrollpane.setSize(500, 100);
+		scrollpane.setSize(500, 160);
+		scrollpane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
 		scrollpane.setPreferredSize(scrollpane.getSize());
-		setSize(500, 100);
+		setSize(500, 160);
 		setPreferredSize(getSize());
 	}
 
 	public static void main(String[] args) {
-		JFrame f = new JFrame("Snippits Arragen Tester");
+		JFrame f = new JFrame("Snippits Arranger Tester");
 		ArrangerPane arr = new ArrangerPane();
 		
 		f.add(arr);
-		f.setSize(new Dimension(300,500));
+		f.setSize(arr.getSize());
 		f.pack();
 		f.setVisible(true);
 	}

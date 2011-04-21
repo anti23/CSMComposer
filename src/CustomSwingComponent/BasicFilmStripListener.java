@@ -71,14 +71,14 @@ public class BasicFilmStripListener implements 	MouseListener,
 	public void mousePressed(MouseEvent e) {
 		int frame = ui.translatePixelToFrame(e.getX());
 		//ui.filmStripSlider.model.setMarkedFrame(frame);
-		System.out.println("Basic Listener: mosue Pressed: Pixel: " +e.getX()+" translated to frame: " + frame);
-		System.out.println("Mouse Pressed : " + e);
+//		System.out.println("Basic Listener: mosue Pressed: Pixel: " +e.getX()+" translated to frame: " + frame);
+//		System.out.println("Basic Listener: Mouse Pressed : " + e);
 		x_at_mouse_pressed = e.getX();
 		
 	}
 
 	public void mouseReleased(MouseEvent e) {
-		System.out.println("Mouse Released : " + e);
+//		System.out.println("Basic Listener: Mouse Released : " + e);
 		if (hasBeenDraged)
 		{
 			ui.filmStripSlider.setMarkedArea(ui.translatePixelToFrame(x_at_mouse_pressed), 
@@ -90,7 +90,7 @@ public class BasicFilmStripListener implements 	MouseListener,
 	public void mouseDragged(MouseEvent e) {
 		//System.out.println("Mouse Dragged : " + e);
 		hasBeenDraged = true;
-		ui.filmStripSlider.model.setMarkedArea(ui.translatePixelToFrame(x_at_mouse_pressed), 
+		ui.filmStripSlider.model.setSelectedArea(ui.translatePixelToFrame(x_at_mouse_pressed), 
 								ui.translatePixelToFrame(e.getX()));
 		ui.filmStripSlider.fireEventChanged();
 		int frame = ui.translatePixelToFrame(e.getX());

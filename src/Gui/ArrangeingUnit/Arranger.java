@@ -28,15 +28,19 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 
 	public static final int snippitsYOffset = 10;
 	public static final int snippitsHeight = 70;
-	public static final int  snippitsWidth = 150;
+	public static final int  snippitsWidth = 110;
 	public static final int  spaceBetweenSnippits = 30; // later used for interleaving
 	Thread animateSnippits;
+	// The snippits array is beeing reoreder, when users change the order
 	ArrayList<Snippit> snippits = new ArrayList<Snippit>();
-	Snippit[] hits;
+	// this is a secon list of the same snippits, but the order will the the creating order
+	ArrayList<Snippit> snippitsForThreadedAnimaiton = new ArrayList<Snippit>();
+	int accesCtr = 0; // access counter for threaded snippits 
+	Snippit hit;
 	
-	Rectangle snippitArea = new Rectangle();
+	Rectangle snippitArea = new Rectangle(0,snippitsYOffset,snippitsWidth,snippitsHeight);
 	
-	Rectangle size = new Rectangle(700,150);
+	Rectangle size = new Rectangle(700,130);
 
 
 	private boolean draggingSnippit = false;
@@ -103,21 +107,32 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		g.setColor(old);
 	}
 	public void mouseDragged(MouseEvent e) {
-		if(hits != null)
-			if(hits.length > 0 )
-			{
-				draggingSnippit  = true;	
-				hits[0].moveTo(e.getPoint());
-				int index = translateXtoIndex(e.getX());
-				snippits.remove(hits[0]);
-				snippits.add(index, hits[0]);
-				updateSnippitPos();
-			}
+		if (hit != null && !snippitArea.contains(e.getPoint()))
+		{
+			hit.isBeeingArranged = false;
+			hit = null;
+		}
+		
+		if(hit != null)
+		{
+			hit.moveTo(e.getPoint());
+			int index = translateXtoIndex(e.getX());
+			snippits.remove(hit);
+			snippits.add(index, hit);
+		}
+		updateSnippitPos();
 		repaint();
 	}
 	
+	/*
+	 * Sets the targe position, so that the animation thread can rearange the Snippits
+	 * AND recalculates the FrameNumberings
+	 */
 	private void updateSnippitPos() {
+		int frameNr = 0; 
 		for (Snippit s : snippits) {
+			s.startFrame = frameNr;
+			frameNr+= s.frameCnt;
 			int pos = s.pos; 
 			int shouldPos = snippits.indexOf(s) * (2*spaceBetweenSnippits + snippitsWidth);
 			if (s.targetPos != shouldPos)
@@ -147,6 +162,14 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	public void add(Snippit snippit) {
 		snippit.pos = snippits.size() * (snippitsWidth + 2*spaceBetweenSnippits);
 		snippits.add(snippit);
+		while(accesCtr != 0)
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+			}
+		accesCtr ++;
+		snippitsForThreadedAnimaiton.add(snippit);
+		accesCtr --;
 		updateSnippitArea();
 		setVisible(false);
 		setVisible(true);
@@ -157,21 +180,20 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	public void mouseEntered(MouseEvent e) {
 	}
 	public void mouseExited(MouseEvent e) {
-		hits = null;
+		hit = null;
 	}
 	public void mousePressed(MouseEvent e) {
-		hits = checkForSnippitHit(e);
-		if(hits.length > 0)
-			hits[0].isBeeingArranged = true;
+		hit = checkForSnippitHit(e);
+		if(hit != null)
+			hit.isBeeingArranged = true;
 	}
 	
 	public void mouseReleased(MouseEvent e) {
-		if(hits != null)
-		if(hits.length > 0)
-			hits[0].isBeeingArranged = false;
+		if(hit != null)
+			hit.isBeeingArranged = false;
 	}
 
-	private Snippit[] checkForSnippitHit(MouseEvent e)
+	private Snippit  checkForSnippitHit(MouseEvent e)
 	{
 		ArrayList<Snippit> hits = new ArrayList<Snippit>();
 		
@@ -183,11 +205,9 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 			}
 		}
 		if (hits.size() == 0)
-			return new Snippit[0];
+			return null;
 		
-		Snippit[] result = new Snippit[hits.size()];
-		hits.toArray(result);
-		hits.clear();
+		Snippit  result = hits.get(0);
 		return result; 
 		
 	}
@@ -252,29 +272,34 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 			int stepping = 5;
 			while (true)
 			{
-				for (Snippit s : snippits) {
-					if(s.isBeeingArranged)
-						continue;
-					delta = s.targetPos-s.pos;
-					if(s.targetPos >=0)
-					{
-						dir= (int) Math.signum(delta);
-						s.pos+= (dir * stepping);
-						if (Math.abs(delta) < stepping)
-							s.pos = s.targetPos;
+				if (accesCtr == 0 )
+				{
+					accesCtr++;
+					for (Snippit s : snippitsForThreadedAnimaiton) {
+						if(s.isBeeingArranged)
+							continue;
+						delta = s.targetPos-s.pos;
+						if(s.targetPos >=0)
+						{
+							dir= (int) Math.signum(delta);
+							s.pos+= (dir * stepping);
+							if (Math.abs(delta) < stepping)
+								s.pos = s.targetPos;
+						}
+						
+						delta = Arranger.snippitsYOffset - s.bounds.y;
+						if(s.bounds.y != Arranger.snippitsYOffset)
+						{
+							dir= (int) Math.signum(delta);
+							s.bounds.y += (dir * stepping);
+							if (Math.abs(delta) < stepping)
+								s.bounds.y = Arranger.snippitsYOffset;
+						}
 					}
-					
-					delta = Arranger.snippitsYOffset - s.bounds.y;
-					if(s.bounds.y != Arranger.snippitsYOffset)
-					{
-						dir= (int) Math.signum(delta);
-						s.bounds.y += (dir * stepping);
-						if (Math.abs(delta) < stepping)
-							s.bounds.y = Arranger.snippitsYOffset;
-					}
-				}
+				accesCtr --;
 				try {Thread.sleep(10);} catch (InterruptedException e) {}
 				repaint();
+				}
 			}
 		}
 	}

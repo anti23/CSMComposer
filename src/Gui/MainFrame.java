@@ -58,7 +58,7 @@ public class MainFrame extends JFrame{
 		setJMenuBar(menu);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
 		setTitle("CSM Editor");
-		setSize(600, 800);
+		setSize(800, 900);
 		setBackground(Color.darkGray);
 		addWindowListener(new WindowAdapter() {
 		      public void windowClosing(WindowEvent e) {
@@ -79,7 +79,7 @@ public class MainFrame extends JFrame{
 		
 		//player.slider = slider;
 //		addComponentsGridBagLayout();
-		addComponentsMulipleSpimpleLayouts();
+		addComponentsMulipleSimpleLayouts();
 		setVisible(true);
 	}
 	
@@ -117,12 +117,17 @@ public class MainFrame extends JFrame{
 		pane.getRightComponent().setMinimumSize(new Dimension(0,0));
 	}
 	
-	private void addComponentsMulipleSpimpleLayouts()
+	private void addComponentsMulipleSimpleLayouts()
 	{
 		setLayout(new BorderLayout());
 		add(projectPanel,BorderLayout.WEST);
-		add(player, BorderLayout.CENTER);
-		add(headerView,BorderLayout.EAST);
+//		add(player, BorderLayout.CENTER);
+//		add(headerView,BorderLayout.EAST);
+		splitPane = new JSplitPane(splitPane.HORIZONTAL_SPLIT,true);
+		splitPane.add(player,0);
+		splitPane.add(headerView,1);
+		splitPane.setDividerLocation(500);
+		add(splitPane,BorderLayout.CENTER);
 		JPanel cutting = new JPanel(new GridLayout(2, 1));
 		cutting.add(playerControllBar);
 		cutting.add(arrangePane);

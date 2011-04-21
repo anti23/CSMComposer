@@ -11,6 +11,7 @@ public interface PlayerControlls {
 	
 	void play();
 	void pause();
+	void stop();
 	void jumpto(int frame);
 	void jumpto(float timeInSecs);
 	void relativeJump(int deltaFrames);

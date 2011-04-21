@@ -79,6 +79,23 @@ public class PreviewMaker {
 	}
 	
 	
+	static PreviewMaker instance;
+	public static PreviewMaker getInstance(CSMHeader header)
+	{
+		if (instance == null)
+		{
+			instance = new PreviewMaker(header);
+		}else if (!instance.skelett.getHeader().equals(header))
+		{
+			System.out.println("PreviewMaker: getInstance: SkeletHeaders Not matiching");
+			instance.finalize();
+			instance = null;
+			instance = new PreviewMaker(header);
+		}
+		
+		return instance;
+	}
+	
 
 	private void initDefaults() {
 		width = 100;

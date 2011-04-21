@@ -19,6 +19,9 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+
+import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
+
 import CSM.CSMHeader;
 import CSM.CSMParser;
 import CSM.CSMPoints;
@@ -66,7 +69,7 @@ public class Animation implements
 	// Player Controll Attributes
 	public float playbackSpeed = 1.0f;
 	private playingDirection playbackDirection = playingDirection.FWD;
-	int markedArea[] = new int[2];
+	int selectedArea[] = new int[2];
 	boolean playSelection = false;
 	
 	public Animation() {
@@ -76,13 +79,21 @@ public class Animation implements
 		skelett = new Skelett(header);
 		skelett.loadFrame(frames[0].points);
 	}
+	public Animation(CSMHeader header) {
+		this.header = header;
+		framecount = header.lastFrame -header.firstFrame;
+		frames = new CSMPoints[framecount];
+		//frames[0] = CSMPoints.defaultTPose();
+		skelett = new Skelett(header);
+		//skelett.loadFrame(frames[0].points);
+	}
 
 	
 	public Animation(String filename) {
 
 		this.filename = filename;
 		try {
-			loadFile();
+			loadFromFile();
 		} catch (IOException e) {
 			System.err.println(e);
 		}
@@ -94,48 +105,29 @@ public class Animation implements
 		
 		this.filename = filename;
 		try {
-			loadFile();
+			loadFromFile();
 		} catch (IOException e) {
 			System.err.println(e);
 		}
 	}
 	
-	public Animation getSubSequentAnimation(int firstFrame, int lastFrame)
-	{
-		Animation anim = new Animation();
-		anim.header = header;
-		anim.header.firstFrame = 0;
-		anim.header.lastFrame = lastFrame-firstFrame;
-		anim.framecount = lastFrame-firstFrame;
-		anim.previews = new HashMap<Integer, ImageIcon>();
-		Set<Integer> set =  previews.keySet();
-		for (Integer i : set) {
-			if (i > firstFrame && i < lastFrame)
-				anim.previews.put(i - firstFrame, previews.get(i));
-				
-		}
-		
-		anim.filename = "frame " + firstFrame + " to " + lastFrame + "of Animation " + filename;
-		anim.frames = new CSMPoints[lastFrame-firstFrame];
-		for (int i = firstFrame; i < lastFrame; i++) {
-			anim.frames[i- firstFrame] = frames[i];
-		}
-		
-		return anim;
-	}
-
 	public Skelett getSkelett()
 	{
 		return this.skelett;
 	}
+	
 	// Constructs and loads CSM datastructure
-	void loadFile() throws IOException
+	private void loadFromFile() throws IOException
 	{
 		if (filename != null)
 		{
 			File f = new File(filename);
 			if (!f.isFile())
 				throw new IOException("File not found "+ f );
+		}else 
+		{
+			System.out.println("Animation: Loadfrom File: but no Filename!");
+			return;
 		}
 		parser = new CSMParser();
 		parser.scanFile(filename);
@@ -147,7 +139,7 @@ public class Animation implements
 
 		framecount = header.lastFrame-header.firstFrame;
 		frames = new CSMPoints[framecount];
-		frames[0] = parser.parseFrame();
+		frames[0] = parser.getNextPoints();
 		
 		
 		
@@ -175,7 +167,7 @@ public class Animation implements
 	public void loadFile(String filename) throws IOException {
 		this.filename = filename;
 		parser = null;
-		loadFile();
+		loadFromFile();
 	}
 	
 	
@@ -224,16 +216,16 @@ public class Animation implements
 	
 	private boolean checkSelection() {
 		//sort marked Area
-		if(markedArea[0] > markedArea[1])
+		if(selectedArea[0] > selectedArea[1])
 		{
-			int bigger = markedArea[0];
-			markedArea[0] = markedArea[1];
-			markedArea[1] = bigger;
+			int bigger = selectedArea[0];
+			selectedArea[0] = selectedArea[1];
+			selectedArea[1] = bigger;
 		}
-		if (markedArea[0] > header.firstFrame && markedArea[1] < header.lastFrame)
+		if (selectedArea[0] > header.firstFrame && selectedArea[1] < header.lastFrame)
 			return true;
 		else
-			System.out.println("Animation: check Selection marked Area out of bound: " +markedArea );
+			System.out.println("Animation: check Selection marked Area out of bound: " +selectedArea );
 		return false;
 	}
 
@@ -275,10 +267,10 @@ public class Animation implements
 			// Differentaite Normal Looped and Selected Area Looped Playback
 			if (playSelection)
 			{
-				if (framePos < markedArea[0])
-					framePos = markedArea[0];
-				if (framePos > markedArea[1])
-					framePos = markedArea[0];
+				if (framePos < selectedArea[0])
+					framePos = selectedArea[0];
+				if (framePos > selectedArea[1])
+					framePos = selectedArea[0];
 					
 			}
 			setFrame((framePos) % frames.length);
@@ -341,17 +333,17 @@ public class Animation implements
 	private class AsyncLoading implements Runnable
 	{
 		public void run() {
-			if (framecount < previewCount)
+			if (framecount < Config.previewCount)
 				previewCount = framecount;
 			if (framecount > 0){
 				for (int i = 0; i < framecount; i++)
 				{
-					frames[i] = parser.parseFrame();
+					frames[i] = parser.getNextPoints();
 					lastLoadedFrame = i;
 					PlayerControllStatus pcs = new PlayerControllStatus(State.LoadgingProgressUpdate);
 					pcs.firstFrame = pcs.lastFrame = i;
 					fireChangeEvenet(pcs);
-					if ((i ) % (framecount/previewCount) == 0 )
+					if ((i ) % (framecount/Config.previewCount) == 0 )
 					{
 						 new Thread(new AsyncPreviewMaking(i)).start();
 					}
@@ -372,8 +364,9 @@ public class Animation implements
 		PreviewMaker previewMaker = null;
 		int frame;
 		public AsyncPreviewMaking(int frame) 
-		{
-			previewMaker = new PreviewMaker(header);
+		{ // Alles Sehr schoen programmiert
+			previewMaker = new PreviewMaker(header); 
+//			previewMaker = PreviewMaker.getInstance(header);
 			this.frame = frame;
 		}
 		public void run() {
@@ -406,7 +399,7 @@ public class Animation implements
 	
 	public String toString()
 	{
-		return "Animation: " + filename + " frame count: " + framecount ;
+		return "Animation: Filename:" + filename + " frame count: " + framecount ;
 	}
 	
 	public CSMPoints getCurrentFrame()
@@ -425,21 +418,29 @@ public class Animation implements
 		pcs.header = header;
 		fireChangeEvenet(pcs);
 		
+		// Hopefully Fully Loaded! :( Atleast the Filmstrip status will show that 
 		//for (int i = 0; i < lastLoadedFrame; i++) {
-			PlayerControllStatus pcs1 = new PlayerControllStatus(State.LoadgingProgressUpdate);
-			pcs.firstFrame = pcs1.lastFrame = header.lastFrame;
-			fireChangeEvenet(pcs1);
+			 pcs = new PlayerControllStatus(State.LoadgingProgressUpdate);
+			pcs.firstFrame = pcs.lastFrame = header.lastFrame;
+			fireChangeEvenet(pcs);
 	//	}
-		PlayerControllStatus pcs2 = new PlayerControllStatus(State.AnimationLoaded);
-		fireChangeEvenet(pcs2);
+			// Marker Positions!
+			pcs = new PlayerControllStatus(State.SelectedAreaUpdate);
+			pcs.firstFrame = selectedArea[0];
+			pcs.lastFrame = selectedArea[1];
+			fireChangeEvenet(pcs);
+			
+			
+		 pcs = new PlayerControllStatus(State.AnimationLoaded);
+		fireChangeEvenet(pcs);
 		try {Thread.sleep(100);	} catch (InterruptedException e) {}
 		
 		Set<Integer> keys = previews.keySet();
 		for (Integer i : keys) {
-			PlayerControllStatus pcs3 = new PlayerControllStatus(State.PreviewUpdate);
-			pcs3.firstFrame = pcs3.lastFrame = i;
-			pcs3.imgIcon = previews.get(i);
-			fireChangeEvenet(pcs3);
+			pcs = new PlayerControllStatus(State.PreviewUpdate);
+			pcs.firstFrame = pcs.lastFrame = i;
+			pcs.imgIcon = previews.get(i);
+			fireChangeEvenet(pcs);
 		}
 	
 	}
@@ -478,7 +479,7 @@ public class Animation implements
 		timer.start();
 		isAnimating = true;
 		animStart = System.currentTimeMillis();
-		
+		selectedArea = new int[2];
 	}
 
 
@@ -488,15 +489,49 @@ public class Animation implements
 
 
 	public void setSelection(int markerMin, int markerMax) {
-		markedArea[0] = markerMin; 
-		markedArea[1] = markerMax; 
+		selectedArea[0] = markerMin; 
+		selectedArea[1] = markerMax; 
 		
 		
 	}
 
 
-	public void concat(Animation animation) {
+	public Animation getSubSequentAnimation(int firstFrame, int lastFrame)
+	{
+		Animation anim = new Animation(header);
+		
+		anim.filename = "frame " + firstFrame + " to " + lastFrame + "of Animation " + filename;
+		anim.framecount = lastFrame-firstFrame;
+		anim.lastLoadedFrame = anim.framecount;
 
+		anim.header.firstFrame = 0;
+		anim.header.lastFrame = anim.framecount;
+		anim.header.filename = anim.filename;
+		// Fill Previews
+		anim.previews = new HashMap<Integer, ImageIcon>();
+		Set<Integer> set =  previews.keySet();
+		for (Integer i : set) {
+			if (i > firstFrame && i < lastFrame)
+				anim.previews.put(i - firstFrame, previews.get(i));
+		}
+		
+		
+		anim.frames = new CSMPoints[lastFrame-firstFrame];
+		for (int i = firstFrame; i < lastFrame; i++) {
+			anim.frames[i- firstFrame] = frames[i];
+		}
+	
+		// If no Previewpic existing, generate one!
+		if (anim.previews.size() == 0 && anim.frames.length > 0)
+		{
+			PreviewMaker pm = new PreviewMaker(header);
+			anim.previews.put(0,new ImageIcon(pm.getImage(anim.frames[0].points)));
+		}
+		return anim;
+	}
+
+	public void concat(Animation animation) {
+		
 		int newlength = animation.frames.length + frames.length;
 		CSMPoints[] newframes = new CSMPoints[newlength];
 		for(int i = 0; i < frames.length; i++)
@@ -513,6 +548,9 @@ public class Animation implements
 		header.lastFrame = newlength;
 		lastLoadedFrame = frames.length -1;
 		fireChangeListenerUpdateEvents();
+	}
+	public void removeChangeListener(ChangeListener player) {
+		listenerList.remove(ChangeListener.class, player);
 	}
 
 } // End Class Animation
