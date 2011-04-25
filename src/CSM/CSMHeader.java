@@ -6,10 +6,17 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 
-public class CSMHeader implements Serializable{
+public class CSMHeader implements Serializable,Cloneable{
 	private static final long serialVersionUID = 8799617713932939669L;
 
-	public static String defaultOder = " LFHD RFHD LBHD RBHD C7 T10 CLAV STRN RBAC LSHO LUPA LELB LFRM LWRA LWRB LFIN RSHO RUPA RELB RFRM RWRA RWRB RFIN LFWT RFWT LPel RPel LBWT RBWT LTHI LKNE LSHN LANK LHEL LTOE LMT5 RTHI RKNE RSHN RANK RHEL RTOE RMT5 ";
+	public static String defaultOder = " LFHD RFHD LBHD RBHD " +
+										"C7 T10 CLAV STRN RBAC " +
+										"LSHO LUPA LELB LFRM LWRA LWRB LFIN " +
+										"RSHO RUPA RELB RFRM RWRA RWRB RFIN " +
+										"LFWT RFWT LPel RPel " +
+										"LBWT RBWT " +
+										"LTHI LKNE LSHN LANK LHEL LTOE LMT5 " +
+										"RTHI RKNE RSHN RANK RHEL RTOE RMT5 ";
 	
 	private Map<String, String> header = new HashMap<String, String>();
 	
@@ -26,16 +33,22 @@ public class CSMHeader implements Serializable{
 	
 	public void setHeaderMap(Map<String, String> header)
 	{
-		this.header = header;
+		this.header = new HashMap<String, String>();
 		for (String s : header.keySet()) {
+			this.header.put(s, new String(header.get(s)));
+		}
+		
+		for (String s : this.header.keySet()) {
 			if (s.equalsIgnoreCase("filename"))
-				this.filename = header.get(s);
+				this.filename = this.header.get(s);
 			if (s.equalsIgnoreCase("date"))
-				this.date = header.get(s);
+				this.date = this.header.get(s);
 			if (s.equalsIgnoreCase("Time"))
-				this.Time = header.get(s);
+				this.Time = this.header.get(s);
 			if (s.equalsIgnoreCase("Actor"))
-				this.Actor = header.get(s);
+				this.Actor = this.header.get(s);
+			if (s.equalsIgnoreCase("Comments"))
+				this.Comments = this.header.get(s);
 			
 //			if (s.equalsIgnoreCase("filename"))
 //				this.filename = header.get(s);
@@ -85,15 +98,24 @@ public class CSMHeader implements Serializable{
 
 		StringTokenizer st = new StringTokenizer(defaultOder);
 		
-		h.header.put("Keyyyyayay", "Valualala");
+		h.header.put("Key", "Value");
 		
 		h.order = new String[st.countTokens()];
 		int cnt = 0 ;
 		while (st.hasMoreTokens()) {
 			h.order[cnt++] = st.nextToken();
 		}
-			
-		
 		return h;
+	}
+	
+	public CSMHeader clone()
+	{
+		CSMHeader clone = new CSMHeader();
+		clone.setHeaderMap(header);
+		clone.firstFrame = firstFrame;
+		clone.lastFrame = lastFrame;
+		clone.framerate = framerate;
+		clone.timeInSecs = timeInSecs;
+		return clone;
 	}
 }

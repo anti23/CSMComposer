@@ -185,19 +185,14 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			child = (DefaultMutableTreeNode) treeRoot.getChildAt(i);
 			if(child.getClass() == AnimaitonComponent.class)
 			{
-				System.out.println("Erfolg : i: " + i);
 				AnimaitonComponent ac = (AnimaitonComponent) child;
 				if (ac.filename.compareTo(fileName)== 0)
 				{
 					TreePath treePath = new TreePath(child.getPath());
 					 projectTree.setSelectionPath(treePath);
 					 projectTree.scrollPathToVisible(treePath);
-
 				}
 			}
-			else
-				System.out.println("Erfolg : i: " + i);
-			
 		}
 	}
 	public void addSnippit(Snippit snippit) {
@@ -268,7 +263,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		@Override
 		public String toString() 
 		{
-			return "Hallo " + animation.header.filename;
+			return animation.header.filename;
 		}
 			
 	}

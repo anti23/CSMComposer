@@ -69,10 +69,7 @@ public class MainFrame extends JFrame{
 		
 		
 		initComponents();
-		menu.setPlayer(player);
-		projectPanel.setPlayer(player);
-		projectPanel.setHeaderView(headerView);
-		menu.setProjectPanel(projectPanel);
+
 		
 		//selector.setPlayer(player);
 	//	controll2.setPlayerToControll(player);
@@ -89,11 +86,16 @@ public class MainFrame extends JFrame{
 		} catch (IOException e) {
 			System.err.println(e);
 		}
+		menu.setPlayer(player);
 		//selector = new SelectorPanel();
 		projectPanel = new ProjectPanel(project);
+		menu.setProjectPanel(projectPanel);
+		projectPanel.setPlayer(player);
+		projectPanel.setHeaderView(headerView);
 		playerControllBar = new CSMPlayerControllBar();
 		playerControllBar.setPlayerToControll(player);
 		playerControllBar.setArrangerPane(arrangePane);
+		playerControllBar.setProjectPanel(projectPanel);
 		
 		
 

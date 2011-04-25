@@ -80,7 +80,7 @@ public class Animation implements
 		skelett.loadFrame(frames[0].points);
 	}
 	public Animation(CSMHeader header) {
-		this.header = header;
+		this.header = header.clone();
 		framecount = header.lastFrame -header.firstFrame;
 		frames = new CSMPoints[framecount];
 		//frames[0] = CSMPoints.defaultTPose();

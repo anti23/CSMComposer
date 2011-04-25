@@ -31,6 +31,9 @@ public class CSMPlayerControllBar extends JPanel
 	PlayerControlls player;
 	ArrangerPane arrangerPane;
 	
+	// for loading snippits
+	ProjectPanel projectPanel;
+	
 	public CSMPlayerControllBar() {
 		initComponents();
 	}
@@ -96,6 +99,7 @@ public class CSMPlayerControllBar extends JPanel
 				int maxFrame = player.getMaxMarker();
 				Animation selected = player.getAnimation().getSubSequentAnimation(minFrame,maxFrame) ; 
 				arrangerPane.add(selected);
+				projectPanel.addAnimation(selected.header.filename, selected);
 				player.loadAnimation(selected);
 			}
 		});
@@ -158,6 +162,11 @@ public class CSMPlayerControllBar extends JPanel
 		controlls.add(copySelection,c);
 		
 		add(controlls,BorderLayout.EAST);
+	}
+
+	public void setProjectPanel(ProjectPanel projectPanel) {
+		this.projectPanel = projectPanel; 
+		
 	}
 
 }
