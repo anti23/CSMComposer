@@ -130,9 +130,10 @@ public class MainFrame extends JFrame{
 		splitPane.add(headerView,1);
 		splitPane.setDividerLocation(500);
 		add(splitPane,BorderLayout.CENTER);
-		JPanel cutting = new JPanel(new GridLayout(2, 1));
-		cutting.add(playerControllBar);
-		cutting.add(arrangePane);
+//		JPanel cutting = new JPanel(new GridLayout(2, 1));
+		JPanel cutting = new JPanel(new BorderLayout());
+		cutting.add(playerControllBar,BorderLayout.NORTH);
+		cutting.add(arrangePane,BorderLayout.CENTER);
 		add(cutting,BorderLayout.SOUTH);
 		
 	}

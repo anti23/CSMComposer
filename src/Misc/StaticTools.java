@@ -24,6 +24,7 @@ import javax.media.j3d.Shape3D;
 import javax.media.j3d.Text3D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
+import javax.media.j3d.TransparencyAttributes;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.filechooser.FileFilter;
@@ -578,6 +579,16 @@ public class StaticTools {
     	return app_yellow;
 	}
 
+    
+    public static void makeBlendedTransparent(Appearance app, float tranpranecy)
+    {
+		if (!app.isLive())
+			app.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
+		TransparencyAttributes ta = new TransparencyAttributes();
+		ta.setTransparency(tranpranecy);
+		ta.setTransparencyMode(TransparencyAttributes.BLENDED);    
+		app.setTransparencyAttributes(ta);
+    }
 
 	public static void lights(BranchGroup root)
 	{

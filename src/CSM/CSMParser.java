@@ -60,7 +60,7 @@ public class CSMParser {
 	{
 		if(debug) System.out.println("nextLine");
 		line = scanner.nextLine();
-		while (line.length() == 0)
+		while (line.length() == 0 || line.startsWith("#"))
 			line = scanner.nextLine();
 		
 		st = new StringTokenizer(line);
@@ -221,7 +221,7 @@ public class CSMParser {
 			return lastLine;
 		}
 		
-		CSMPoints points;
+		CSMPoints points = null;
 		
 		if (scannedFilename == null)
 		{
@@ -233,7 +233,13 @@ public class CSMParser {
 			line = scanner.nextLine();
 			Scanner s = new Scanner(line);
 			s.useLocale(Locale.US);
-			
+			if (!s.hasNextInt())
+			{
+				noMoreLines = true;
+				lastLine = points;
+				return lastLine;
+			}
+				
 			lastFrameNumber = s.nextInt();
 			points = new CSMPoints(lastFrameNumber, this.order.length);
 			
@@ -256,7 +262,7 @@ public class CSMParser {
 			return points;
 		}
 		System.out.println("CSMParser: No more lines to scan!");
-		return null;
+		return lastLine;
 	}
 
 

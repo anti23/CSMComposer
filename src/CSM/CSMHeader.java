@@ -116,6 +116,7 @@ public class CSMHeader implements Serializable,Cloneable{
 		clone.lastFrame = lastFrame;
 		clone.framerate = framerate;
 		clone.timeInSecs = timeInSecs;
+		clone.order = order.clone(); // hahaha  funny syntax!
 		return clone;
 	}
 }

@@ -28,6 +28,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import Gui.ArrangeingUnit.Arranger;
 import Gui.ArrangeingUnit.Snippit;
 import Java3D.CSMPlayer.PlayerControlls;
 import Misc.StaticTools;
@@ -42,6 +43,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	Project project;
 	PlayerControlls player;
 	CSMHeaderView headerView;
+	Arranger arranger;
 	
 	JPanel buttonBar = new JPanel();
 	
@@ -78,6 +80,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	{
 		project = p;
 		updateProjectTree();
+		updateSnippitsTree();
 	}
 	
 	
@@ -100,6 +103,25 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		projectTree.expandRow(0);
 	}
 	
+	void updateSnippitsTree()
+	{
+		//fill in Key values of project animation list
+		if (project != null)
+		{
+			
+			snippitRoot = new DefaultMutableTreeNode("Snippits Tree");
+			Set<String> keys = project.snippits.keySet();
+			int ctr= 0 ;
+			for (String string : keys) {
+				//root.add(new DefaultMutableTreeNode(string));
+				snippitRoot.add(new AnimaitonComponent(project.snippits.get(string), string));
+				System.out.println(string);
+			}
+		}
+		snippitsTree.setModel(new DefaultTreeModel(snippitRoot));
+		snippitsTree.expandRow(0);
+	}
+	
 	void initLayout()
 	{
 		setLayout(new BorderLayout());
@@ -108,6 +130,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 //		setPreferredSize(new Dimension(300,500));
 //		projectTree.setPreferredSize(new Dimension(500,500));
 		projectTree.addTreeSelectionListener(this);
+		snippitsTree.addTreeSelectionListener(this);
 //		projectTreeScrollPane.add(projectTree);
 		buttonBar.setLayout(new FlowLayout());
 //		add(projectTreeScrollPane,BorderLayout.CENTER);
@@ -146,6 +169,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 				);
 				if (fileName != null)
 					project.removeAnimation(fileName);
+				updateProjectTree();
 			}
 		});
 		buttonBar.add(load);
@@ -156,7 +180,12 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	public void valueChanged(TreeSelectionEvent tse) {
 		System.out.println("Project Panel : TreeSelection Listener: value Changed");
 		System.out.println(tse);
-		Object o =  projectTree.getLastSelectedPathComponent();
+		Object o = null;
+		if (tse.getSource() == projectTree)
+			o =  projectTree.getLastSelectedPathComponent();
+		else if (tse.getSource() == snippitsTree)
+			o =  snippitsTree.getLastSelectedPathComponent();
+			
 		AnimaitonComponent ac = null;
 		Animation a = null;
 		if (o != null && o.getClass() == AnimaitonComponent.class)
@@ -223,7 +252,6 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			FileInputStream fi = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fi);
 			setProject( (Project) ois.readObject() );
-			
 			fi.close();
 			
 		} catch (IOException e) {
@@ -235,6 +263,11 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	
 	public void setHeaderView(CSMHeaderView headerView) {
 		this.headerView = headerView;
+	}
+
+	public void addSnippit(String filename, Animation selected) {
+		project.snippits.put(filename, selected);
+		updateSnippitsTree();
 	}
 
 	class AnimaitonComponent extends DefaultMutableTreeNode

@@ -22,6 +22,8 @@ import datastructure.Project;
 
 import CSM.CSMHeader;
 import CSM.CSMPoints;
+import CSM.CSMWriter;
+import Gui.ProjectPanel.AnimaitonComponent;
 import Java3D.Java3DCSMPlayer;
 import Java3D.SkeletMaker.Java3DSkeletMaker;
 import Java3D.SkeletMaker.SkeletConnections;
@@ -54,6 +56,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 	JMenuItem miRenderingOptions = new JMenuItem("Redering Options");
 	JCheckBoxMenuItem  miDisplayEnviroment = new JCheckBoxMenuItem ("Display Enviroment",true);
 	JCheckBoxMenuItem  miDisplayOrigin = new JCheckBoxMenuItem ("Display Origin",true);
+	JCheckBoxMenuItem  miDisplayBG = new JCheckBoxMenuItem ("Display Background",true);
 	JMenuItem miTakeScreenShot = new JMenuItem("Take Screenshot");
 	JCheckBoxMenuItem  miToggleFullscreen = new JCheckBoxMenuItem ("Toggle Fullscreen");
 	// Project Menu
@@ -98,6 +101,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 		mPlayer.add(miRenderingOptions);
 		mPlayer.add(miDisplayEnviroment);
 		mPlayer.add(miDisplayOrigin);
+		mPlayer.add(miDisplayBG);
 		mPlayer.add(miTakeScreenShot);
 		mPlayer.add(miToggleFullscreen);
 		// Project Menu
@@ -194,6 +198,11 @@ public class CSMComposerMeunBar extends JMenuBar{
 				player.toggleOrigin();
 			}
 		});
+		miDisplayBG.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				player.toggleBackground();
+			}
+		});
 		
 		miToggleFullscreen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -226,7 +235,35 @@ public class CSMComposerMeunBar extends JMenuBar{
 				
 			}
 		});
-	}
+		
+		miSaveToCSM.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int index = projectPanel.tabsPane.getSelectedIndex();
+				Object selected = null;
+				switch (index)
+				{
+				case 0 : 
+					
+					selected = projectPanel.projectTree.getLastSelectedPathComponent();
+				break;
+				case 1 : 
+					selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
+				break;
+				}
+				
+				if (selected != null && selected.getClass() == AnimaitonComponent.class)
+				{
+					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
+					File file = StaticTools.openDialog("csm", true);
+					CSMWriter csmw = new CSMWriter(a, file.getName());
+					csmw.writeOutCSM();
+				}else 
+					System.out.println("CSMComposerMenuBar: MenueItem SaveToCSM: no AnimationComponent is selected!");
+				
+			}
+		});
+		
+	} // end init actions
 	
 	public CSMComposerMeunBar() {
 		initMenu();

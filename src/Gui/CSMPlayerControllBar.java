@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import datastructure.Animation;
@@ -27,6 +28,7 @@ public class CSMPlayerControllBar extends JPanel
 {
 	private static final long serialVersionUID = 8246585468543236639L;
 	JFilmStripSlider filmStripSlider;
+	JLabel speedDisplay = new JLabel("1.0");
 	JPanel controlls = new JPanel();
 	PlayerControlls player;
 	ArrangerPane arrangerPane;
@@ -70,7 +72,8 @@ public class CSMPlayerControllBar extends JPanel
 		JButton markMin = new JButton("[<");
 		JButton markMax = new JButton(">]");
 		JButton playSelection = new JButton("[>]");
-		JButton copySelection = new JButton("copy");
+		JButton copySelection = new JButton("to Storyboard");
+		JButton deleteSelection = new JButton("delete");
 
 		play.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -81,13 +84,14 @@ public class CSMPlayerControllBar extends JPanel
 		faster.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				float newspeed = player.getSpeed() * 1.2f;
-				System.out.println(player.getSpeed());
+				speedDisplay.setText(Float.toString(newspeed));
 				player.changeSpeed(newspeed);
 			}
 		});
 		slower.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				float newspeed = player.getSpeed() *0.8f;
+				speedDisplay.setText(Float.toString(newspeed));
 				player.changeSpeed(newspeed);
 			}
 		});
@@ -99,8 +103,21 @@ public class CSMPlayerControllBar extends JPanel
 				int maxFrame = player.getMaxMarker();
 				Animation selected = player.getAnimation().getSubSequentAnimation(minFrame,maxFrame) ; 
 				arrangerPane.add(selected);
-				projectPanel.addAnimation(selected.header.filename, selected);
-				player.loadAnimation(selected);
+				projectPanel.addSnippit(selected.header.filename + " " + minFrame + " to " + maxFrame, selected);
+				//player.loadAnimation(selected);
+			}
+		});
+		
+		
+		deleteSelection.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				int minFrame = player.getMinMarker();
+				int maxFrame = player.getMaxMarker();
+				Animation selected = player.getAnimation() ;
+				selected.deleteSubsequence(minFrame, maxFrame);
+				player.setMaxMarker(0);
+				player.setMinMarker(0);
+				selected.fireChangeListenerUpdateEvents();
 			}
 		});
 		pause.addActionListener(new ActionListener() {
@@ -148,6 +165,8 @@ public class CSMPlayerControllBar extends JPanel
 		controlls.add(slower,c);
 		c.gridx = 1;
 		controlls.add(faster,c);
+		c.gridx = 2;
+		controlls.add(speedDisplay,c);
 		
 		c.gridy = 2;
 		c.gridx = 0;
@@ -158,8 +177,12 @@ public class CSMPlayerControllBar extends JPanel
 		controlls.add(playSelection,c);
 		
 		c.gridy = 3;
-		c.gridx = 2;
+		c.gridx = 0;
+		c.gridwidth = 2;
 		controlls.add(copySelection,c);
+		c.gridx = 2;
+		c.gridwidth = 1;
+		controlls.add(deleteSelection,c);
 		
 		add(controlls,BorderLayout.EAST);
 	}

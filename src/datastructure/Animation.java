@@ -246,15 +246,15 @@ public class Animation implements
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == timer)
 		{
-			if (!isAnimating)
+			delta =  System.currentTimeMillis() - animStart ;
+			animStart = System.currentTimeMillis();
+			if (!isAnimating) // pausing, no need for killing timer
 			{
-				timer.setRepeats(false);
-				timer.stop();
+				//timer.setRepeats(false);
+				//timer.stop();
 				return;
 			}
 			
-			delta =  System.currentTimeMillis() - animStart ;
-			animStart = System.currentTimeMillis();
 		//	System.out.println("Running for: " + delta + " Milliseconds");
 			float frameRate = header.framerate;
 			float speedControllFactor = playbackSpeed;
@@ -409,7 +409,13 @@ public class Animation implements
 
 	public CSMPoints getPoints(int index)
 	{
-		return frames[index];
+		if (index > frames.length-1)
+		{
+			System.out.println("Animation: getPoints(index= "+index+"): bigger than frames.length: " + frames.length);
+			System.out.println("Animation: getPoints(index= "+index+"): giving a modulo frame.length instead");
+		}
+		return frames[index % frames.length];
+		
 	}
 
 	public void fireChangeListenerUpdateEvents() {
@@ -452,7 +458,7 @@ public class Animation implements
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {}
-			System.out.println("Animation is still in Loading State, cat save to Disk while Loading!");
+			System.out.println("Animation: write Object: still in Loading State, cat save to Disk while Loading!");
 		}
 		out.writeObject(header);
 		out.writeObject(frames);
@@ -473,20 +479,24 @@ public class Animation implements
 		listenerList = new EventListenerList();
 		//Timer setup
 		playbackSpeed = 1;
-		timer = new Timer(1000/20, this);
-		timer.setDelay(1000/20);
-		timer.setRepeats(true);
-		timer.start();
-		isAnimating = true;
+//		timer = new Timer(1000/20, this);
+//		timer.setDelay(1000/20);
+//		timer.setRepeats(true);
+//		timer.start();
+		isAnimating = false;
 		animStart = System.currentTimeMillis();
 		selectedArea = new int[2];
+		loadingComplete = true;
 	}
 
 
 	public int getFramePos() {
 		return framePos;
 	}
-
+	public boolean isLoadingComplete()
+	{
+		return loadingComplete;
+	}
 
 	public void setSelection(int markerMin, int markerMax) {
 		selectedArea[0] = markerMin; 
@@ -495,10 +505,44 @@ public class Animation implements
 		
 	}
 
+	public void deleteSubsequence(int firstFrame, int lastFrame)
+	{
+		System.out.println("Animaiton: deleteSubsequence() ");
+		System.out.println("Animaiton: deleteSubsequence: firstFrame : " + firstFrame);
+		System.out.println("Animaiton: deleteSubsequence: lastFrame  : " + lastFrame);
+		if (firstFrame < 0 && firstFrame > lastLoadedFrame && lastFrame < firstFrame && lastFrame >lastLoadedFrame)
+		{
+			System.out.println("Animaition: deleteSubsequence: First or last frame to big or to small.");
+			return;
+		}
+		int deleteCount = lastFrame - firstFrame;
+		if (deleteCount < 0)
+			return;
+		System.out.println("Animaiton: deleteSubsequence: DeleteCount: " + deleteCount);
+		CSMPoints[] newframes = new CSMPoints[frames.length - deleteCount];
+		System.out.println("Animaiton: deleteSubsequence: old Frames length : " + frames.length);
+		System.out.println("Animaiton: deleteSubsequence: new Frames length : " + newframes.length);
+		for(int i = 0; i < firstFrame; i++)
+		{
+			newframes[i] = frames[i];
+		}
+		for(int i = lastFrame; i < frames.length; i++)
+		{
+			newframes[(i -lastFrame) + firstFrame] = frames[i];
+		}
+		frames = newframes;
+		lastLoadedFrame = frames.length;
+		header.lastFrame = frames.length;
+		this.framePos = this.framePos % lastLoadedFrame;
+		header.getHeaderMap().put("lastframe", Integer.toString(frames.length) );
+		
+
+		fireChangeListenerUpdateEvents();
+	}
 
 	public Animation getSubSequentAnimation(int firstFrame, int lastFrame)
 	{
-		Animation anim = new Animation(header);
+		Animation anim = new Animation(header.clone());
 		
 		anim.filename = "frame " + firstFrame + " to " + lastFrame + "of Animation " + filename;
 		anim.framecount = lastFrame-firstFrame;
@@ -506,7 +550,7 @@ public class Animation implements
 
 		anim.header.firstFrame = 0;
 		anim.header.lastFrame = anim.framecount;
-		anim.header.filename = anim.filename;
+		//anim.header.filename = anim.filename;
 		// Fill Previews
 		anim.previews = new HashMap<Integer, ImageIcon>();
 		Set<Integer> set =  previews.keySet();
@@ -527,6 +571,9 @@ public class Animation implements
 			PreviewMaker pm = new PreviewMaker(header);
 			anim.previews.put(0,new ImageIcon(pm.getImage(anim.frames[0].points)));
 		}
+		
+		//seting reading Controll flags, this animaiton is made 100% out of ram
+		anim.loadingComplete = true;
 		return anim;
 	}
 

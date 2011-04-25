@@ -1,5 +1,6 @@
 package Java3D;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Container;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
@@ -33,6 +34,9 @@ import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
+
+import org.w3c.dom.css.CSSPrimitiveValue;
+import org.w3c.dom.css.RGBColor;
 
 import CustomSwingComponent.JFilmStripSlider;
 import Java3D.CSMPlayer.PlayerControllStatus;
@@ -76,8 +80,10 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	// Visibility Attributes
 	boolean showEnviroment = true;
 	boolean showOrigin = true;
+	boolean showBackground = true;
 	Switch enviromentSwitch = new Switch();
 	Switch originSwitch = new Switch();
+	Switch backgroundSwitch = new Switch();
 	
 	private SimpleUniverse u_offscreen;
 	
@@ -89,6 +95,9 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		if(withFileChooser)
 		{
 			file = StaticTools.openDialog("csm", false);
+			if (file == null)
+				System.exit(0);
+			
 			System.out.println(file.getPath());
 			a = new Animation(file.getCanonicalPath());	
 		}else 
@@ -207,6 +216,15 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			originSwitch.setWhichChild(999);
 	}
 	
+	public void toggleBackground()
+	{
+		showBackground = !showBackground; 
+		if (showBackground)
+			backgroundSwitch.setWhichChild(0);
+		else 
+			backgroundSwitch.setWhichChild(999);
+	}
+	
 	
 	void initStaticGraph()
 	{
@@ -214,8 +232,16 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		originSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
 		enviromentSwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
 		enviromentSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
+		backgroundSwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
+		backgroundSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
 		originSwitch.setWhichChild(0);
 		enviromentSwitch.setWhichChild(0);
+		backgroundSwitch.setWhichChild(0);
+		
+		
+		  //Background      
+		backgroundSwitch.addChild(backgroundTextureSphere());
+		staticGroup.addChild(backgroundSwitch);
 		
 		BranchGroup origin = new BranchGroup();
 		// 3D Measure Coordinates and Origin
@@ -225,17 +251,19 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		origin.addChild(StaticTools.createSphereWithText(new Point3f(0,0,5), 0.4f, "Z=5"));
 		
 		//Cylinders
+		Appearance yellow =StaticTools.yellow();
+		StaticTools.makeBlendedTransparent(yellow, 0.5f);
 		origin.addChild(StaticTools.cylinder(new Point3f(0,0,0),
 				new Point3f(5,0,0),
-				0.1f,StaticTools.yellow()));
+				0.1f,yellow));
 		
 		origin.addChild(StaticTools.cylinder(new Point3f(0,0,0),
 				new Point3f(0,5,0),
-				0.1f,StaticTools.yellow()));
+				0.1f,yellow));
 		
 		origin.addChild(StaticTools.cylinder(new Point3f(0,0,0),
 				new Point3f(0,0,5),
-				0.1f,StaticTools.yellow()));
+				0.1f,yellow));
 	
 		originSwitch.addChild(origin);
 		staticGroup.addChild(originSwitch);
@@ -243,27 +271,9 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		BranchGroup enviroment = new BranchGroup();
 		enviroment.addChild(backgroundTextureSphere());
 		// Boden
-		float a = 50.0f;
-		LitQuad lq = new LitQuad(
-				new Point3f(-a,0, a),
-				new Point3f(a ,0, a),
-				new Point3f( a,0,-a),
-				new Point3f(-a,0,-a)
-		);
-	
-		try {
-			
-			Texture texture =
-				new TextureLoader("470.jpg","LUMINANCE", new Container()).getTexture();
-			lq.getAppearance().setTexture(texture);
-			
-		} catch (Exception e) {
-			System.out.println("Java3dCSMPlayer: initStatic Graph: Texture loading Problem!");
-		} finally
-		{
-			enviroment.addChild(lq);
-		}
+
 	      
+		enviroment.addChild(loadGroundTexture());
 	      
 	      // Cameras
 	      
@@ -275,14 +285,15 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	    	  
 	    	  float x = (float) (Math.sin(i) * r);
 	    	  float z = (float) (Math.cos(i) * r);
-	    	  
+	    	  Appearance black = StaticTools.createAppearance();
+	    	  StaticTools.makeBlendedTransparent(black, 0.3f);
 	    	  enviroment.addChild(StaticTools.cylinder(new Point3f(x,h/4,z), 
-					new Point3f(x,h,z),
-					0.5f));
+    			  										new Point3f(x,h,z),
+    			  										0.5f,black));
 			
 	    	  enviroment.addChild(StaticTools.cylinder(new Point3f(x,h,z), 
 					new Point3f(x- x/10,h-1 ,z- z/10),
-					0.7f));
+					0.7f,black));
 			for (float j = 0; j <= Math.PI * 2 ; j+= Math.PI/1.5f) 
 			{
 				float r2  = 3.3f;
@@ -292,11 +303,51 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 				enviroment.addChild(StaticTools.cylinder(
 						new Point3f(x  + x2,0,z + z2),
 						new Point3f(x,h/4,z), 
-						0.5f));
+						0.5f,black));
 			}
 		}  
 	     enviromentSwitch.addChild(enviroment);
 	     staticGroup.addChild(enviromentSwitch);
+	}
+	
+	LitQuad loadGroundTexture()
+	{
+		float a = 50.0f;
+		LitQuad lq = new LitQuad(
+				new Point3f(-a,0, a),
+				new Point3f(a ,0, a),
+				new Point3f( a,0,-a),
+				new Point3f(-a,0,-a)
+		);
+	
+		TextureLoader tex= null; 
+		try {
+			tex = new TextureLoader("470.jpg","LUMINANCE", new Container());
+			
+			
+		} catch (Exception e) {
+			System.out.println("Java3dCSMPlayer: initStatic Graph: Ground Texture loading Problem!");
+			int width = 1024;
+			int height = 1024;
+			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			for (int i = 0; i <width ; i++) 
+				for (int j = 0; j < height; j++)
+					bi.setRGB(i, j, Color.gray.getRGB() );
+					
+			for (int i = 0; i <width ; i++) {
+				for (int j = 0; j < height; j+=10) {
+					bi.setRGB(i, j, Color.blue.getRGB() );
+					bi.setRGB(j, i, Color.blue.getRGB() );
+				}
+			}
+			tex = new TextureLoader(bi);
+		
+		} finally
+		{
+			Texture texture = tex.getTexture();
+			lq.getAppearance().setTexture(texture);
+		}
+		return lq;
 	}
 
 	private void initOrbitBehavoir()
@@ -316,7 +367,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		setSize(500,500);
 		if (isStandAlone)
 		{
-			final Java3DCSMPlayer simple = this;
 			final JFilmStripSlider slider = new JFilmStripSlider();
 			slider.setPlayerToControll(this);
 			content.add(slider,BorderLayout.SOUTH);
@@ -344,12 +394,8 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		root.setCapability(BranchGroup.ALLOW_DETACH);
 		
 		
-		  //Background      
-	      ImageComponent2D backgroundImage = new TextureLoader("470.jpg", this).getImage();
-	      Background background = new Background(backgroundImage);
-	   //   objectBranch.addChild(background);
-	      
-	      root.addChild(backgroundTextureSphere());
+//		  //Background      
+//	      root.addChild(backgroundTextureSphere());
 		
 		objectBranch.setCapability(BranchGroup.ALLOW_AUTO_COMPUTE_BOUNDS_READ);
 		objectBranch.setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
@@ -411,7 +457,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			System.out.println(string);
 		}
  
-	Java3DCSMPlayer s = 	null; 
+	Java3DCSMPlayer s = null; 
 	if (args.length > 0)
 	{
 		s = new Java3DCSMPlayer(true,false);
@@ -513,6 +559,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	public void stop() {
 		animation.stop();
+		animation.setFrame(0);
 		animation.removeChangeListener(this);
 	}
 
@@ -533,7 +580,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 
 	public void pause() {
-		animation.isAnimating = false;
+		animation.isAnimating = !animation.isAnimating;
 	}
 
 
@@ -693,8 +740,26 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	        | Sphere.GENERATE_TEXTURE_COORDS, 45);
 	    Appearance backgroundApp = sphereObj.getAppearance();
 
-	    TextureLoader tex = new TextureLoader("./sm_office-85.jpg", new String(
-	        "RGB"), null);
+	    TextureLoader tex = null;
+	    try {
+	    	tex= new TextureLoader("./sm_office-85.jpg", new String("RGB"), null);
+		} catch (Exception e) {
+			int width = 1024;
+			int height = 1024;
+			BufferedImage bi = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+			for (int i = 0; i <width ; i++) {
+				for (int j = 0; j < height; j++) {
+					bi.setRGB(i, j, Color.gray.getRGB() );
+				}
+			}
+			for (int i = 0; i <width ; i++) {
+				for (int j = 0; j < height; j+=10) {
+					bi.setRGB(i, j, Color.green.getRGB() );
+					bi.setRGB(j, i, Color.green.getRGB() );
+				}
+			}
+			tex = new TextureLoader(bi);
+		}
 	    if (tex != null) {
 	    	System.out.println("CSM Player: BackgroundTextureLoader");
 	    	Texture texture = tex.getTexture();

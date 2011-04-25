@@ -103,6 +103,10 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		{
 			space.setLocation(i * (2* spaceBetweenSnippits + snippitsWidth), snippitsYOffset);
 			g.fillRect(space.x, space.y, space.width, space.height);
+			NoTransiton nt = new NoTransiton();
+			nt.bounds.x = space.x + snippitsWidth;
+			nt.bounds.y = space.y;
+			nt.paint(g);
 		}
 		g.setColor(old);
 	}
