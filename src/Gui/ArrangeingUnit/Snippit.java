@@ -2,6 +2,7 @@ package Gui.ArrangeingUnit;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -66,11 +67,19 @@ public class Snippit implements Comparable<Snippit>
 		Font oldFont = g.getFont();
 		Font idFont = new Font(g.getFont().getFamily(), Font.BOLD, g.getFont().getSize());
 		g.setFont(idFont);
-		String s_id = String.valueOf(id);
+		String s_id = "ID:" + String.valueOf(id);
 		g.drawString(s_id, bounds.x, bounds.y);
 		g.setFont(oldFont);
-		g.drawString("Frames : " + frameCnt , bounds.x  + s_id.length() * s_id.length() * idFont.getSize() , bounds.y);
-		g.drawString("End: " + (startFrame + frameCnt) , bounds.x + bounds.width, 90);
+		FontMetrics metrics = g.getFontMetrics(idFont);
+		g.drawString("Frames : " + frameCnt , bounds.x  + metrics.stringWidth(s_id), bounds.y);
+		
+		String s_start = "S: " + startFrame;
+		String s_end = "E: " + (startFrame + frameCnt) ;
+		//draw start string
+		FontMetrics fm = g.getFontMetrics();
+		g.drawString(s_start, bounds.x, bounds.y + bounds.height + fm.getHeight());
+
+		g.drawString(s_end, bounds.x + bounds.width - fm.stringWidth(s_end), bounds.y + bounds.height + fm.getHeight());
 		
 		if (name != null)
 		{

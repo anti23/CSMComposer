@@ -1,9 +1,7 @@
 package CustomSwingComponent;
 
-import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
 import java.awt.LayoutManager;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -15,9 +13,7 @@ import java.awt.event.MouseWheelListener;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.CellRendererPane;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
@@ -73,7 +69,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 
 
 	public void installComponents() {
-		int framecount = this.filmStripSlider.model.getMaxFrames();
+		//int framecount = this.filmStripSlider.model.getMaxFrames();
 	}
 
 	

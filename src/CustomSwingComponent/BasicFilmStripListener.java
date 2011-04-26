@@ -69,10 +69,6 @@ public class BasicFilmStripListener implements 	MouseListener,
 	}
 
 	public void mousePressed(MouseEvent e) {
-		int frame = ui.translatePixelToFrame(e.getX());
-		//ui.filmStripSlider.model.setMarkedFrame(frame);
-//		System.out.println("Basic Listener: mosue Pressed: Pixel: " +e.getX()+" translated to frame: " + frame);
-//		System.out.println("Basic Listener: Mouse Pressed : " + e);
 		x_at_mouse_pressed = e.getX();
 		
 	}

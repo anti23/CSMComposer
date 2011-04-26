@@ -77,6 +77,8 @@ public class CSMPlayerControllBar extends JPanel
 
 		play.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				player.changeSpeed(1);
+				speedDisplay.setText("1");
 				player.play();
 				System.out.println("CSM PlayerControllBar: play : player :" + player);
 			}

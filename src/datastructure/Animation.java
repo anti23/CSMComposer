@@ -19,6 +19,7 @@ import javax.swing.Timer;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import javax.vecmath.Point3f;
 
 import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
 
@@ -47,7 +48,7 @@ public class Animation implements
 	
 	
 	private Skelett skelett;
-	String filename;
+	public String filename;
 	CSMParser parser;
 	Calendar cal = Calendar.getInstance();
 	public CSMHeader header;
@@ -87,6 +88,21 @@ public class Animation implements
 		skelett = new Skelett(header);
 		//skelett.loadFrame(frames[0].points);
 	}
+	public Animation(CSMHeader header, CSMPoints[] frames) {
+		this.header = header.clone();
+		framecount = header.lastFrame -header.firstFrame;
+		this.frames = frames;
+		if (framecount != frames.length)
+			System.out.println("Animaiton: Construcor (CSMheader,Point3f): header array framecount mismatch, adapting header");
+		header.firstFrame = 1;
+		header.lastFrame = frames.length;
+		framecount = header.lastFrame -header.firstFrame;
+		lastLoadedFrame = framecount;
+
+		//frames[0] = CSMPoints.defaultTPose();
+		skelett = new Skelett(header);
+		//skelett.loadFrame(frames[0].points);
+	}
 
 	
 	public Animation(String filename) {
@@ -98,22 +114,21 @@ public class Animation implements
 			System.err.println(e);
 		}
 	}
-	
-	public Animation(String filename, ChangeListener cl) {
-		
-		listenerList.add(ChangeListener.class, cl);
-		
-		this.filename = filename;
-		try {
-			loadFromFile();
-		} catch (IOException e) {
-			System.err.println(e);
-		}
-	}
+
 	
 	public Skelett getSkelett()
 	{
 		return this.skelett;
+	}
+	
+	public CSMPoints getLastFrame()
+	{
+		return frames[frames.length-1];
+	}
+	
+	public CSMPoints getFirstFrame()
+	{
+		return frames[0];
 	}
 	
 	// Constructs and loads CSM datastructure
@@ -583,12 +598,10 @@ public class Animation implements
 		CSMPoints[] newframes = new CSMPoints[newlength];
 		for(int i = 0; i < frames.length; i++)
 		{
-			System.out.println(" FIRTS" + frames[i].points.length);
 			newframes[i] = frames[i];
 		}
 		for(int i = frames.length; i < newlength ; i++)
 		{
-			System.out.println(" Second" + animation.frames[i- frames.length].points.length);
 			newframes[i] = animation.frames[i - frames.length];
 		}
 		frames = newframes;

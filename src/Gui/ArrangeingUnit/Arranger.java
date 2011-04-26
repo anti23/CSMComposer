@@ -3,6 +3,7 @@ package Gui.ArrangeingUnit;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -13,10 +14,12 @@ import java.util.HashMap;
 import java.util.Timer;
 
 import javax.swing.ImageIcon;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import CSM.CSMHeader;
 import CSM.CSMPoints;
 
 import datastructure.Animation;
@@ -28,8 +31,8 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 
 	public static final int snippitsYOffset = 10;
 	public static final int snippitsHeight = 70;
-	public static final int  snippitsWidth = 110;
-	public static final int  spaceBetweenSnippits = 30; // later used for interleaving
+	public static final int  snippitsWidth = 100;
+	public static final int  spaceBetweenSnippits = 45; // later used for interleaving
 	Thread animateSnippits;
 	// The snippits array is beeing reoreder, when users change the order
 	ArrayList<Snippit> snippits = new ArrayList<Snippit>();
@@ -37,6 +40,9 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	ArrayList<Snippit> snippitsForThreadedAnimaiton = new ArrayList<Snippit>();
 	int accesCtr = 0; // access counter for threaded snippits 
 	Snippit hit;
+	
+	ArrayList<Transition> transitions = new ArrayList<Transition>();
+	
 	
 	Rectangle snippitArea = new Rectangle(0,snippitsYOffset,snippitsWidth,snippitsHeight);
 	
@@ -49,8 +55,15 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		init();
 	}
 	
+	void instanciateAllTransitionClasses()
+	{
+		new NoTransiton();
+		new LinearTransition();
+	}
+	
 	void init()
 	{
+		instanciateAllTransitionClasses();
 		animateSnippits = new Thread(new SnippitAnimator()) ;
 		animateSnippits.start();
 		setPreferredSize(size.getSize());
@@ -62,13 +75,13 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	public void paint(Graphics g) {
 		super.paint(g);
 		paintSnippitsArea(g);
-		paintSnippits(g);
+		paintSnippitsAndTransitions(g);
 		validate();
 	}
 	
 	void updateSnippitArea()
 	{
-		snippitArea.setSize(snippits.size() * (2* spaceBetweenSnippits + snippitsWidth),snippitsHeight);
+		snippitArea.setSize(snippits.size() * (spaceBetweenSnippits + snippitsWidth),snippitsHeight);
 		size.width = snippitArea.width;
 		this.setBounds(size);
 	}
@@ -80,14 +93,13 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		return size.getSize();
 	}
 	
-	void paintSnippits(Graphics g)
+	void paintSnippitsAndTransitions(Graphics g)
 	{
-		// Calc PanelSize
-		int maxEndFrame = 0;
-		Snippit sni = null;
-		
 		for (Snippit s : snippits) {
 			s.paint(g);
+		}
+		for (Transition t : transitions) {
+			t.paint(g);
 		}
 	}
 	void paintSnippitsArea(Graphics g)
@@ -101,12 +113,8 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		
 		for (int i = 0; i < snippits.size(); i++)
 		{
-			space.setLocation(i * (2* spaceBetweenSnippits + snippitsWidth), snippitsYOffset);
+			space.setLocation(i * (spaceBetweenSnippits + snippitsWidth), snippitsYOffset);
 			g.fillRect(space.x, space.y, space.width, space.height);
-			NoTransiton nt = new NoTransiton();
-			nt.bounds.x = space.x + snippitsWidth;
-			nt.bounds.y = space.y;
-			nt.paint(g);
 		}
 		g.setColor(old);
 	}
@@ -134,11 +142,14 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	 */
 	private void updateSnippitPos() {
 		int frameNr = 0; 
-		for (Snippit s : snippits) {
+		for (int i = 0; i < snippits.size(); i++) 
+		{
+			Snippit s = snippits.get(i);
+			Transition t = transitions.get(i);
 			s.startFrame = frameNr;
-			frameNr+= s.frameCnt;
+			frameNr+= s.frameCnt + t.getFrameCount();
 			int pos = s.pos; 
-			int shouldPos = snippits.indexOf(s) * (2*spaceBetweenSnippits + snippitsWidth);
+			int shouldPos = snippits.indexOf(s) * (spaceBetweenSnippits + snippitsWidth);
 			if (s.targetPos != shouldPos)
 			{
 				s.targetPos = shouldPos;
@@ -149,23 +160,55 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 
 	int translateXtoIndex(int xPos)
 	{
-		return xPos / (snippitsWidth +2 * spaceBetweenSnippits);
+		return xPos / (snippitsWidth + spaceBetweenSnippits);
 	}
 	
 	public void mouseMoved(MouseEvent e) {
 	//	System.out.println("Mouse mmoved");
 	}
 	public void mouseClicked(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON3)
+		int mouseButton =e.getButton(); 
+		if( mouseButton== MouseEvent.BUTTON3)
 		{
 			add(new Snippit( (int) (Math.random()*200),e.getX())	);
 			System.out.println("Adding Snippit" );
+		}else if (mouseButton == MouseEvent.BUTTON1)
+		{
+			int transition_index = checkForTranitionHit(e);
+			if (transition_index >= 0)
+			{
+				
+				Point p  = new Point(snippits.get(transition_index).pos + snippitsWidth,
+						snippitsYOffset);
+				TransitionChooseDialog diag = new TransitionChooseDialog(e.getPoint(),transitions,transition_index,p);
+				diag.setVisible(true);
+			}
 		}
+		updateSnippitPos();
 		repaint();
 	}
+	
+
+	private int checkForTranitionHit(MouseEvent e) {
+		Point p = e.getPoint();
+		for (Transition t : transitions) {
+			if (t.bounds.contains(p))
+				return transitions.indexOf(t);
+		}
+		
+		return -1;
+	}
+
 	public void add(Snippit snippit) {
-		snippit.pos = snippits.size() * (snippitsWidth + 2*spaceBetweenSnippits);
+		int Xpos = snippits.size() * (snippitsWidth + spaceBetweenSnippits);
+		snippit.pos = Xpos;
 		snippits.add(snippit);
+		Transition trans = new LinearTransition();
+		//Transition trans = new NoTransiton();
+		trans.bounds.x = Xpos + snippitsWidth;
+		trans.bounds.y = snippitsYOffset;
+		trans.setFrameCount(120);
+		transitions.add(trans);
 		while(accesCtr != 0)
 			try {
 				Thread.sleep(10);
@@ -177,6 +220,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		updateSnippitArea();
 		setVisible(false);
 		setVisible(true);
+		updateSnippitPos();
 	}
 
 
@@ -219,6 +263,8 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
  
 	public Animation simpleGenerateAnimation()
 	{
+		return generateTransitonsAnimation();
+		/*
 		Animation result = null;
 		if(snippits.size() > 0 )
 			result = snippits.get(0).animation;
@@ -234,8 +280,45 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 			}else 
 			result.concat(s.animation);
 		}
+		// return result;
+		 */
+	}
+	
+	public Animation generateTransitonsAnimation()
+	{
+		if (snippits.size() == 0)
+		{
+			System.out.println("Arranger: generateTransitonsAnimation: no Snippits here to combine");
+			return null;
+		}
+		CSMHeader head = snippits.get(0).animation.header.clone();
+		head.firstFrame = 0;
+		head.lastFrame = 0;
+		Animation result = new Animation(head);
+		
+		//add first snippits animation to the result 
+		result.concat(snippits.get(0).animation);
+		
+		for (int i = 1; i < snippits.size(); i++) {
+			Snippit s = snippits.get(i);
+			Transition t = transitions.get(i);
+			Animation transition = new Animation(result.header.clone(),
+												t.getTransition(result.getLastFrame(),
+														s.animation.getFirstFrame()));
+			//add following Transition, and animation to the result
+			result.concat(transition);
+			result.concat(s.animation);
+		}
+		
+		StringBuffer sb =  new StringBuffer("Arrangement:");
+		for (Snippit s : snippits) {
+			sb.append(Integer.toString(s.id) + "->");
+		}
+		result.filename = sb.toString();
+		
 		return result;
 	}
+	
 	
 	public Animation generateAnimation()
 	{
@@ -306,5 +389,11 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 				}
 			}
 		}
+	}
+
+	public void clear() {
+		snippits.clear();
+		snippitsForThreadedAnimaiton.clear();
+		transitions.clear();
 	}
 }

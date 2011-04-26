@@ -241,7 +241,7 @@ public class CSMParser {
 			}
 				
 			lastFrameNumber = s.nextInt();
-			points = new CSMPoints(lastFrameNumber, this.order.length);
+			points = new CSMPoints(this.order.length);
 			
 			for (int i = 0; i < order.length ; i++) 
 			{

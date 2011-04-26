@@ -43,7 +43,11 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		this.projectPanel = pp;
 	}
 	
-	public void add(Animation a)
+	/**
+	 * @param a - animation to add into Arranger
+	 * @return id of created snippit
+	 */
+	public int add(Animation a)
 	{
 		Set<Integer > set = a.previews.keySet();
 		Integer[] intset = new Integer[set.size()];
@@ -60,6 +64,7 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		this.arranger.add(s);
 		scrollpane.setVisible(false);
 		scrollpane.setVisible(true);
+		return s.id;
 		
 	}
 	
@@ -70,11 +75,20 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 				Animation a = arranger.simpleGenerateAnimation();
 				if (projectPanel != null)
 				{
-					projectPanel.addAnimation("Compsition" , a);
+					projectPanel.addAnimation(a.filename , a);
 				}
 			}
 		});
 		comandPanel.add(buildAnimation);
+		
+		JButton reset = new JButton("Reset");
+		reset.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				arranger.clear();
+			}
+		});
+		comandPanel.add(reset);
+		
 	}
 	void init(){
 		initCommandPanel();
@@ -93,8 +107,8 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 
 	public static void main(String[] args) {
 		JFrame f = new JFrame("Snippits Arranger Tester");
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ArrangerPane arr = new ArrangerPane();
-		
 		f.add(arr);
 		f.setSize(arr.getSize());
 		f.pack();
