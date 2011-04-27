@@ -13,6 +13,10 @@ public class Config implements Serializable{
 	public static int previewCount = 7;
 	public static float skeletScale = 0.01f;
 	
+	
+	public static String floorTexturePath = "floor.jpg";
+	public static String sphericalBackGroundTexturePath = "sphereBG.jpg";
+	
 	// Where to look for CSM files
 	String workingDirecttory = null;
 	// Where to store Screenshots

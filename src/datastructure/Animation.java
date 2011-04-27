@@ -208,12 +208,12 @@ public class Animation implements
 		timer.start();
 		animStart = System.currentTimeMillis();
 		
-		System.out.println("Animation: play : timer :" + timer + 
-				" \n \t animStart " + animStart + 
-				" \n \t framepos " + framePos  +
-				" \n \t framerate " + header.framerate  
-				/*" \n \t listener List: " + listenerList*/
-				);
+//		System.out.println("Animation: play : timer :" + timer + 
+//				" \n \t animStart " + animStart + 
+//				" \n \t framepos " + framePos  +
+//				" \n \t framerate " + header.framerate  
+//				/*" \n \t listener List: " + listenerList*/
+//				);
 	}
 	
 	public void togglePlaySelection()
@@ -391,9 +391,8 @@ public class Animation implements
 			previews.put(frame, image);
 			pcs.imgIcon = image;
 			fireChangeEvenet(pcs);
-			System.out.println("Animation: setPreviewImage: Transfering Image: " +  frame);
-			System.out.println("Preview Size" + previews.size());
-			//previews.put(frame, image);
+//			System.out.println("AsyncPreviewMaking: setPreviewImage: Transfering Image: " +  frame);
+//			System.out.println("PAsyncPreviewMaking: review Size" + previews.size());
 		}
 		
 	}

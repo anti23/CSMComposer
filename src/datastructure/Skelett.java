@@ -33,6 +33,10 @@ public class Skelett implements Serializable {
 	List<TransformGroup> boneTransformsAngle;
 	List<TransformGroup> boneTransformsLenth;
 	Point3f[] currentFrame = null;
+	//SkeleteAppearance
+	float scaleFactor = 0.01f;
+	public float sphereSize = 0.5f;
+	public float cylinderRadius = 0.2f;
 	
 	CSMHeader header;
 	
@@ -70,7 +74,7 @@ public class Skelett implements Serializable {
 			pointTransforms[i] = new TransformGroup(transform);
 			pointTransforms[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 //			pointTransforms[i].addChild(points[i]);
-			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), 0.5f, header.order[i]));
+			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), sphereSize, header.order[i]));
 			pointTransforms[i].setUserData(header.order[i]);
 			
 			pointsGroup.addChild(pointTransforms[i]);
@@ -116,7 +120,8 @@ public class Skelett implements Serializable {
 			p = (Point3f) frame[i].clone();
 			float z = p.z;
 			p.z = p.y;
-			p.y = z;
+			p.y = z ;
+			p.x*=-1;
 			
 			p.scale(Config.skeletScale);
 			Transform3D t = new  Transform3D();
@@ -135,10 +140,12 @@ public class Skelett implements Serializable {
 			float z = a.z;
 			a.z = a.y;
 			a.y = z;
+			a.x*=-1;
 			Point3f b = (Point3f) frame[connectlist.get(i*2 + 1)].clone();
 			 z = b.z;
 			b.z = b.y;
 			b.y = z;
+			b.x*=-1;
 			a.scale(Config.skeletScale);
 			b.scale(Config.skeletScale);
 			moveBone(a, b, boneTransformsLenth.get(i), boneTransformsAngle.get(i));
@@ -301,7 +308,7 @@ public class Skelett implements Serializable {
 			TransformGroup rot= new TransformGroup();
 			rot.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 			boneTransformsAngle.add(rot);
-			Cylinder c = new Cylinder(0.2f,1);
+			Cylinder c = new Cylinder(cylinderRadius,1);
 			c.setAppearance(StaticTools.createAppearance());
 			rot.addChild(leng);
 			leng.addChild(c);

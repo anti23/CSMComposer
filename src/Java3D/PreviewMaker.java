@@ -33,6 +33,8 @@ import CSM.CSMPoints;
 import Misc.StaticTools;
 import com.sun.j3d.utils.image.TextureLoader;
 import com.sun.j3d.utils.universe.SimpleUniverse;
+
+import datastructure.Config;
 import datastructure.LitQuad;
 import datastructure.Skelett;
 
@@ -65,7 +67,7 @@ public class PreviewMaker {
 	public PreviewMaker(CSMHeader header) {
 		
 		instanceCounter ++;
-		System.out.println("instancing PreviewMaker  i: " + instanceCounter);
+		//System.out.println("instancing PreviewMaker  i: " + instanceCounter);
 		if (instanceCounter <= 32)
 		{
 			
@@ -186,7 +188,7 @@ public class PreviewMaker {
 
 		try {
 			Texture texture =
-				new TextureLoader("470.jpg","LUMINANCE", new Container()).getTexture();
+				new TextureLoader(Config.floorTexturePath,"LUMINANCE", new Container()).getTexture();
 			lq.getAppearance().setTexture(texture);
 			
 		} catch (Exception e) {
@@ -281,6 +283,6 @@ public class PreviewMaker {
     	else 
     		System.out.println("Finalize Called from Constructor!");
     	instanceCounter --;
-    	System.out.println("Finalizing PreviewMaker i: " + instanceCounter);
+    	//System.out.println("Finalizing PreviewMaker i: " + instanceCounter);
     }
 }

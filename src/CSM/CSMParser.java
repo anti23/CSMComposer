@@ -50,6 +50,7 @@ public class CSMParser {
 	{
 		fis = new FileInputStream(fileName);
 		 scanner = new Scanner(fis, "UTF-8");
+		 scanner.useLocale(Locale.US);
 		 scannedFilename = fileName;
 		 stateMachine();
 	}

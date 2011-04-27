@@ -178,8 +178,8 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	public void valueChanged(TreeSelectionEvent tse) {
-		System.out.println("Project Panel : TreeSelection Listener: value Changed");
-		System.out.println(tse);
+		//System.out.println("Project Panel : TreeSelection Listener: value Changed");
+		//System.out.println(tse);
 		Object o = null;
 		if (tse.getSource() == projectTree)
 			o =  projectTree.getLastSelectedPathComponent();

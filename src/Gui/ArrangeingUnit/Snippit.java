@@ -84,7 +84,7 @@ public class Snippit implements Comparable<Snippit>
 		if (name != null)
 		{
 			g.setColor(Color.BLACK);
-			g.drawString(name, pos + 100, 100);
+			g.drawString(name, bounds.x, bounds.y + bounds.height + 2 * fm.getHeight());
 		}
 		g.setColor(old);
 	}

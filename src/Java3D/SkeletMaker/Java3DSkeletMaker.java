@@ -176,7 +176,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		try {
 			
 			Texture texture =
-				new TextureLoader("470.jpg","LUMINANCE", new Container()).getTexture();
+				new TextureLoader(Config.floorTexturePath,"LUMINANCE", new Container()).getTexture();
 			lq.getAppearance().setTexture(texture);
 			
 		} catch (Exception e) {
@@ -236,10 +236,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		content.setLayout(new BorderLayout());
 		//content.setPreferredSize(new Dimension(500,500));
 		setSize(500,500);
-		if (isStandAlone)
-		{
-			final Java3DSkeletMaker simple = this;
-		}
 		this.add(content,BorderLayout.CENTER);
 		initCommandPanel();
 		setVisible(true);

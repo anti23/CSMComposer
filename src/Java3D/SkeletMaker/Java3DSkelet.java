@@ -18,6 +18,8 @@ import Misc.StaticTools;
 import com.sun.j3d.utils.geometry.Cylinder;
 import com.sun.j3d.utils.geometry.Sphere;
 
+import datastructure.Config;
+
 /*
  * Diese Klasse repraesentiert die Datenstruktur Skelett,
  * sie verwaltet die assoziationen von Messpunkten in gruppen von 
@@ -35,7 +37,9 @@ public class Java3DSkelet {
 	BranchGroup bones;
 	public Sphere[] points;
 	TransformGroup[] pointTransforms;
-	float scaleFactor = 0.01f;
+	//SkeleteAppearance
+	public float sphereSize = 0.5f;
+	public float cylinderRadius = 0.2f;
 	
 	
 	public boolean[] printNodeName = new boolean[100];
@@ -67,7 +71,7 @@ public class Java3DSkelet {
 			pointTransforms[i].setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 			pointTransforms[i].setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
 //			pointTransforms[i].addChild(points[i]);
-			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), 0.5f, csm_header.order[i]));
+			pointTransforms[i].addChild(StaticTools.createSphereWithText(new Point3f(0,0,0), sphereSize, csm_header.order[i]));
 			pointTransforms[i].setUserData(csm_header.order[i]);
 			pointsGroup.addChild(pointTransforms[i]);
 		}
@@ -98,7 +102,7 @@ public class Java3DSkelet {
 		stretch.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
 		
 		angle.addChild(stretch);
-		stretch.addChild(new Cylinder(0.4f, 1));
+		stretch.addChild(new Cylinder(cylinderRadius, 1));
 		BoneConnectBehavior aim = new BoneConnectBehavior(pointTransforms[indexA],
 												pointTransforms[indexB],angle,stretch);
 		aim.setSchedulingBounds(StaticTools.defaultBounds);
@@ -125,7 +129,8 @@ public class Java3DSkelet {
 			float z = p.z;
 			p.z = p.y;
 			p.y = z;
-			p.scale(scaleFactor);
+			p.x*=-1;
+			p.scale(Config.skeletScale);
 			Transform3D t = new  Transform3D();
 			t.setTranslation(new Vector3f(p));
 			pointTransforms[i].setTransform(t) ;

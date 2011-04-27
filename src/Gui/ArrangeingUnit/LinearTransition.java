@@ -45,7 +45,6 @@ public class LinearTransition extends Transition {
 			}
 			result[i] = new CSMPoints(frame.clone());
 			t+= (1.0f/getFrameCount());
-			System.out.println("Linera Transition t: " + t );
 		}
 		return result;
 	}

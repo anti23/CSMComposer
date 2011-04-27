@@ -461,6 +461,7 @@ public class StaticTools {
 		if (app_standard == null )
 		{
 			app_standard = new Appearance();
+			app_standard.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 			Color3f ambientColour = new Color3f();
 			ambientColour.set(Color.BLACK);
 			Color3f emissiveColour = new Color3f(0.0f, 0.1f, 0.0f);
@@ -487,6 +488,7 @@ public class StaticTools {
 		{
 			
 			app_red = new Appearance();
+			app_red.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 	    	Color3f ambientColour = new Color3f();
 	    	ambientColour.set(Color.GRAY);
 	    	Color3f emissiveColour = new Color3f(0.3f, 0.0f, 0.0f);
@@ -511,6 +513,7 @@ public class StaticTools {
     	if(app_green == null)
     	{
 	         app_green = new Appearance();
+	         app_green.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 	        Color3f ambientColour = new Color3f();
 	        ambientColour.set(Color.GRAY);
 	        Color3f emissiveColour = new Color3f(0.0f, 0.3f, 0.0f);
@@ -535,6 +538,7 @@ public class StaticTools {
     	if(app_blue == null)
     	{
     		app_blue = new Appearance();
+    		app_blue.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
 	    	Color3f ambientColour = new Color3f();
 	    	ambientColour.set(Color.GRAY);
 	    	Color3f emissiveColour = new Color3f(0.0f, 0.0f, 0.3f);
@@ -559,6 +563,7 @@ public class StaticTools {
     	if(app_yellow == null)
     	{
     		app_yellow = new Appearance();
+    		app_yellow.setCapability(Appearance.ALLOW_TRANSPARENCY_ATTRIBUTES_WRITE);
     		Color3f ambientColour = new Color3f();
     		ambientColour.set(Color.yellow);
     		Color3f emissiveColour = new Color3f(1.0f, 1.0f, 0.0f);

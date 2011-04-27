@@ -14,7 +14,7 @@ public  class JFilmStripSlider extends JComponent {
 	// All positions and areas are frame number units
 	
 	private static final String uiClassID = "FilmStripSliderUI";
-	public static boolean debug = true;
+	public static boolean debug = false;
  
 	FilmStripModel model = new DefaultFilmStripModel();
 	public int[] visibleArea = new int[2]; 
@@ -43,9 +43,9 @@ public  class JFilmStripSlider extends JComponent {
 			model.setMaxFrames(playerToControll.getFrameCount());
 			model.setMaximumShownFrame(model.getMaxFrames());
 			model.setMinimumShownFrame(0);
-			System.out.println("JFilmstripSlider: setPlayerToControll: model status: max Frames: " + model.getMaxFrames());
-			System.out.println("JFilmstripSlider: setPlayerToControll: model status: zoomArea: [" + model.getMinimumShownFrame()
-					+ " , " + model.getMaximumShownFrame() + "]");
+//			System.out.println("JFilmstripSlider: setPlayerToControll: model status: max Frames: " + model.getMaxFrames());
+//			System.out.println("JFilmstripSlider: setPlayerToControll: model status: zoomArea: [" + model.getMinimumShownFrame()
+//					+ " , " + model.getMaximumShownFrame() + "]");
 		}else
 			System.err.println("JFilmstripSlider: setPlayerToControll: null");
 		

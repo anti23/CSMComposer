@@ -52,7 +52,7 @@ public class BasicFilmStripListener implements 	MouseListener,
 	public void mouseClicked(MouseEvent e) {
 		int frame = ui.translatePixelToFrame(e.getX());
 		//ui.filmStripSlider.model.setMarkedFrame(frame);
-		System.out.println("Basic Listener: mosue Clicked: Pixel: " +e.getX()+" translated to frame: " + frame);
+//		System.out.println("Basic Listener: mosue Clicked: Pixel: " +e.getX()+" translated to frame: " + frame);
 		ui.filmStripSlider.model.setSelectorCursor(frame);
 		ui.filmStripSlider.model.setPlayerCursor(frame);
 		ui.filmStripSlider.playerToControll.jumpto(frame);
@@ -103,8 +103,8 @@ public class BasicFilmStripListener implements 	MouseListener,
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		System.out.println("Basic Listener: Mousewheel ScrollAmount: " + e.getScrollAmount());;
-		System.out.println("Basic Listener: Mousewheel WheelRotation: " + e.getWheelRotation());;
+	//	System.out.println("Basic Listener: Mousewheel ScrollAmount: " + e.getScrollAmount());;
+	//	System.out.println("Basic Listener: Mousewheel WheelRotation: " + e.getWheelRotation());;
 		
 		int max =ui.filmStripSlider.model.getMaximumShownFrame() ;
 		int min =ui.filmStripSlider.model.getMinimumShownFrame() ;

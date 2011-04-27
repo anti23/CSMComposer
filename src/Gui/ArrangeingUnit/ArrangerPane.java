@@ -59,7 +59,7 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		if(a.header != null)
 		{
 			s.name =a.header.filename;
-			System.out.println("Snippit has got a filename: " + a.header.filename);
+			//System.out.println("Snippit has got a filename: " + a.header.filename);
 		}
 		this.arranger.add(s);
 		scrollpane.setVisible(false);

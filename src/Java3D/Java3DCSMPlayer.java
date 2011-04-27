@@ -179,7 +179,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		new_anim.addChangeListener(this);
 		ballGroups.removeAllChildren();
 		ballGroups.addChild(animation.initPlayerGroup());
-		System.out.println("Simple Player: Animation thread startet!");
 		
 		animation.addChangeListener(this);
 		animation.fireChangeListenerUpdateEvents();
@@ -280,13 +279,13 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	      float r = 30;
 	      float h = 22;
 
+	      Appearance black = StaticTools.createAppearance();
+	      StaticTools.makeBlendedTransparent(black, 0.2f);
 	      for (float i =  (float) -Math.PI; i <= Math.PI ; i+= Math.PI/3)
 	      {
 	    	  
 	    	  float x = (float) (Math.sin(i) * r);
 	    	  float z = (float) (Math.cos(i) * r);
-	    	  Appearance black = StaticTools.createAppearance();
-	    	  StaticTools.makeBlendedTransparent(black, 0.3f);
 	    	  enviroment.addChild(StaticTools.cylinder(new Point3f(x,h/4,z), 
     			  										new Point3f(x,h,z),
     			  										0.5f,black));
@@ -322,7 +321,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	
 		TextureLoader tex= null; 
 		try {
-			tex = new TextureLoader("470.jpg","LUMINANCE", new Container());
+			tex = new TextureLoader(Config.floorTexturePath,"LUMINANCE", new Container());
 			
 			
 		} catch (Exception e) {
@@ -542,6 +541,10 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			break;
 		case KeyEvent.VK_ENTER : captureScreen();
 			break;
+		case KeyEvent.VK_ESCAPE :
+			if(isFullScreen)
+				toggleFullScreen();
+			break;
 		}
 		System.out.println("Simple: keyPressed: Keycode: "+arg0.getKeyCode());
 		//getDefaultCameraPos();
@@ -572,7 +575,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			return;
 		}
 		animation.addChangeListener(this);
-		System.out.println("CSM Player: play : animation:"+ animation);
+	//	System.out.println("CSM Player: play : animation:"+ animation);
 		animation.play();
 		animation.isAnimating = true;
 	}
@@ -596,8 +599,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	public void relativeJump(int deltaFrames) {
 		
 	}
-
-
 
 	public void relativeJump(float deltaSecs) {
 		
@@ -650,9 +651,9 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	
 
 	public void addChangeListener(ChangeListener cl) {
-		System.out.println("Java3dCSMPLayer: addChangeListener ");
+	//	System.out.println("Java3dCSMPLayer: addChangeListener ");
 		listenerList.add(ChangeListener.class, cl);
-		System.out.println(listenerList);
+	//	System.out.println(listenerList);
 	}
 
 
@@ -742,7 +743,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	    TextureLoader tex = null;
 	    try {
-	    	tex= new TextureLoader("./sm_office-85.jpg", new String("RGB"), null);
+	    	tex= new TextureLoader(Config.sphericalBackGroundTexturePath, new String("RGB"), null);
 		} catch (Exception e) {
 			int width = 1024;
 			int height = 1024;
