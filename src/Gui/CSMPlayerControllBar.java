@@ -11,11 +11,13 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
 
 import datastructure.Animation;
 
 import CustomSwingComponent.JFilmStripSlider;
 import Gui.ArrangeingUnit.ArrangerPane;
+import Gui.ArrangeingUnit.Snippit;
 import Java3D.Java3DCSMPlayer;
 import Java3D.CSMPlayer.PlayerControlls;
 /**
@@ -71,7 +73,7 @@ public class CSMPlayerControllBar extends JPanel
 		JButton markAll = new JButton("Mark All");
 		JButton markMin = new JButton("[<");
 		JButton markMax = new JButton(">]");
-		JButton playSelection = new JButton("[>]");
+		JToggleButton playSelection = new JToggleButton("[>]");
 		JButton copySelection = new JButton("to Storyboard");
 		JButton deleteSelection = new JButton("delete");
 
@@ -101,11 +103,13 @@ public class CSMPlayerControllBar extends JPanel
 		
 		copySelection.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int minFrame = player.getMinMarker();
-				int maxFrame = player.getMaxMarker();
+				int minFrame =Math.min(player.getMinMarker(),player.getMaxMarker());
+				int maxFrame =Math.max(player.getMinMarker(),player.getMaxMarker());
 				Animation selected = player.getAnimation().getSubSequentAnimation(minFrame,maxFrame) ; 
-				arrangerPane.add(selected);
-				projectPanel.addSnippit(selected.header.filename + " " + minFrame + " to " + maxFrame, selected);
+				selected.filename = selected.filename + " " + minFrame + " to " + maxFrame;
+				int snippitID = arrangerPane.add(selected);
+				selected.header.filename = "Snippit " + snippitID;
+				projectPanel.addSnippit(selected.header.filename, selected);
 				//player.loadAnimation(selected);
 			}
 		});

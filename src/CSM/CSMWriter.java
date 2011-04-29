@@ -22,7 +22,7 @@ public class CSMWriter {
 		this.header = a.header;
 		this.fileName = fileName;
 		writeOutHeader();
-		writeOutPoints();
+	//	writeOutPoints();
 	}
 	
 	private void writeOutHeader()
@@ -49,11 +49,13 @@ public class CSMWriter {
 			sb.append(marker + " ");
 		}
 		sb.append( "\n");
-		
+
+		System.out.println("CSMWriter: " + sb);
 	}
 	
-	private void writeOutPoints()
+	private void writeOutPoints(BufferedWriter bw) throws IOException
 	{
+		StringBuffer bs = new StringBuffer();
 		//points
 		sb.append("$Points" + "\n");
 		//Wait for Loading finished first
@@ -63,13 +65,17 @@ public class CSMWriter {
 			} catch (InterruptedException e) {
 			}
 			
-			for (int i = 0; i < animation.header.lastFrame; i++) {
+			for (int i = 0; i < animation.frames.length; i++) {
 				sb.append(i + " ");
 				Point3f[] row = animation.getPoints(i).points;
 				for (Point3f point3f : row) {
 					sb.append(point3f.x + " " + point3f.y + " " + point3f.z + " ");
 				}
+				
 				sb.append("\n");
+				System.out.print(sb);
+			 bw.write(sb.toString());
+			 sb = new StringBuffer();
 			}
 
 	}
@@ -81,8 +87,8 @@ public class CSMWriter {
 		try {
 			fw = new FileWriter(fileName);
 			bw = new BufferedWriter(fw);
-		//	System.out.println(sb);
 			bw.write(sb.toString());
+			writeOutPoints(bw);
 		}
 		catch (IOException e) {
 			System.out.println("CSMWriter: writeOutFile: error with buffered Writing");

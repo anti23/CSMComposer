@@ -131,7 +131,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		Transform3D viewTrans = new Transform3D();
 		u.getViewingPlatform().getViewPlatformTransform().getTransform(viewTrans);
 		u_offscreen.getViewingPlatform().getViewPlatformTransform().setTransform( viewTrans	);
-		String filename = "textIMG.jpg";
+		String filename = Config.screeShotDirectory + Config.screeShotFileName; // "screenshot.jpg";
 		
 		c3d_offscreen.getScreen3D().setSize(500, 500);
 		c3d_offscreen.getScreen3D().setPhysicalScreenWidth(0.0254/90.0 * 500);
@@ -229,10 +229,13 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	{
 		originSwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
 		originSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
+		
 		enviromentSwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
 		enviromentSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
+		
 		backgroundSwitch.setCapability(Switch.ALLOW_SWITCH_WRITE);
 		backgroundSwitch.setCapability(Switch.ALLOW_SWITCH_READ);
+		
 		originSwitch.setWhichChild(0);
 		enviromentSwitch.setWhichChild(0);
 		backgroundSwitch.setWhichChild(0);
@@ -268,10 +271,7 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 		staticGroup.addChild(originSwitch);
 		
 		BranchGroup enviroment = new BranchGroup();
-		enviroment.addChild(backgroundTextureSphere());
 		// Boden
-
-	      
 		enviroment.addChild(loadGroundTexture());
 	      
 	      // Cameras
@@ -744,6 +744,8 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	    TextureLoader tex = null;
 	    try {
 	    	tex= new TextureLoader(Config.sphericalBackGroundTexturePath, new String("RGB"), null);
+	    	if (tex != null)
+	    		System.out.println("CSM Player: BackgroundTextureLoader: File: " + Config.sphericalBackGroundTexturePath);
 		} catch (Exception e) {
 			int width = 1024;
 			int height = 1024;
@@ -762,7 +764,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 			tex = new TextureLoader(bi);
 		}
 	    if (tex != null) {
-	    	System.out.println("CSM Player: BackgroundTextureLoader");
 	    	Texture texture = tex.getTexture();
 	        texture.setBoundaryModeS(Texture.WRAP);
 	        texture.setBoundaryModeT(Texture.WRAP);

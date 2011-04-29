@@ -17,6 +17,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+
+import javax.print.attribute.standard.Finishings;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JPanel;
@@ -37,8 +39,8 @@ public class MainFrame extends JFrame{
 	private static final long serialVersionUID = 4185989615854832714L;
 
 	CSMComposerMeunBar menu = new CSMComposerMeunBar();
-	Config config;
-	File configFile;
+	Config config = new Config();
+
 	// Data Components
 	Project project = new Project();
 	
@@ -57,12 +59,17 @@ public class MainFrame extends JFrame{
 	private void init() {
 		setJMenuBar(menu);
 		JPopupMenu.setDefaultLightWeightPopupEnabled(false);
-		setTitle("CSM Editor");
+		setTitle("CSM Composer Version " + config.version);
 		setSize(800, 900);
 		setBackground(Color.darkGray);
 		addWindowListener(new WindowAdapter() {
 		      public void windowClosing(WindowEvent e) {
-			        System.exit(0);
+			       try {
+			    	   config.saveConfig();
+			    	   System.exit(1);
+				} catch (Throwable e1) {
+					e1.printStackTrace();
+				}
 			      }
 		});
 		setBackground(Color.green.brighter());
@@ -170,60 +177,12 @@ public class MainFrame extends JFrame{
 
 	// Constructor
 	public MainFrame() {
-		loadConfig();
+		config.loadConfig();
 		init();
 	}
 	
 
-
-	private void loadConfig() {
-		File programDir = new File(".");
-		
-		for (File  s : programDir.listFiles(new FileFilter() {
-			public boolean accept(File arg0) {
-				return arg0.toString().endsWith("CSMCConf.xml");
-			}
-		})) {
-			System.out.println(s);
-			
-			if(s.isFile())
-				configFile = s;
-		}
-		if(configFile != null) // we have a configfile in root dir
-		{
-			// we parse it
-			try {
-				FileInputStream in = new FileInputStream(configFile);
-				XMLDecoder decoder = new XMLDecoder(in);
-				config = (Config) decoder.readObject();
-			} catch (FileNotFoundException e) {
-			}
-			
-		}else
-		{
-			//we create one
-			configFile = new File("./CSMConf.xml");
-			
-		}
-	}
 	
-	private void saveConfig()
-	{
-		if(config != null && configFile != null)
-		{
-			try {
-				FileOutputStream fo = new FileOutputStream(configFile);
-				XMLEncoder encoder = new XMLEncoder(fo);
-				encoder.writeObject(config);
-			} catch (FileNotFoundException e) {
-			}
-			
-		}else 
-		{
-			System.out.println("Error Saving Config File");
-		}
-	}
-
 	
 	public static void main(String[] args) throws Throwable {
 		MainFrame mf = new MainFrame();

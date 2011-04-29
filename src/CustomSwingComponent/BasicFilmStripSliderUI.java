@@ -44,7 +44,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 	//zoomGlobals
 	int zoomFrameStart = 0;
 	int zoomFrameEnd = 0;
-	int frame_range = 0;
+	int frame_range = 0; // number of visible frames
 	float marker_Pixel_distance = 0;
 	float marker_value = 0 ;
 	
@@ -97,7 +97,6 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 	@Override
 	public void paint(Graphics g, JComponent c) {
 		super.paint(g, c);
-		
 		this.bounds = c.getBounds();
 		int[] minMax = filmStripSlider.model.getSelectedArea();
 		int min = Math.min(minMax[0], minMax[1]);
@@ -121,8 +120,26 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 			int default_image_length = 100;
 			int default_image_height = 70;
 			// itterates at tenth stepping between min and max
-			int stepping = (frame_range/ Config.previewCount);
+			int visible_pixels = bounds.width;
+			int stepps = (visible_pixels)/ (int)(default_image_length * 0.5f);
+			if (stepps == 0 )
+				stepps =1;
 			
+			float step_delta = visible_pixels/(float)stepps;
+			
+			for (float i = 0; i <= visible_pixels ; i+=step_delta) 
+			{
+				int pixel = (int)i;
+				int closest = getClosestImage(translatePixelToFrame(pixel));
+				if ( previews.get(closest) != null) // should work everytime!
+				{
+					//		System.out.println("Frame i: " + i + " Closest:" + closest);
+					g.drawImage(previews.get(closest).getImage(), translateFrameToPixel(closest), 20, default_image_length, default_image_height, null);
+				}
+				
+			}
+			/* ursprung
+			int stepping = (frame_range/ Config.previewCount);
 			for (int i = zoomFrameStart; i <= zoomFrameEnd; i+=stepping) 
 			{
 				if ( previews.get(i) != null)
@@ -133,9 +150,6 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 				
 			}
 			
-			
-			
-			/*
 			 * 
 			for (int i = 0; i < maxImgs; i++) 
 			{
@@ -162,29 +176,27 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 		int[] pFrames = new int[previews.size()];
 		int pCnt = 0;
 		for (Integer i : previews.keySet()) {
-			pFrames[pCnt++] = i;
+			pFrames[pCnt] = i;
+			pCnt++;
 		}
 		Arrays.sort(pFrames);
 		
 		int cnt = 0;
 		int lower = pFrames[cnt];  //beide low
 		int higher = pFrames[cnt];
-		while(cnt+1 < pFrames.length && higher < frame)
+		while(cnt < pFrames.length -1 && higher < frame)
 		{
 			lower = higher;
 			cnt++;
 			higher = pFrames[cnt];
 			
 		}
-		
-		System.out.print("Frame: "+frame+" Lower choice :" + lower + "Higher choice :" + higher);
 		int result = 0;
 		if (frame - lower >= higher - frame)
 			result =  higher;
 		else 
 			result = lower;
 		
-		System.out.println("Result: " + result);
 		return result;
 	}
 

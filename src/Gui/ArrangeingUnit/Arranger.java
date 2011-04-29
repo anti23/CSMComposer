@@ -33,6 +33,9 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	public static final int snippitsHeight = 70;
 	public static final int  snippitsWidth = 100;
 	public static final int  spaceBetweenSnippits = 45; // later used for interleaving
+
+
+	static boolean debug =false;
 	Thread animateSnippits;
 	// The snippits array is beeing reoreder, when users change the order
 	ArrayList<Snippit> snippits = new ArrayList<Snippit>();
@@ -170,8 +173,9 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		int mouseButton =e.getButton(); 
 		if( mouseButton== MouseEvent.BUTTON3)
 		{
-			add(new Snippit( (int) (Math.random()*200),e.getX())	);
+			if (Arranger.debug ) add(new Snippit( (int) (Math.random()*200),e.getX())	);
 			System.out.println("Adding Snippit" );
+			
 		}else if (mouseButton == MouseEvent.BUTTON1)
 		{
 			int transition_index = checkForTranitionHit(e);
@@ -203,12 +207,12 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		int Xpos = snippits.size() * (snippitsWidth + spaceBetweenSnippits);
 		snippit.pos = Xpos;
 		snippits.add(snippit);
-		Transition trans = new LinearTransition();
-		//Transition trans = new NoTransiton();
-		trans.bounds.x = Xpos + snippitsWidth;
-		trans.bounds.y = snippitsYOffset;
-		trans.setFrameCount(120);
-		transitions.add(trans);
+			Transition trans = new LinearTransition();
+			//Transition trans = new NoTransiton();
+			trans.bounds.x = Xpos + snippitsWidth;
+			trans.bounds.y = snippitsYOffset;
+			trans.setFrameCount(120);
+			transitions.add(trans);
 		while(accesCtr != 0)
 			try {
 				Thread.sleep(10);
@@ -261,31 +265,9 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	}
 	
  
-	public Animation simpleGenerateAnimation()
-	{
-		return generateTransitonsAnimation();
-		/*
-		Animation result = null;
-		if(snippits.size() > 0 )
-			result = snippits.get(0).animation;
-		else
-		{
-			System.out.println("Arranger: simpleGenerateAnimation: nosnippits");
-		}
-		boolean skipfirst = true;
-		for (Snippit s : snippits) {
-			if(skipfirst)
-			{
-				skipfirst = false;
-			}else 
-			result.concat(s.animation);
-		}
-		// return result;
-		 */
-	}
-	
 	public Animation generateTransitonsAnimation()
 	{
+		
 		if (snippits.size() == 0)
 		{
 			System.out.println("Arranger: generateTransitonsAnimation: no Snippits here to combine");
@@ -294,14 +276,14 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		CSMHeader head = snippits.get(0).animation.header.clone();
 		head.firstFrame = 0;
 		head.lastFrame = 0;
-		Animation result = new Animation(head);
 		
+		Animation result = new Animation(head);
 		//add first snippits animation to the result 
 		result.concat(snippits.get(0).animation);
 		
 		for (int i = 1; i < snippits.size(); i++) {
 			Snippit s = snippits.get(i);
-			Transition t = transitions.get(i);
+			Transition t = transitions.get(i-1);
 			Animation transition = new Animation(result.header.clone(),
 												t.getTransition(result.getLastFrame(),
 														s.animation.getFirstFrame()));

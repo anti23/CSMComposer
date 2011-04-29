@@ -53,7 +53,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 	JMenuItem miExit = new JMenuItem("Exit");
 	
 	// Player Menu
-	JMenuItem miRenderingOptions = new JMenuItem("Redering Options");
+	//JMenuItem miRenderingOptions = new JMenuItem("Redering Options");
 	JCheckBoxMenuItem  miDisplayEnviroment = new JCheckBoxMenuItem ("Display Enviroment",true);
 	JCheckBoxMenuItem  miDisplayOrigin = new JCheckBoxMenuItem ("Display Origin",true);
 	JCheckBoxMenuItem  miDisplayBG = new JCheckBoxMenuItem ("Display Background",true);
@@ -63,20 +63,21 @@ public class CSMComposerMeunBar extends JMenuBar{
 	JMenuItem miAddCSMFile = new JMenuItem("Add CSM File");
 	JMenuItem miSaveToCSM = new JMenuItem("Save To CSM File");
 	JMenuItem miPathSettings = new JMenuItem("Path Settings");
-	JMenu	 mPreviewCameraSettings = new JMenu("Preview CameraSettings");
+//	JMenu	 mPreviewCameraSettings = new JMenu("Preview CameraSettings");
 		// Preview CameraSettings
-		JMenuItem miSetFromPlayer = new JMenuItem("Set From Player");
-		JMenuItem miSetDefault = new JMenuItem("Set Default");
-		JMenuItem miSetPreviewCount = new JMenuItem("Set Preview Count");
-		JMenuItem miRecalcPreviews = new JMenuItem("Recalculate Previews");
+//		JMenuItem miSetFromPlayer = new JMenuItem("Set From Player");
+//		JMenuItem miSetDefault = new JMenuItem("Set Default");
+//		JMenuItem miSetPreviewCount = new JMenuItem("Set Preview Count");
+//		JMenuItem miRecalcPreviews = new JMenuItem("Recalculate Previews");
 	// Animation
 	JMenu mOperations = new JMenu("Operations");
 		// Operations
-		JMenuItem miStrechTrimSpeed = new JMenuItem("Stretch Or Trim Speed");
+		JMenuItem miDoubleSpeed = new JMenuItem("Speed x 2");
+		JMenuItem miHalfSpeed = new JMenuItem("Speed / 2");
 		JMenuItem miReverse = new JMenuItem("Reverse");
-	JMenuItem miCut = new JMenuItem("Cut");
-	JMenuItem miCopy = new JMenuItem("Copy");
-	JMenuItem miPaste = new JMenuItem("Paste");
+//	JMenuItem miCut = new JMenuItem("Cut");
+//	JMenuItem miCopy = new JMenuItem("Copy");
+//	JMenuItem miPaste = new JMenuItem("Paste");
 	
 	//Skelet Menu
 	JMenuItem miSkeleteEditor = new JMenuItem("Open Skelet Editor");
@@ -98,7 +99,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 		mFile.add(miExit);
 
 		//Player Menu
-		mPlayer.add(miRenderingOptions);
+		//mPlayer.add(miRenderingOptions);
 		mPlayer.add(miDisplayEnviroment);
 		mPlayer.add(miDisplayOrigin);
 		mPlayer.add(miDisplayBG);
@@ -108,20 +109,21 @@ public class CSMComposerMeunBar extends JMenuBar{
 		
 		mProject.add(miAddCSMFile);
 		mProject.add(miSaveToCSM);
-		mProject.add(miPathSettings);
-		mProject.add(mPreviewCameraSettings);
+		//mProject.add(miPathSettings);
+		//mProject.add(mPreviewCameraSettings);
 			// Preview CameraSettings
-			mPreviewCameraSettings.add(miSetFromPlayer);
-			mPreviewCameraSettings.add(miSetPreviewCount);
-			mPreviewCameraSettings.add(miRecalcPreviews);
+		//	mPreviewCameraSettings.add(miSetFromPlayer);
+		//	mPreviewCameraSettings.add(miSetPreviewCount);
+		//	mPreviewCameraSettings.add(miRecalcPreviews);
 			
 		// Animation Menu
 		mAnimation.add(mOperations);
-		mOperations.add(miStrechTrimSpeed);
-		mOperations.add(miReverse);
-		mAnimation.add(miCut);
-		mAnimation.add(miCopy);
-		mAnimation.add(miPaste);
+		  mOperations.add(miDoubleSpeed);
+		  mOperations.add(miHalfSpeed);
+		  mOperations.add(miReverse);
+	//	mAnimation.add(miCut);
+	//	mAnimation.add(miCopy);
+	//	mAnimation.add(miPaste);
 	
 
 		// Skelet Menu
@@ -132,6 +134,14 @@ public class CSMComposerMeunBar extends JMenuBar{
 	
 	void initActions()
 	{
+		
+		miNewProject.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				projectPanel.project = new Project();
+				projectPanel.repaint();
+			}
+		});
+		
 		miAddCSMFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				File file = StaticTools.openDialog("csm", false);
@@ -243,7 +253,6 @@ public class CSMComposerMeunBar extends JMenuBar{
 				switch (index)
 				{
 				case 0 : 
-					
 					selected = projectPanel.projectTree.getLastSelectedPathComponent();
 				break;
 				case 1 : 
@@ -263,6 +272,80 @@ public class CSMComposerMeunBar extends JMenuBar{
 			}
 		});
 		
+		miReverse.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				int index = projectPanel.tabsPane.getSelectedIndex();
+				Object selected = null;
+				switch (index)
+				{
+					case 0 : 
+						selected = projectPanel.projectTree.getLastSelectedPathComponent();
+					break;
+					case 1 : 
+						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
+					break;
+				}
+					
+				if (selected != null && selected.getClass() == AnimaitonComponent.class)
+				{
+					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
+					a.reverse();
+				}else 
+					System.out.println("CSMComposerMenuBar: MenueItem reverse: no AnimationComponent is selected!");
+			}
+		});
+		
+		miDoubleSpeed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) 
+			{
+				int index = projectPanel.tabsPane.getSelectedIndex();
+				Object selected = null;
+				switch (index)
+				{
+					case 0 : 
+						selected = projectPanel.projectTree.getLastSelectedPathComponent();
+					break;
+					case 1 : 
+						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
+					break;
+				}
+				if (selected != null && selected.getClass() == AnimaitonComponent.class)
+				{
+					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
+					a.doubleSpeed();
+				}else 
+					System.out.println("CSMComposerMenuBar: MenueItem doubleSpeed: no AnimationComponent is selected!");
+			}
+		});
+		
+		miHalfSpeed.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				int index = projectPanel.tabsPane.getSelectedIndex();
+				Object selected = null;
+				switch (index)
+				{
+					case 0 : 
+						selected = projectPanel.projectTree.getLastSelectedPathComponent();
+					break;
+					case 1 : 
+						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
+					break;
+				}
+				if (selected != null && selected.getClass() == AnimaitonComponent.class)
+				{
+					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
+					a.halfSpeed();
+				}else 
+					System.out.println("CSMComposerMenuBar: MenueItem halfSpeed: no AnimationComponent is selected!");
+			}
+		});
+		
+		miExit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.exit(1);
+			}
+		});
 	} // end init actions
 	
 	public CSMComposerMeunBar() {

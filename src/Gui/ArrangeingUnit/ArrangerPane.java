@@ -27,13 +27,13 @@ import Gui.ProjectPanel;
 
 import datastructure.Animation;
 
-public class ArrangerPane extends JPanel implements MouseMotionListener{
+public class ArrangerPane extends JPanel{
 	private static final long serialVersionUID = 3473339410000435173L;
 	Arranger arranger = new Arranger();
 	JScrollPane scrollpane = new JScrollPane(arranger);
 	JPanel comandPanel = new JPanel(new GridLayout(1, 3));
 	ProjectPanel projectPanel = null;
-	
+	int comositionCounter = 1;
 	public ArrangerPane() {
 		init();
 	}
@@ -72,10 +72,13 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		JButton buildAnimation = new JButton("Build");
 		buildAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Animation a = arranger.simpleGenerateAnimation();
+				Animation a = arranger.generateTransitonsAnimation();
 				if (projectPanel != null)
 				{
-					projectPanel.addAnimation(a.filename , a);
+					String index_filename  = "Composition "+comositionCounter+" from"+ a.header.filename;
+					String display_filename = "Composition " + comositionCounter++ ;
+					a.header.filename = display_filename;
+					projectPanel.addAnimation(index_filename, a);
 				}
 			}
 		});
@@ -93,7 +96,7 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 	void init(){
 		initCommandPanel();
 		setLayout(new BorderLayout());
-		JLabel heading = new JLabel("Arranging Unit");
+		JLabel heading = new JLabel("Storyboard");
 		heading.setAlignmentX(JLabel.CENTER_ALIGNMENT);
 		add(heading,BorderLayout.NORTH);
 		add(scrollpane,BorderLayout.CENTER);
@@ -109,32 +112,10 @@ public class ArrangerPane extends JPanel implements MouseMotionListener{
 		JFrame f = new JFrame("Snippits Arranger Tester");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		ArrangerPane arr = new ArrangerPane();
+		Arranger.debug = true;
 		f.add(arr);
 		f.setSize(arr.getSize());
 		f.pack();
 		f.setVisible(true);
 	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (r != null)
-			g.drawRect(r.x, r.y, r.width, r.height);
-	}
-
-	Rectangle r;
-	public void mouseDragged(MouseEvent e) {
-		r = (Rectangle) scrollpane.getBounds();
-		int autoscrollBorderSpace = 10;
-		r.x += autoscrollBorderSpace;
-		r.width -= 2* autoscrollBorderSpace;	
-		System.out.println("Arranger Pane : Dragging");
-	}
-
-	public void mouseMoved(MouseEvent e) {
-
-		
-	}
-
- 
 }

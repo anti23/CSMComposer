@@ -53,7 +53,7 @@ public class Animation implements
 	Calendar cal = Calendar.getInstance();
 	public CSMHeader header;
 	//CSMPoints currentFrame;
-	CSMPoints[] frames;
+	public CSMPoints[] frames;
 	float lenghtInSecs;
 	int framecount ;
 //	BranchGroup skeletGroup;
@@ -65,7 +65,6 @@ public class Animation implements
 	boolean isStopped = false; // breaking condition for Animation Thread
 	private EventListenerList listenerList = new EventListenerList();
 	public Map <Integer,ImageIcon> previews = new HashMap<Integer, ImageIcon>();
-	int previewCount = 10;
 	
 	// Player Controll Attributes
 	public float playbackSpeed = 1.0f;
@@ -86,6 +85,7 @@ public class Animation implements
 		frames = new CSMPoints[framecount];
 		//frames[0] = CSMPoints.defaultTPose();
 		skelett = new Skelett(header);
+		loadingComplete = true;
 		//skelett.loadFrame(frames[0].points);
 	}
 	public Animation(CSMHeader header, CSMPoints[] frames) {
@@ -347,6 +347,7 @@ public class Animation implements
 
 	private class AsyncLoading implements Runnable
 	{
+		int previewCount = Config.previewCount;
 		public void run() {
 			if (framecount < Config.previewCount)
 				previewCount = framecount;
@@ -472,7 +473,7 @@ public class Animation implements
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {}
-			System.out.println("Animation: write Object: still in Loading State, cat save to Disk while Loading!");
+			System.out.println("Animation: write Object: still in Loading State, can't save to Disk while Loading!");
 		}
 		out.writeObject(header);
 		out.writeObject(frames);
@@ -603,11 +604,94 @@ public class Animation implements
 		{
 			newframes[i] = animation.frames[i - frames.length];
 		}
+		// Update Previews
+		Map<Integer,ImageIcon> previews = new HashMap<Integer, ImageIcon>();
+		Set<Integer> old_keys = this.previews.keySet();
+		for (Integer i : old_keys) {
+			previews.put(i, this.previews.get(i));
+		}
+		int offset = this.frames.length;
+		// if to cnocat animation has previews add the to new preview array with frame offset
+		if(animation.previews != null)
+		{
+			Set<Integer> new_keys = animation.previews.keySet();
+			for (Integer i : new_keys) {
+				previews.put(i + offset, animation.previews.get(i));
+			}
+			
+		}
+		
 		frames = newframes;
+		this.previews = previews;
 		header.lastFrame = newlength;
 		lastLoadedFrame = frames.length -1;
 		fireChangeListenerUpdateEvents();
 	}
+	
+	
+	public void reverse()
+	{
+		CSMPoints[] newFrames = new CSMPoints[frames.length];
+		for (int i = 0; i < frames.length; i++) {
+			newFrames[i] = frames[frames.length-i-1];
+		}
+		frames = newFrames;
+	}
+	
+	// es wird jeder zweite frame aus dem Arra geloescht
+	public void doubleSpeed()
+	{
+		CSMPoints[] newFrames = new CSMPoints[frames.length/2 ];
+		for (int i = 0; i < frames.length/2; i++) {
+			newFrames[i] = frames[i*2];
+		}
+		frames = newFrames;
+		header.firstFrame = 1;
+		header.lastFrame = frames.length;
+		lastLoadedFrame = header.lastFrame -1;
+
+		Map<Integer,ImageIcon> newpreviews = new HashMap<Integer, ImageIcon>();
+		for (Integer i : previews.keySet()) {
+			newpreviews.put(i/2, previews.get(i));
+		}
+		previews = newpreviews;
+	}
+	//animation wird doppelt so gross, zwischen dene fran wird ein weiterer interpoliert 
+	public void halfSpeed()
+	{
+		CSMPoints[] newFrames = new CSMPoints[frames.length*2 -1];
+		for (int i = 0; i < frames.length-1; i++) 
+		{
+			newFrames[i*2] = frames[i];
+			
+			Point3f[] interP = new Point3f[frames[i].points.length];
+			for (int j = 0; j < interP.length; j++) {
+				float x = (frames[i].points[j].x +frames[i+1].points[j].x ) *0.5f;
+				float y = (frames[i].points[j].y +frames[i+1].points[j].y ) *0.5f;
+				float z = (frames[i].points[j].z +frames[i+1].points[j].z ) *0.5f;
+				interP[j]= new Point3f(x,y,z);
+				
+			}
+			CSMPoints interpoliert = new CSMPoints(interP);
+			newFrames[i*2+1] = interpoliert;
+		}
+		//letzer Frame ist original
+		newFrames[newFrames.length-1] = frames[frames.length-1];
+		
+		frames = newFrames;
+		header.firstFrame = 1;
+		header.lastFrame = frames.length;
+		lastLoadedFrame = header.lastFrame -1;
+		
+		
+		// update previews 
+		Map<Integer,ImageIcon> newpreviews = new HashMap<Integer, ImageIcon>();
+		for (Integer i : previews.keySet()) {
+			newpreviews.put(i*2, previews.get(i));
+		}
+		previews = newpreviews;
+	}
+	
 	public void removeChangeListener(ChangeListener player) {
 		listenerList.remove(ChangeListener.class, player);
 	}

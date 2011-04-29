@@ -2,17 +2,16 @@ package datastructure;
 
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FilenameFilter;
-import java.io.Serializable;
 import java.util.Scanner;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import Misc.StaticTools;
 
-public class Config implements Serializable{
+public class Config  {
 	// --------- Static Constants --------- 
 	public static int previewCount = 7;
 	public static float skeletScale = 0.01f;
-	
 	
 	public static String floorTexturePath = "floor.jpg";
 	public static String sphericalBackGroundTexturePath = "sphereBG.jpg";
@@ -20,12 +19,17 @@ public class Config implements Serializable{
 	// Where to look for CSM files
 	String workingDirecttory = null;
 	// Where to store Screenshots
-	String screeShotDirectory = null;
-	int screenShotCount = 0;
+	public static String screeShotDirectory = "./";
+	public static String screeShotFileName = "shot.jpg";
+	private int screenShotCount = 0;
 	// Where to find and Store Skelet Files
 	String skeletDirectory = null;
 	// Where to Save created Animations
 	String SaveDirectory = null;
+
+	public String version = "0.98";
+	
+	
 	
 	public void calcScreenShotCount()
 	{
@@ -48,4 +52,26 @@ public class Config implements Serializable{
 		}
 	}
 	
+	
+	File configFile;
+	public void loadConfig() {
+		File programDir = new File(".");
+		
+		for (File  s : programDir.listFiles(new FileFilter() {
+			public boolean accept(File arg0) {
+				return arg0.toString().endsWith("CSMCConf.xml");
+			}
+		})) {			
+			if(s.isFile())
+				configFile = s;
+		}
+
+	}
+	
+	public void saveConfig()
+	{
+		
+	}
+		
+
 }

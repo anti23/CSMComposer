@@ -57,6 +57,17 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	JScrollPane projectTreeScrollPane = new JScrollPane(projectTree);
 	JScrollPane snippitsTreeScrollPane = new JScrollPane(snippitsTree);
 	
+	
+	@Override
+	public void repaint() {
+		super.repaint();
+		if(project == null)
+			return;
+		
+		updateProjectTree();
+		updateSnippitsTree();
+	}
+	
 	public ProjectPanel() 
 	{
 		initLayout();
@@ -236,7 +247,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			FileOutputStream fo = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fo);
 			oos.writeObject(project);
-			
+			oos.writeObject(arranger);
 			fo.flush();
 			fo.close();
 			
@@ -252,6 +263,8 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			FileInputStream fi = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fi);
 			setProject( (Project) ois.readObject() );
+			arranger = (Arranger) ois.readObject();
+			
 			fi.close();
 			
 		} catch (IOException e) {
