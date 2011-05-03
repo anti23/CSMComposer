@@ -16,7 +16,9 @@ import CSM.CSMHeader;
 public class PlayerControllStatus  {
 
 	private static final long serialVersionUID = 1540528934051844984L;
-	public enum State {FramePosUpdate, AnimationHeaderLoaded,LoadgingProgressUpdate, PlaybackSpeedChanged,AnimationLoaded,PreviewUpdate, SelectedAreaUpdate};
+	public enum State {FramePosUpdate,AnimationHeaderLoaded,
+						LoadgingProgressUpdate, PlaybackSpeedChanged,
+						AnimationLoaded,PreviewUpdate, SelectedAreaUpdate};
 	
 	public State status; 
 	public ImageIcon imgIcon;

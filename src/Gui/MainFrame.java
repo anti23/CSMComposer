@@ -114,7 +114,7 @@ public class MainFrame extends JFrame{
 		splitPane.setOneTouchExpandable(true);
 		
 		arrangePane.setProjectPanel(projectPanel);
-		
+		projectPanel.arranger = arrangePane;
 	//	controll2 = new SimpleControllBar();
 	}
 

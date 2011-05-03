@@ -23,7 +23,7 @@ import datastructure.Project;
 import CSM.CSMHeader;
 import CSM.CSMPoints;
 import CSM.CSMWriter;
-import Gui.ProjectPanel.AnimaitonComponent;
+import Gui.ProjectPanel.AnimationComponent;
 import Java3D.Java3DCSMPlayer;
 import Java3D.SkeletMaker.Java3DSkeletMaker;
 import Java3D.SkeletMaker.SkeletConnections;
@@ -149,7 +149,7 @@ public class CSMComposerMeunBar extends JMenuBar{
 				{
 					//player.loadAnimation(file.getAbsolutePath());
 					try {
-						projectPanel.addAnimation(file.getCanonicalPath(),new Animation(file.getCanonicalPath() ) );
+						projectPanel.addAnimation(new Animation(file.getCanonicalPath() ) );
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -246,98 +246,59 @@ public class CSMComposerMeunBar extends JMenuBar{
 			}
 		});
 		
-		miSaveToCSM.addActionListener(new ActionListener() {
+		miSaveToCSM.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent arg0) {
-				int index = projectPanel.tabsPane.getSelectedIndex();
-				Object selected = null;
-				switch (index)
+				Animation a = projectPanel.getSelectedAnimation();
+				if(a == null)
 				{
-				case 0 : 
-					selected = projectPanel.projectTree.getLastSelectedPathComponent();
-				break;
-				case 1 : 
-					selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
-				break;
+					System.out.println("CSMComposerMenuBar: MenueItem SaveToCSM: no AnimationComponent is selected in Tree!");
+					return;
 				}
-				
-				if (selected != null && selected.getClass() == AnimaitonComponent.class)
-				{
-					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
-					File file = StaticTools.openDialog("csm", true);
-					CSMWriter csmw = new CSMWriter(a, file.getName());
-					csmw.writeOutCSM();
-				}else 
-					System.out.println("CSMComposerMenuBar: MenueItem SaveToCSM: no AnimationComponent is selected!");
-				
+				File file = StaticTools.openDialog("csm", true);
+				CSMWriter csmw = new CSMWriter(a, file.getName());
+				csmw.writeOutCSM();
 			}
 		});
 		
-		miReverse.addActionListener(new ActionListener() {
+		miReverse.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent e) 
 			{
-				int index = projectPanel.tabsPane.getSelectedIndex();
-				Object selected = null;
-				switch (index)
+				Animation a = projectPanel.getSelectedAnimation();
+				if(a == null)
 				{
-					case 0 : 
-						selected = projectPanel.projectTree.getLastSelectedPathComponent();
-					break;
-					case 1 : 
-						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
-					break;
+					System.out.println("CSMComposerMenuBar: MenueItem Reverse: no AnimationComponent is selected in Tree!");
+					return;
 				}
-					
-				if (selected != null && selected.getClass() == AnimaitonComponent.class)
-				{
-					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
 					a.reverse();
-				}else 
-					System.out.println("CSMComposerMenuBar: MenueItem reverse: no AnimationComponent is selected!");
 			}
 		});
 		
-		miDoubleSpeed.addActionListener(new ActionListener() {
+		miDoubleSpeed.addActionListener(new ActionListener() 
+		{
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				int index = projectPanel.tabsPane.getSelectedIndex();
-				Object selected = null;
-				switch (index)
+				Animation a = projectPanel.getSelectedAnimation();
+				if(a == null)
 				{
-					case 0 : 
-						selected = projectPanel.projectTree.getLastSelectedPathComponent();
-					break;
-					case 1 : 
-						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
-					break;
+					System.out.println("CSMComposerMenuBar: MenueItem DoubleSpeed: no AnimationComponent is selected in Tree!");
+					return;
 				}
-				if (selected != null && selected.getClass() == AnimaitonComponent.class)
-				{
-					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
 					a.doubleSpeed();
-				}else 
-					System.out.println("CSMComposerMenuBar: MenueItem doubleSpeed: no AnimationComponent is selected!");
 			}
 		});
 		
 		miHalfSpeed.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				int index = projectPanel.tabsPane.getSelectedIndex();
-				Object selected = null;
-				switch (index)
+			public void actionPerformed(ActionEvent e) 
+			{
+				Animation a = projectPanel.getSelectedAnimation();
+				if(a == null)
 				{
-					case 0 : 
-						selected = projectPanel.projectTree.getLastSelectedPathComponent();
-					break;
-					case 1 : 
-						selected = projectPanel.snippitsTree.getLastSelectedPathComponent();
-					break;
+					System.out.println("CSMComposerMenuBar: MenueItem HalfSpeed: no AnimationComponent is selected in Tree!");
+					return;
 				}
-				if (selected != null && selected.getClass() == AnimaitonComponent.class)
-				{
-					Animation a = ((ProjectPanel.AnimaitonComponent)selected).animation;
 					a.halfSpeed();
-				}else 
-					System.out.println("CSMComposerMenuBar: MenueItem halfSpeed: no AnimationComponent is selected!");
 			}
 		});
 		

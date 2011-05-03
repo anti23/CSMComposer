@@ -6,6 +6,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,8 +16,9 @@ import javax.vecmath.Point3f;
 
 import CSM.CSMPoints;
 
-public abstract class Transition{
+public abstract class Transition implements Serializable{
 
+	private static final long serialVersionUID = -5521107459851046770L;
 	Rectangle bounds = new Rectangle(Arranger.spaceBetweenSnippits,Arranger.snippitsHeight);
 	Polygon p;
 	protected int framecount = 0;
@@ -56,6 +58,12 @@ public abstract class Transition{
 	public int getFrameCount()
 	{
 		return framecount;
+	}
+	
+	public static void instanciateAllTransitionClasses()
+	{
+		new NoTransiton();
+		new LinearTransition();
 	}
 	
 	

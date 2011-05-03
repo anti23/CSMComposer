@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -29,6 +30,7 @@ import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import Gui.ArrangeingUnit.Arranger;
+import Gui.ArrangeingUnit.ArrangerPane;
 import Gui.ArrangeingUnit.Snippit;
 import Java3D.CSMPlayer.PlayerControlls;
 import Misc.StaticTools;
@@ -43,7 +45,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	Project project;
 	PlayerControlls player;
 	CSMHeaderView headerView;
-	Arranger arranger;
+	ArrangerPane arranger;
 	
 	JPanel buttonBar = new JPanel();
 	
@@ -104,9 +106,12 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			projectRoot = new DefaultMutableTreeNode("Project Tree");
 			Set<String> keys = project.getAnimations().keySet();
 			int ctr= 0 ;
-			for (String string : keys) {
+			String[] sortedKeys = new String[keys.size()];
+			keys.toArray(sortedKeys);
+			Arrays.sort(sortedKeys);
+			for (String string : sortedKeys) {
 				//root.add(new DefaultMutableTreeNode(string));
-				projectRoot.add(new AnimaitonComponent(project.getAnimation(string), string));
+				projectRoot.add(new AnimationComponent(project.getAnimation(string), string));
 				System.out.println(string);
 			}
 		}
@@ -123,9 +128,12 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			snippitRoot = new DefaultMutableTreeNode("Snippits Tree");
 			Set<String> keys = project.snippits.keySet();
 			int ctr= 0 ;
-			for (String string : keys) {
+			String[] sortedKeys = new String[keys.size()];
+			keys.toArray(sortedKeys);
+			Arrays.sort(sortedKeys);
+			for (String string : sortedKeys) {
 				//root.add(new DefaultMutableTreeNode(string));
-				snippitRoot.add(new AnimaitonComponent(project.snippits.get(string), string));
+				snippitRoot.add(new AnimationComponent(project.snippits.get(string), string));
 				System.out.println(string);
 			}
 		}
@@ -156,36 +164,71 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	}
 
 	private void initButtons() {
-		//Play
-		JButton load = new JButton("Load");
-		load.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("Project Panel: Playing --> " + 
-						projectTree.getLastSelectedPathComponent());
-				Animation a = project.getAnimation(projectTree.getLastSelectedPathComponent().toString());
-				System.out.println(" " + a);
-				if (a != null)
-					player.loadAnimation(a);
-			}
-		});
+//		//Play
+//		JButton load = new JButton("Load");
+//		load.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent arg0) {
+//				System.out.println("Project Panel: Playing --> " + 
+//						projectTree.getLastSelectedPathComponent());
+//				Animation a = project.getAnimation(projectTree.getLastSelectedPathComponent().toString());
+//				System.out.println(" " + a);
+//				if (a != null)
+//					player.loadAnimation(a);
+//			}
+//		});
 		// Delete
 		JButton delete = new JButton("Remove");
 		delete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) 
 			{
-				String fileName = projectTree.getLastSelectedPathComponent().toString();  
-				System.out.println("Project Panel: Deleting --> " + 
-						fileName
-
-				);
+				String fileName = getSelectedAnimation().filename;
 				if (fileName != null)
 					project.removeAnimation(fileName);
 				updateProjectTree();
 			}
 		});
-		buttonBar.add(load);
-		buttonBar.add(delete);
 		
+		JButton toStoryborad = new JButton("to Storyboard");
+		toStoryborad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(arranger != null)
+				{
+					Animation a = getSelectedAnimation();
+					if (a != null)
+					{
+						arranger.add(a);
+					}
+				}
+			}
+		});
+//		buttonBar.add(load);
+		buttonBar.add(delete);
+		buttonBar.add(toStoryborad);
+		
+	}
+	
+	public Animation getSelectedAnimation()
+	{
+		int panel = tabsPane.getSelectedIndex();
+		Object o = null;
+		switch (panel) {
+		case 0:
+			o = projectTree.getLastSelectedPathComponent();
+			break;
+		case 1:
+			o = snippitsTree.getLastSelectedPathComponent();
+			break;
+		}
+		
+		if(o != null && o.getClass() == AnimationComponent.class)
+		{
+			return ((AnimationComponent)o).animation;
+		}
+		else
+		{
+			System.out.println("Project Panel: No Animation Component Selected");
+			return null;
+		}
 	}
 
 	public void valueChanged(TreeSelectionEvent tse) {
@@ -197,10 +240,10 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		else if (tse.getSource() == snippitsTree)
 			o =  snippitsTree.getLastSelectedPathComponent();
 			
-		AnimaitonComponent ac = null;
+		AnimationComponent ac = null;
 		Animation a = null;
-		if (o != null && o.getClass() == AnimaitonComponent.class)
-			ac = (AnimaitonComponent) o;
+		if (o != null && o.getClass() == AnimationComponent.class)
+			ac = (AnimationComponent) o;
 		if (ac != null)
 			a = ac.animation;
 		if (a != null)
@@ -210,11 +253,16 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		}
 	}
 
-	public void addAnimation(String fileName, Animation animation) {
-		project.addAnimation(fileName, animation);
+	public void addAnimation(Animation animation) {
+		project.addAnimation(animation.filename, animation);
 		updateProjectTree();		
-		selectACinProjectTree( fileName);
+		selectACinProjectTree( animation.filename);
 	}
+//	public void addAnimation(String fileName, Animation animation) {
+//		project.addAnimation(fileName, animation);
+//		updateProjectTree();		
+//		selectACinProjectTree( fileName);
+//	}
 
 	
 	void selectACinProjectTree(String fileName)
@@ -223,9 +271,9 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		DefaultMutableTreeNode child;
 		for (int i = 0; i < treeRoot.getChildCount(); i++) {
 			child = (DefaultMutableTreeNode) treeRoot.getChildAt(i);
-			if(child.getClass() == AnimaitonComponent.class)
+			if(child.getClass() == AnimationComponent.class)
 			{
-				AnimaitonComponent ac = (AnimaitonComponent) child;
+				AnimationComponent ac = (AnimationComponent) child;
 				if (ac.filename.compareTo(fileName)== 0)
 				{
 					TreePath treePath = new TreePath(child.getPath());
@@ -247,7 +295,12 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			FileOutputStream fo = new FileOutputStream(f);
 			ObjectOutputStream oos = new ObjectOutputStream(fo);
 			oos.writeObject(project);
-			oos.writeObject(arranger);
+			if(arranger != null)
+			{
+				oos.flush();
+				System.out.println("PP: SAVING Arranger is there !");
+				arranger.writeObject(oos);
+			}
 			fo.flush();
 			fo.close();
 			
@@ -263,8 +316,8 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			FileInputStream fi = new FileInputStream(f);
 			ObjectInputStream ois = new ObjectInputStream(fi);
 			setProject( (Project) ois.readObject() );
-			arranger = (Arranger) ois.readObject();
-			
+			arranger.readObject(ois);
+		
 			fi.close();
 			
 		} catch (IOException e) {
@@ -278,18 +331,18 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		this.headerView = headerView;
 	}
 
-	public void addSnippit(String filename, Animation selected) {
-		project.snippits.put(filename, selected);
+	public void addSnippit(Animation a) {
+		project.snippits.put(a.filename, a);
 		updateSnippitsTree();
 	}
 
-	class AnimaitonComponent extends DefaultMutableTreeNode
+	class AnimationComponent extends DefaultMutableTreeNode
 	{
 		public ImageIcon icon;
 		public String filename; // for project to find;
 		public Animation animation;
 		private static final long serialVersionUID = -7054399594182919315L;
-		public AnimaitonComponent(Animation a, String physicalFileName) {
+		public AnimationComponent(Animation a, String physicalFileName) {
 			this.animation = a;
 			this.filename = physicalFileName;
 			if (animation.previews.size() > 0)

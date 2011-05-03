@@ -6,14 +6,16 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
 
 import datastructure.Animation;
 
-public class Snippit implements Comparable<Snippit>
+public class Snippit implements Comparable<Snippit>, Serializable
 {
+	private static final long serialVersionUID = 5974019425165965513L;
 	static int idCtr = 0;
 	int id;
 	int pos; // x start value, give by  Arrager, to draw itself

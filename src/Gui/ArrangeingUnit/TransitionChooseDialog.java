@@ -30,6 +30,9 @@ public class TransitionChooseDialog extends JDialog {
 		this.index = index;
 		this.p = p;
 		setTitle("Transition Chooser Dialog");
+		setSize(230,100);
+		pos.x -=getSize().width/2;
+		pos.y -=getSize().height/2;
 		setLocation(pos);
 		init();
 	}
@@ -37,7 +40,6 @@ public class TransitionChooseDialog extends JDialog {
 
 	private void init() {
 		setLayout(new BorderLayout());
-		setSize(200,75);
 		//Transitions
 		final JComboBox transitions = new JComboBox(Transition.transitions.keySet().toArray());
 		add(transitions,BorderLayout.CENTER);

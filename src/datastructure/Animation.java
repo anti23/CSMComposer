@@ -81,6 +81,7 @@ public class Animation implements
 	}
 	public Animation(CSMHeader header) {
 		this.header = header.clone();
+		filename = header.filename;
 		framecount = header.lastFrame -header.firstFrame;
 		frames = new CSMPoints[framecount];
 		//frames[0] = CSMPoints.defaultTPose();
@@ -468,6 +469,7 @@ public class Animation implements
 	private void writeObject(java.io.ObjectOutputStream out)
     	throws IOException
     {
+		System.out.println("Animation IS beeing serialized!!!!");
 		while(!loadingComplete)
 		{
 			try {
@@ -481,6 +483,7 @@ public class Animation implements
 		out.writeObject(previews);
 		
     }
+	
 	private void readObject(java.io.ObjectInputStream in)
     	throws IOException, ClassNotFoundException{
 	
@@ -558,8 +561,7 @@ public class Animation implements
 	public Animation getSubSequentAnimation(int firstFrame, int lastFrame)
 	{
 		Animation anim = new Animation(header.clone());
-		
-		anim.filename = "frame " + firstFrame + " to " + lastFrame + "of Animation " + filename;
+		anim.filename += " frame " + firstFrame + " to " + lastFrame;
 		anim.framecount = lastFrame-firstFrame;
 		anim.lastLoadedFrame = anim.framecount;
 

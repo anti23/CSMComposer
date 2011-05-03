@@ -106,10 +106,10 @@ public class CSMPlayerControllBar extends JPanel
 				int minFrame =Math.min(player.getMinMarker(),player.getMaxMarker());
 				int maxFrame =Math.max(player.getMinMarker(),player.getMaxMarker());
 				Animation selected = player.getAnimation().getSubSequentAnimation(minFrame,maxFrame) ; 
-				selected.filename = selected.filename + " " + minFrame + " to " + maxFrame;
 				int snippitID = arrangerPane.add(selected);
+				selected.filename = "Snippit " + snippitID  + " " + selected.filename;
 				selected.header.filename = "Snippit " + snippitID;
-				projectPanel.addSnippit(selected.header.filename, selected);
+				projectPanel.addSnippit(selected);
 				//player.loadAnimation(selected);
 			}
 		});

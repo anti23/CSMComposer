@@ -8,11 +8,14 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
+import java.io.Serializable;
 import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 
+import javax.media.j3d.NioImageBuffer;
 import javax.swing.ImageIcon;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -24,18 +27,15 @@ import CSM.CSMPoints;
 
 import datastructure.Animation;
 
-public class Arranger extends JPanel implements MouseListener, MouseMotionListener{
+public class Arranger extends JPanel implements MouseListener, MouseMotionListener,Serializable{
 
 	private static final long serialVersionUID = 1699180473798936300L;
-
-
 	public static final int snippitsYOffset = 10;
 	public static final int snippitsHeight = 70;
 	public static final int  snippitsWidth = 100;
 	public static final int  spaceBetweenSnippits = 45; // later used for interleaving
-
-
 	static boolean debug =false;
+	
 	Thread animateSnippits;
 	// The snippits array is beeing reoreder, when users change the order
 	ArrayList<Snippit> snippits = new ArrayList<Snippit>();
@@ -45,10 +45,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	Snippit hit;
 	
 	ArrayList<Transition> transitions = new ArrayList<Transition>();
-	
-	
 	Rectangle snippitArea = new Rectangle(0,snippitsYOffset,snippitsWidth,snippitsHeight);
-	
 	Rectangle size = new Rectangle(700,130);
 
 
@@ -58,15 +55,10 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		init();
 	}
 	
-	void instanciateAllTransitionClasses()
-	{
-		new NoTransiton();
-		new LinearTransition();
-	}
 	
 	void init()
 	{
-		instanciateAllTransitionClasses();
+		Transition.instanciateAllTransitionClasses();
 		animateSnippits = new Thread(new SnippitAnimator()) ;
 		animateSnippits.start();
 		setPreferredSize(size.getSize());
@@ -184,7 +176,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 				
 				Point p  = new Point(snippits.get(transition_index).pos + snippitsWidth,
 						snippitsYOffset);
-				TransitionChooseDialog diag = new TransitionChooseDialog(e.getPoint(),transitions,transition_index,p);
+				TransitionChooseDialog diag = new TransitionChooseDialog(e.getLocationOnScreen(),transitions,transition_index,p);
 				diag.setVisible(true);
 			}
 		}
@@ -292,11 +284,11 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 			result.concat(s.animation);
 		}
 		
-		StringBuffer sb =  new StringBuffer("Arrangement:");
+		StringBuffer sb =  new StringBuffer(" ");
 		for (Snippit s : snippits) {
 			sb.append(Integer.toString(s.id) + "->");
 		}
-		result.filename = sb.toString();
+		result.filename += sb.toString();
 		
 		return result;
 	}
@@ -378,4 +370,31 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		snippitsForThreadedAnimaiton.clear();
 		transitions.clear();
 	}
+	
+	public void writeObject(java.io.ObjectOutputStream out)
+	throws IOException
+	{
+		System.out.println("Arranger Writing Objekt");
+		out.writeObject(snippits);
+		out.writeObject(transitions);
+	}
+	
+	public void readObject(java.io.ObjectInputStream in)
+		throws IOException, ClassNotFoundException
+	{
+		snippits.clear();
+		snippits = (ArrayList<Snippit>) in.readObject();
+		snippitsForThreadedAnimaiton = new ArrayList<Snippit>();
+		for (Snippit snippit : snippits) {
+			snippitsForThreadedAnimaiton.add(snippit);		
+		}
+		transitions.clear();
+		transitions = (ArrayList<Transition>) in.readObject();
+		this.removeAll();
+		this.removeMouseListener(this);
+		this.removeMouseMotionListener(this);
+		init();
+	}
+	
+	
 }

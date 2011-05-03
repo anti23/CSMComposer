@@ -1,22 +1,15 @@
 package Gui.ArrangeingUnit;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.dnd.Autoscroll;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.lang.reflect.Array;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Set;
 
-import javax.swing.ImageIcon;
+import javax.jws.Oneway;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,13 +20,13 @@ import Gui.ProjectPanel;
 
 import datastructure.Animation;
 
-public class ArrangerPane extends JPanel{
+public class ArrangerPane extends JPanel implements Serializable {
 	private static final long serialVersionUID = 3473339410000435173L;
 	Arranger arranger = new Arranger();
 	JScrollPane scrollpane = new JScrollPane(arranger);
 	JPanel comandPanel = new JPanel(new GridLayout(1, 3));
 	ProjectPanel projectPanel = null;
-	int comositionCounter = 1;
+	int compositionCounter = 1;
 	public ArrangerPane() {
 		init();
 	}
@@ -69,16 +62,18 @@ public class ArrangerPane extends JPanel{
 	}
 	
 	private void initCommandPanel() {
+		comandPanel.removeAll();
 		JButton buildAnimation = new JButton("Build");
 		buildAnimation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				Animation a = arranger.generateTransitonsAnimation();
-				if (projectPanel != null)
+				if (a != null && projectPanel != null)
 				{
-					String index_filename  = "Composition "+comositionCounter+" from"+ a.header.filename;
-					String display_filename = "Composition " + comositionCounter++ ;
+					String index_filename  = "Composition "+compositionCounter+" of "+ a.filename;
+					String display_filename = "Composition " + compositionCounter++ + " from:" + a.header.filename;
+					a.filename = index_filename;
 					a.header.filename = display_filename;
-					projectPanel.addAnimation(index_filename, a);
+					projectPanel.addAnimation(a);
 				}
 			}
 		});
@@ -117,5 +112,24 @@ public class ArrangerPane extends JPanel{
 		f.setSize(arr.getSize());
 		f.pack();
 		f.setVisible(true);
+	}
+	
+	public void writeObject(java.io.ObjectOutputStream out)
+	throws IOException
+	{
+		arranger.writeObject(out);
+	}
+	
+	public void readObject(java.io.ObjectInputStream in)
+		throws IOException, ClassNotFoundException
+	{
+		
+		arranger.readObject(in);
+		arranger.repaint();
+		scrollpane = new JScrollPane(arranger);
+		this.removeAll();
+		init();
+		validate();
+		repaint();
 	}
 }
