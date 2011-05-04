@@ -10,7 +10,7 @@ import Misc.StaticTools;
 
 public class Config  {
 	// --------- Static Constants --------- 
-	public static int previewCount = 7;
+	public static int previewCount = 12;
 	public static float skeletScale = 0.01f;
 	
 	public static String floorTexturePath = "floor.jpg";
@@ -27,7 +27,7 @@ public class Config  {
 	// Where to Save created Animations
 	String SaveDirectory = null;
 
-	public String version = "0.98";
+	public String version = "1.01";
 	
 	
 	

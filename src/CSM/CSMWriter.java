@@ -55,9 +55,8 @@ public class CSMWriter {
 	
 	private void writeOutPoints(BufferedWriter bw) throws IOException
 	{
-		StringBuffer bs = new StringBuffer();
 		//points
-		sb.append("$Points" + "\n");
+		bw.write("$Points" + "\n");
 		//Wait for Loading finished first
 		while ( !animation.isLoadingComplete())
 			try {
@@ -66,16 +65,12 @@ public class CSMWriter {
 			}
 			
 			for (int i = 0; i < animation.frames.length; i++) {
-				sb.append(i + " ");
+				bw.write(i+header.firstFrame + " ");
 				Point3f[] row = animation.getPoints(i).points;
 				for (Point3f point3f : row) {
-					sb.append(point3f.x + " " + point3f.y + " " + point3f.z + " ");
+					bw.write( point3f.x + " " + point3f.y + " " + point3f.z + " ");
 				}
-				
-				sb.append("\n");
-				System.out.print(sb);
-			 bw.write(sb.toString());
-			 sb = new StringBuffer();
+				bw.write( "\n");
 			}
 
 	}

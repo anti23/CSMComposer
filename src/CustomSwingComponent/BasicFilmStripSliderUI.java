@@ -114,27 +114,44 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 	}
 
 	private void paintPreviewImages(Graphics g) {
+		Color old_c = g.getColor();
 		if(previews != null)
 			if(previews.size() > 0)
 		{
 			int default_image_length = 100;
 			int default_image_height = 70;
 			// itterates at tenth stepping between min and max
-			int visible_pixels = bounds.width;
-			int stepps = (visible_pixels)/ (int)(default_image_length * 0.5f);
+			int visible_pixels = bounds.width  ;
+			int stepps = (visible_pixels)/ (int)(default_image_length * 0.8f);
 			if (stepps == 0 )
 				stepps =1;
 			
 			float step_delta = visible_pixels/(float)stepps;
-			
-			for (float i = 0; i <= visible_pixels ; i+=step_delta) 
+			int pixel ;
+			for (float i = 0; i <= visible_pixels; i+=step_delta) 
 			{
-				int pixel = (int)i;
-				int closest = getClosestImage(translatePixelToFrame(pixel));
+				pixel = (int)i ;
+				int closest = getClosestImage(translatePixelToFrame(pixel)) ;
 				if ( previews.get(closest) != null) // should work everytime!
 				{
 					//		System.out.println("Frame i: " + i + " Closest:" + closest);
-					g.drawImage(previews.get(closest).getImage(), translateFrameToPixel(closest), 20, default_image_length, default_image_height, null);
+					g.drawImage(previews.get(closest).getImage(), pixel /*translateFrameToPixel(closest)*/, 20, default_image_length, default_image_height, null);
+					g.setColor(Color.blue.darker());
+					g.drawLine( translateFrameToPixel(closest), 2, pixel, 20);
+					g.drawLine(translateFrameToPixel(closest), 20, translateFrameToPixel(closest), 2);
+				}
+				
+			}
+			for (float i = 0; i <= visible_pixels; i+=step_delta) 
+			{
+				pixel = (int)i ;
+				int closest = getClosestImage(translatePixelToFrame(pixel)) ;
+				if ( previews.get(closest) != null) // should work everytime!
+				{
+					//		System.out.println("Frame i: " + i + " Closest:" + closest);
+					g.setColor(old_c);
+					g.drawLine(pixel, 20, pixel, 90);
+					g.drawLine(pixel-1, 20, pixel-1, 90);
 				}
 				
 			}
@@ -163,6 +180,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 			}
 			 */
 		}
+		g.setColor(old_c);
 	}
 	
 	/*

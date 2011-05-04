@@ -1,8 +1,10 @@
 package CSM;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
@@ -22,7 +24,7 @@ import javax.vecmath.Point3f;
 public class CSMParser {
 
 	CSMHeader csm_Header = null;
-	public static boolean debug = false;
+	public final static boolean debug = false;
 	public static int  statemachine_speed = 0;
 	
 	public enum state {START,ERROR,DOLLAR_TOKEN,KEY_VALUE,COMMENT,POINTS,READ_POINTS,END, ORDER};
@@ -174,7 +176,6 @@ public class CSMParser {
 		if(debug) System.out.println("End of StateMachine");
 		scanSuccesfull = true;
 	}
-	
 	
 	/*Method is called after Statemachien scaned for meta file information
 	 * 

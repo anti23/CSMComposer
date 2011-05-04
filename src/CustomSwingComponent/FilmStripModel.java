@@ -21,8 +21,8 @@ public interface FilmStripModel {
 	//AreaViewing
 	void setMinimumShownFrame(int framePos);
 	void setMaximumShownFrame(int framePos);
-	int  getMinimumShownFrame();
-	int  getMaximumShownFrame();
+	int  getMinimumShownFrame(); //return frist frame shown
+	int  getMaximumShownFrame(); //analog
 	
 	//PlayerCurser
 	void setPlayerCursor(int framePos);

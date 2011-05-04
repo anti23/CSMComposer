@@ -82,7 +82,7 @@ public class Animation implements
 	public Animation(CSMHeader header) {
 		this.header = header.clone();
 		filename = header.filename;
-		framecount = header.lastFrame -header.firstFrame;
+		framecount = header.lastFrame+1  -header.firstFrame;
 		frames = new CSMPoints[framecount];
 		//frames[0] = CSMPoints.defaultTPose();
 		skelett = new Skelett(header);
@@ -97,7 +97,7 @@ public class Animation implements
 			System.out.println("Animaiton: Construcor (CSMheader,Point3f): header array framecount mismatch, adapting header");
 		header.firstFrame = 1;
 		header.lastFrame = frames.length;
-		framecount = header.lastFrame -header.firstFrame;
+		framecount = header.lastFrame+1 - header.firstFrame;
 		lastLoadedFrame = framecount;
 
 		//frames[0] = CSMPoints.defaultTPose();
@@ -153,11 +153,9 @@ public class Animation implements
 		pcs.header = header;
 		fireChangeEvenet(pcs);
 
-		framecount = header.lastFrame-header.firstFrame;
+		framecount = header.lastFrame+1 -header.firstFrame;
 		frames = new CSMPoints[framecount];
-		frames[0] = parser.getNextPoints();
-		
-		
+		//frames[0] = parser.getNextPoints();
 		
 		
 		if(framecount > 0)	// start asyc loading
@@ -356,11 +354,11 @@ public class Animation implements
 				for (int i = 0; i < framecount; i++)
 				{
 					frames[i] = parser.getNextPoints();
-					lastLoadedFrame = i;
+					lastLoadedFrame = i+1;
 					PlayerControllStatus pcs = new PlayerControllStatus(State.LoadgingProgressUpdate);
 					pcs.firstFrame = pcs.lastFrame = i;
 					fireChangeEvenet(pcs);
-					if ((i ) % (framecount/Config.previewCount) == 0 )
+					if ( (framecount/previewCount) > 0 && (i ) % (framecount/previewCount) == 0 )
 					{
 						 new Thread(new AsyncPreviewMaking(i)).start();
 					}
@@ -372,6 +370,8 @@ public class Animation implements
 				fireChangeEvenet(pcs);
 			}
 			System.out.println("Animation Loaded Succesfully!");
+			System.out.println("FrameCount" + framecount);
+			System.out.println("Frames length " + frames.length);
 		} //end run
 	}// ende class  AsyncLoading
 	

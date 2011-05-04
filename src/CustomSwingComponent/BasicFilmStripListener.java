@@ -48,14 +48,19 @@ public class BasicFilmStripListener implements 	MouseListener,
 
 	public void keyTyped(KeyEvent e) {
 	}
+	
 	// MouseListener 
 	public void mouseClicked(MouseEvent e) {
-		int frame = ui.translatePixelToFrame(e.getX());
+		int magic = (int) (ui.marker_Pixel_distance/ 2);
+		int frame = ui.translatePixelToFrame(e.getX() + magic );
+		
+		int zoomFrameStart = ui.filmStripSlider.model.getMinimumShownFrame();
+		
 		//ui.filmStripSlider.model.setMarkedFrame(frame);
 //		System.out.println("Basic Listener: mosue Clicked: Pixel: " +e.getX()+" translated to frame: " + frame);
 		ui.filmStripSlider.model.setSelectorCursor(frame);
 		ui.filmStripSlider.model.setPlayerCursor(frame);
-		ui.filmStripSlider.playerToControll.jumpto(frame);
+		ui.filmStripSlider.playerToControll.jumpto(zoomFrameStart+ frame);
 
 	}
 
@@ -96,7 +101,8 @@ public class BasicFilmStripListener implements 	MouseListener,
 	// MouseMoitionListener
 	public void mouseMoved(MouseEvent me) {
 		//Seting Selector curser
-		int frame = ui.translatePixelToFrame(me.getX());
+		int magic = (int) (ui.marker_Pixel_distance/ 2);
+		int frame = ui.translatePixelToFrame(me.getX()+magic);
 		ui.filmStripSlider.model.setSelectorCursor(frame);
 		ui.filmStripSlider.fireEventChanged();
 		
@@ -116,7 +122,7 @@ public class BasicFilmStripListener implements 	MouseListener,
 			ui.filmStripSlider.model.setMinimumShownFrame(min-delta);
 		}
 			
-		
+		ui.filmStripSlider.repaint(100);
 		ui.filmStripSlider.fireEventChanged();
 	}
 
