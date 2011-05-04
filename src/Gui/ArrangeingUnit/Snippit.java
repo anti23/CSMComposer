@@ -7,8 +7,6 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.io.Serializable;
-import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
 
 import datastructure.Animation;

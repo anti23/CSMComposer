@@ -20,7 +20,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.plaf.ComponentUI;
 
-import datastructure.Config;
 import Java3D.CSMPlayer.PlayerControllStatus;
 import Java3D.CSMPlayer.PlayerControllStatus.State;
 
@@ -296,7 +295,7 @@ public class BasicFilmStripSliderUI extends FilmStripSliderUI {
 		int singel_frame_marker_heigth = 3; // px
 		int five_frames_marker_height = 6; // px
 		int ten_frames_marker_height = 10; // px
-		int max_heigth = border_offset + ten_frames_marker_height;
+		//int max_heigth = border_offset + ten_frames_marker_height;
 		
 		Rectangle r= (Rectangle) bounds.clone();
 		r.x = border_offset; r.y = border_offset;

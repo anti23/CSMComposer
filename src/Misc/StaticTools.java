@@ -160,6 +160,9 @@ public class StaticTools {
 	 
 	 public static Transform3D getTransform(Point3f a,Point3f b)
 	 {
+		 if (a.equals(b))
+			 return new Transform3D();
+		 
 		 float x1 =(float)a.x;
 		 float y1 =(float)a.y;
 		 float z1 =(float)a.z;
@@ -169,7 +172,6 @@ public class StaticTools {
 		    //ChartJ3DLink starting at (x1,y1,z2) goint to (x2,y2,z2)
 		 //   System.out.println("\nChartJ3DLink from ("+x1+","+y1+","+z1+") to ("+x2+","+y2+","+z2+")");
 
-		    TransformGroup tg = new TransformGroup();
 		    Transform3D transform = new Transform3D();
 
 		    //Work out center...
@@ -184,9 +186,6 @@ public class StaticTools {
 		    double dx = (double) (x2-x1);
 		    double dy = (double) (y2-y1);
 		    double dz = (double) (z2-z1);
-		    //System.out.println("Distance: dx="+dx+" dy="+dy+" dz="+dz);
-		    float s = (float) Math.sqrt(dx*dx + dy*dy + dz*dz);
-		   // System.out.println("Length: s="+s);
 
 		    //Work out rotation on Z-axis...
 		    double rotZ=0;

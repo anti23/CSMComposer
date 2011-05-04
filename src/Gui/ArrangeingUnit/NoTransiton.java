@@ -2,13 +2,11 @@ package Gui.ArrangeingUnit;
 
 import java.awt.Color;
 
-import javax.vecmath.Point3f;
-
 import CSM.CSMPoints;
 
 public class NoTransiton extends Transition {
 
-	
+	private static final long serialVersionUID = -6693659926770791438L;
 	public NoTransiton() {
 		super();
 	}

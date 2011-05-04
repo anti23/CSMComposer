@@ -1,18 +1,12 @@
 package Gui.ArrangeingUnit;
 
 import java.awt.Color;
-import java.awt.Dialog;
-import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import javax.vecmath.Point3f;
 
 import CSM.CSMPoints;
 
@@ -47,7 +41,6 @@ public abstract class Transition implements Serializable{
 		g.setColor(Color.BLACK);
 		g.drawPolygon(p);
 		g.drawString(getTranstionShortName(), bounds.x, bounds.y + Arranger.snippitsHeight);
-		FontMetrics fm = g.getFontMetrics();
 		g.drawString(Integer.toString(framecount), bounds.x , bounds.y);
 		g.setColor(old_color);
 	}

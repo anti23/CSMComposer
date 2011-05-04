@@ -3,36 +3,19 @@ package Gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.beans.XMLDecoder;
-import java.beans.XMLEncoder;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 
-import javax.print.attribute.standard.Finishings;
 import javax.swing.JFrame;
-import javax.swing.JMenu;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 
 import datastructure.Config;
 import datastructure.Project;
-import CSM.CSMHeader;
-import CustomSwingComponent.JFilmStripSlider;
-import Gui.ArrangeingUnit.Arranger;
 import Gui.ArrangeingUnit.ArrangerPane;
 import Java3D.Java3DCSMPlayer;
-import Java3D.CSMPlayer.SimpleControllBar;
 
 public class MainFrame extends JFrame{
 
@@ -49,7 +32,6 @@ public class MainFrame extends JFrame{
 	// SelectorPanel selector;
 	ProjectPanel projectPanel;
 	CSMPlayerControllBar playerControllBar;
-	SimpleControllBar controll2;
 	CSMHeaderView headerView = new CSMHeaderView();
 	ArrangerPane arrangePane = new ArrangerPane();
 	
@@ -132,7 +114,7 @@ public class MainFrame extends JFrame{
 		add(projectPanel,BorderLayout.WEST);
 //		add(player, BorderLayout.CENTER);
 //		add(headerView,BorderLayout.EAST);
-		splitPane = new JSplitPane(splitPane.HORIZONTAL_SPLIT,true);
+		splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,true);
 		splitPane.add(player,0);
 		splitPane.add(headerView,1);
 		splitPane.setDividerLocation(500);
@@ -145,35 +127,7 @@ public class MainFrame extends JFrame{
 		
 	}
 	
-	private void addComponentsGridBagLayout() {
-		setLayout(new GridBagLayout());
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 2;
-		c.fill = GridBagConstraints.BOTH;
-		add(projectPanel,c);
-		
-		
-		c.gridx = 2;
-		c.gridy = 0;
-		c.gridwidth = 4;
-		add(splitPane,c);
-
-		c.gridx = 0;
-		c.gridy = 1;
-		c.gridwidth = 4;
-		add(playerControllBar,c);
-
-		c.gridx = 0;
-		c.gridwidth = 4;
-		c.fill = GridBagConstraints.BOTH;
-		c.gridy = 4;
-		c.gridheight = 5;
-		add(arrangePane,c);
-		
-		//pack();
-	}
+ 
 
 	// Constructor
 	public MainFrame() {
@@ -181,11 +135,13 @@ public class MainFrame extends JFrame{
 		init();
 	}
 	
-
-	
 	
 	public static void main(String[] args) throws Throwable {
-		MainFrame mf = new MainFrame();
+		try {
+			MainFrame mf = new MainFrame();
+			
+		} catch (Exception e) {
+		}
 	}
 	
 

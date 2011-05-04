@@ -21,7 +21,6 @@ import javax.media.j3d.Canvas3D;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Switch;
 import javax.media.j3d.Texture;
-import javax.media.j3d.Texture2D;
 import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
@@ -30,13 +29,9 @@ import javax.swing.JPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
-import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction;
 import javax.vecmath.Color4f;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3f;
-
-import org.w3c.dom.css.CSSPrimitiveValue;
-import org.w3c.dom.css.RGBColor;
 
 import CustomSwingComponent.JFilmStripSlider;
 import Java3D.CSMPlayer.PlayerControllStatus;
@@ -160,7 +155,6 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 
 	private void fireChangeEvenet(PlayerControllStatus pcs)
 	{
-		
 		ChangeListener[] changeListeners = listenerList.getListeners(ChangeListener.class);
 		for (ChangeListener changeListener : changeListeners) {
 			changeListener.stateChanged(new ChangeEvent(pcs));

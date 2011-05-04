@@ -2,7 +2,6 @@ package Java3D.SkeletMaker;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
-import java.awt.FlowLayout;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
@@ -24,7 +23,6 @@ import javax.media.j3d.Appearance;
 import javax.media.j3d.BadTransformException;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
-import javax.media.j3d.Group;
 import javax.media.j3d.PickInfo;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.Texture;
@@ -33,15 +31,11 @@ import javax.media.j3d.TransformGroup;
 import javax.media.j3d.TransparencyAttributes;
 import javax.media.j3d.View;
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileFilter;
 import javax.vecmath.Point3f;
 import javax.vecmath.Vector3d;
 import javax.vecmath.Vector3f;
-import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
-
 import CSM.CSMHeader;
 import CSM.CSMParser;
 import CSM.CSMPoints;
@@ -92,7 +86,6 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	BranchGroup markerTextGroup = new BranchGroup();
 	
 	// Frame 
-	private boolean isStandAlone =false;
 	
 	//Options Panel
 	JPanel commandPannel = new JPanel(new GridLayout(5, 1));
@@ -113,14 +106,13 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	
 	public Java3DSkeletMaker(CSMHeader header, CSMPoints frame, SkeletConnections connections) throws IOException
 	{
-		this(false,false);
+		this(false);
 		loadSkeleton(header, frame, connections);
 
 	}
 	
-	public Java3DSkeletMaker(boolean isStandAlone,boolean withFileChooser) throws IOException {
+	public Java3DSkeletMaker(boolean withFileChooser) throws IOException {
 		File file = null;
-		this.isStandAlone = isStandAlone;
 		if(withFileChooser)
 		{
 			file = StaticTools.openDialog("csm", false);
@@ -406,17 +398,9 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		for (String string : args) {
 			System.out.println(string);
 		}
-		/*
-		 * 
-		Map <String,String> map =System.getenv();
-		for (String string : map.keySet()) {
-			System.out.println(string + " :  " + map.get(string));
-		}
-		System.out.println();
-		 */
  
 	Java3DSkeletMaker s = 	null; 
-	 s=  new Java3DSkeletMaker(true,true);
+	 s=  new Java3DSkeletMaker(true);
 	
 	JFrame frame;
 	frame = new JFrame("Frame of Fame");

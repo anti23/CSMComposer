@@ -2,12 +2,13 @@ package Gui.ArrangeingUnit;
 
 import java.awt.Color;
 
-import javax.naming.spi.DirStateFactory.Result;
 import javax.vecmath.Point3f;
 
 import CSM.CSMPoints;
 
 public class LinearTransition extends Transition {
+
+	private static final long serialVersionUID = -4792846773228858762L;
 
 	@Override
 	public Color getBackGroundColor() {

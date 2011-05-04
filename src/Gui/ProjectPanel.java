@@ -1,7 +1,6 @@
 package Gui;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -25,11 +24,9 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import Gui.ArrangeingUnit.Arranger;
 import Gui.ArrangeingUnit.ArrangerPane;
 import Gui.ArrangeingUnit.Snippit;
 import Java3D.CSMPlayer.PlayerControlls;
@@ -105,7 +102,6 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			
 			projectRoot = new DefaultMutableTreeNode("Project Tree");
 			Set<String> keys = project.getAnimations().keySet();
-			int ctr= 0 ;
 			String[] sortedKeys = new String[keys.size()];
 			keys.toArray(sortedKeys);
 			Arrays.sort(sortedKeys);
@@ -127,7 +123,6 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 			
 			snippitRoot = new DefaultMutableTreeNode("Snippits Tree");
 			Set<String> keys = project.snippits.keySet();
-			int ctr= 0 ;
 			String[] sortedKeys = new String[keys.size()];
 			keys.toArray(sortedKeys);
 			Arrays.sort(sortedKeys);

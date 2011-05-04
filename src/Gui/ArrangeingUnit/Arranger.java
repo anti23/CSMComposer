@@ -10,21 +10,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
 import java.io.Serializable;
-import java.io.ObjectInputStream.GetField;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-
-import javax.media.j3d.NioImageBuffer;
-import javax.swing.ImageIcon;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import CSM.CSMHeader;
-import CSM.CSMPoints;
-
 import datastructure.Animation;
 
 public class Arranger extends JPanel implements MouseListener, MouseMotionListener,Serializable{
@@ -49,7 +37,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	Rectangle size = new Rectangle(700,130);
 
 
-	private boolean draggingSnippit = false;
+	//private boolean draggingSnippit = false;
 	
 	public Arranger() {
 		init();
@@ -143,7 +131,6 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 			Transition t = transitions.get(i);
 			s.startFrame = frameNr;
 			frameNr+= s.frameCnt + t.getFrameCount();
-			int pos = s.pos; 
 			int shouldPos = snippits.indexOf(s) * (spaceBetweenSnippits + snippitsWidth);
 			if (s.targetPos != shouldPos)
 			{
@@ -293,39 +280,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		return result;
 	}
 	
-	
-	public Animation generateAnimation()
-	{
-		int frameCount = countFrames();
-		boolean headersMatch = compareHeaderOrders();
-		Animation result = new Animation();
-		return null;
-	}
-
-	private boolean compareHeaderOrders() {
-		HashMap<String, Integer> orderCounter = new HashMap<String, Integer>(); 
-		Integer val;
-		for (Snippit s : snippits) {
-			for (String  marker : s.animation.header.order) {
-				val = orderCounter.get(marker);
-				if(val == null)
-					val = 0;
-				orderCounter.put(marker, val+1);
-			}
-		}
-		System.out.println("Arranger: orderMap: " + orderCounter);
-	return false;
-		
-	}
-
-	private int countFrames() {
-		int count = 0;
-		for (Snippit s : snippits) {
-			count += s.frameCnt;
-		}
-		return count;
-	}
-
+  
 	class SnippitAnimator implements Runnable
 	{
 		public void run() {
@@ -377,6 +332,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		System.out.println("Arranger Writing Objekt");
 		out.writeObject(snippits);
 		out.writeObject(transitions);
+		out.writeObject(new Integer(Snippit.idCtr));
 	}
 	
 	public void readObject(java.io.ObjectInputStream in)
@@ -390,6 +346,8 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		}
 		transitions.clear();
 		transitions = (ArrayList<Transition>) in.readObject();
+		Integer i = (Integer) in.readObject();
+		Snippit.idCtr = i;
 		this.removeAll();
 		this.removeMouseListener(this);
 		this.removeMouseMotionListener(this);

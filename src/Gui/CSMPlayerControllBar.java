@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToggleButton;
@@ -17,8 +16,6 @@ import datastructure.Animation;
 
 import CustomSwingComponent.JFilmStripSlider;
 import Gui.ArrangeingUnit.ArrangerPane;
-import Gui.ArrangeingUnit.Snippit;
-import Java3D.Java3DCSMPlayer;
 import Java3D.CSMPlayer.PlayerControlls;
 /**
  * Diese Klass verbidet das Custom Swing Applet JFilmStrip und einige Buttons
@@ -70,7 +67,6 @@ public class CSMPlayerControllBar extends JPanel
 		JButton stop = new JButton("[]");
 		JButton faster = new JButton(">>");
 		JButton slower = new JButton("<<");
-		JButton markAll = new JButton("Mark All");
 		JButton markMin = new JButton("[<");
 		JButton markMax = new JButton(">]");
 		JToggleButton playSelection = new JToggleButton("[>]");

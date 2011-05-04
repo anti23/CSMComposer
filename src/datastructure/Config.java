@@ -3,9 +3,6 @@ package datastructure;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.Scanner;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
 import Misc.StaticTools;
 
 public class Config  {
@@ -27,7 +24,7 @@ public class Config  {
 	// Where to Save created Animations
 	String SaveDirectory = null;
 
-	public String version = "1.01";
+	public String version = "1.02";
 	
 	
 	

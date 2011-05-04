@@ -9,21 +9,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.filechooser.FileFilter;
-
 import datastructure.Animation;
 import datastructure.Project;
-
 import CSM.CSMHeader;
 import CSM.CSMPoints;
 import CSM.CSMWriter;
-import Gui.ProjectPanel.AnimationComponent;
 import Java3D.Java3DCSMPlayer;
 import Java3D.SkeletMaker.Java3DSkeletMaker;
 import Java3D.SkeletMaker.SkeletConnections;

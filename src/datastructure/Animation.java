@@ -1,14 +1,11 @@
 package datastructure;
 
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -21,12 +18,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import javax.vecmath.Point3f;
 
-import com.sun.j3d.utils.geometry.compression.CompressedGeometryData.Header;
-
 import CSM.CSMHeader;
 import CSM.CSMParser;
 import CSM.CSMPoints;
-import Gui.ArrangeingUnit.Snippit;
 import Java3D.PreviewMaker;
 import Java3D.CSMPlayer.PlayerControllStatus;
 import Java3D.CSMPlayer.PlayerControllStatus.State;
@@ -68,7 +62,6 @@ public class Animation implements
 	
 	// Player Controll Attributes
 	public float playbackSpeed = 1.0f;
-	private playingDirection playbackDirection = playingDirection.FWD;
 	int selectedArea[] = new int[2];
 	boolean playSelection = false;
 	
@@ -299,15 +292,6 @@ public class Animation implements
 
 
 	public void setFrame(int frame) {
-		int i = 0;
-		for (CSMPoints framee : frames) {
-			i++;
-			if (framee == null)
-			{
-				System.out.println("Animaiton Set Frame: " + i + " frame " + frame);
-				System.out.println("null");
-			}
-		}
 	//	System.out.println("Animation: setFrame: frame " + frame);
 		if (frame < lastLoadedFrame)
 			framePos = frame;

@@ -1,7 +1,6 @@
 package Java3D.SkeletMaker;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 
