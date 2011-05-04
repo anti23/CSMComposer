@@ -82,16 +82,16 @@ public class Animation implements
 	public Animation(CSMHeader header) {
 		this.header = header.clone();
 		filename = header.filename;
-		framecount = header.lastFrame+1  -header.firstFrame;
+		framecount = header.lastFrame+1  - header.firstFrame;
 		frames = new CSMPoints[framecount];
-		//frames[0] = CSMPoints.defaultTPose();
+		frames[0] = CSMPoints.defaultTPose();
 		skelett = new Skelett(header);
 		loadingComplete = true;
-		//skelett.loadFrame(frames[0].points);
+		skelett.loadFrame(frames[0].points);
 	}
 	public Animation(CSMHeader header, CSMPoints[] frames) {
 		this.header = header.clone();
-		framecount = header.lastFrame -header.firstFrame;
+		framecount = header.lastFrame+1 -header.firstFrame;
 		this.frames = frames;
 		if (framecount != frames.length)
 			System.out.println("Animaiton: Construcor (CSMheader,Point3f): header array framecount mismatch, adapting header");
@@ -129,7 +129,13 @@ public class Animation implements
 	
 	public CSMPoints getFirstFrame()
 	{
-		return frames[0];
+		if(frames != null && frames.length > 0)
+			return frames[0];
+		else 
+		{
+			System.out.println("Animaiton : No frist frame to get here!");
+			return CSMPoints.defaultTPose();
+		}
 	}
 	
 	// Constructs and loads CSM datastructure
@@ -268,7 +274,6 @@ public class Animation implements
 				//timer.stop();
 				return;
 			}
-			
 		//	System.out.println("Running for: " + delta + " Milliseconds");
 			float frameRate = header.framerate;
 			float speedControllFactor = playbackSpeed;
@@ -294,12 +299,21 @@ public class Animation implements
 
 
 	public void setFrame(int frame) {
+		int i = 0;
+		for (CSMPoints framee : frames) {
+			i++;
+			if (framee == null)
+			{
+				System.out.println("Animaiton Set Frame: " + i + " frame " + frame);
+				System.out.println("null");
+			}
+		}
 	//	System.out.println("Animation: setFrame: frame " + frame);
 		if (frame < lastLoadedFrame)
 			framePos = frame;
 		else if (frame > lastLoadedFrame)
 		{
-			if (frame > (header.lastFrame - 1) )
+			if (frame >= frames.length )
 			{
 				System.out.println("Animation: setFrame: Trying to Load Frame : " + frame);
 				System.out.println("Animation: setFrame: Header.lastFrame  " + header.lastFrame);
@@ -320,6 +334,7 @@ public class Animation implements
 	
 	private void loadFrame()
 	{
+	//	System.out.println("Animaiton: load Frame: id " + framePos + " value " + frames[framePos]);
 		if (framePos >= 0 && framePos < frames.length)
 		{
 			skelett.loadFrame(frames[framePos].points);
@@ -358,7 +373,7 @@ public class Animation implements
 					PlayerControllStatus pcs = new PlayerControllStatus(State.LoadgingProgressUpdate);
 					pcs.firstFrame = pcs.lastFrame = i;
 					fireChangeEvenet(pcs);
-					if ( (framecount/previewCount) > 0 && (i ) % (framecount/previewCount) == 0 )
+					if ( (framecount/previewCount) > 0 && (i) % (framecount/previewCount) == 0 )
 					{
 						 new Thread(new AsyncPreviewMaking(i)).start();
 					}
@@ -561,6 +576,19 @@ public class Animation implements
 	public Animation getSubSequentAnimation(int firstFrame, int lastFrame)
 	{
 		Animation anim = new Animation(header.clone());
+	
+		if (firstFrame == lastFrame)
+		{
+			anim.frames = new CSMPoints[1];
+			anim.frames[0] = frames[firstFrame];
+			anim.header.firstFrame = 0;
+			anim.header.lastFrame = 0;
+			anim.filename += " frame " + firstFrame;
+			anim.lastLoadedFrame = 1;
+			anim.loadingComplete = true;
+			return anim;
+		}
+		
 		anim.filename += " frame " + firstFrame + " to " + lastFrame;
 		anim.framecount = lastFrame-firstFrame;
 		anim.lastLoadedFrame = anim.framecount;

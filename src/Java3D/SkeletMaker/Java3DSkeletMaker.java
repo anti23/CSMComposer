@@ -297,7 +297,8 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 	{
 		if(s != null)
 		{
-			pickGroup.removeChild(skelet.getBG());
+			//pickGroup.removeChild(skelet.getBG());
+			pickGroup.removeAllChildren();
 			skelet = s;
 			pickGroup.addChild(skelet.getBG());
 		}
@@ -483,12 +484,12 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 				//String s = pickInfo.getNode().getClass().getName();
 				//System.out.println(s);
 				Shape3D shape = (Shape3D) pickInfo.getNode();
-				System.out.println(shape.getUserData());
+			//	System.out.println(shape.getUserData());
 				String userData = (String) shape.getUserData();
 				if (userData != null)
 				{
 					// if this is a shap with userdata, it could be a sphere
-					System.out.println(shape.getParent().toString());
+				//	System.out.println(shape.getParent().toString());
 				//	if (shape.getParent().getClass().toString().startsWith("com.sun.j3d.utils.geometry.Sphere") )
 					{
 						// if its a sphere, it has a transformgroup as parent
@@ -525,7 +526,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 				if (shape.getUserData().getClass() == String.class)
 				{
 					String userData = (String) shape.getUserData();
-					System.out.println("It's a String User Data: " + userData);
+			//		System.out.println("It's a String User Data: " + userData);
 					return userData;
 				}
 			}
@@ -568,7 +569,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 			toggleFullScreen();
 			break;
 		}
-		System.out.println("Simple: keyPressed: Keycode: "+arg0.getKeyCode());
+	//	System.out.println("Simple: keyPressed: Keycode: "+arg0.getKeyCode());
 		//getDefaultCameraPos();
 	//	System.out.println("Key: " + code);
 	}
@@ -599,7 +600,7 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		Transform3D trafo = getTransformFromPickCanvas(pickCanvasPoints.pickClosest());
 		if(trafo != null && curserMode)
 		{
-			System.out.println("Trafo: " + trafo);
+		//	System.out.println("Trafo: " + trafo);
 			markerTransformGroup.setTransform(trafo);
 		}
 /*
@@ -692,8 +693,13 @@ public class Java3DSkeletMaker extends JPanel implements KeyListener,MouseListen
 		PickInfo pick = pickCanvasPoints.pickClosest();
 		if (pick != null && curserMode )
 		{
-			markerEnd = getStringFromSphere(pick);
-			setMarkerBoneRotScale(pick);
+			String s =getStringFromSphere(pick);
+			if (s != null)
+			{
+				markerEnd = s;
+				System.out.println("Curser: " + markerStart + " Target: " + markerEnd);
+				setMarkerBoneRotScale(pick);
+			}
 		}
 		
 	}
@@ -703,7 +709,7 @@ void setMarkerBoneRotScale(PickInfo target)
 	Transform3D trafo = getTransformFromPickCanvas(target);
 	if(trafo != null)
 	{
-		System.out.println("Trafo: " + trafo);
+	//	System.out.println("Trafo: " + trafo);
 		Vector3f a = new Vector3f();
 		Vector3f b = new Vector3f();
 		Transform3D markerTrans = new Transform3D();

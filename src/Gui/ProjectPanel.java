@@ -226,7 +226,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 		}
 		else
 		{
-			System.out.println("Project Panel: No Animation Component Selected");
+			System.out.println("Project Panel: No AnimationComponent Selected");
 			return null;
 		}
 	}
@@ -234,18 +234,7 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 	public void valueChanged(TreeSelectionEvent tse) {
 		//System.out.println("Project Panel : TreeSelection Listener: value Changed");
 		//System.out.println(tse);
-		Object o = null;
-		if (tse.getSource() == projectTree)
-			o =  projectTree.getLastSelectedPathComponent();
-		else if (tse.getSource() == snippitsTree)
-			o =  snippitsTree.getLastSelectedPathComponent();
-			
-		AnimationComponent ac = null;
-		Animation a = null;
-		if (o != null && o.getClass() == AnimationComponent.class)
-			ac = (AnimationComponent) o;
-		if (ac != null)
-			a = ac.animation;
+		Animation a = getSelectedAnimation();
 		if (a != null)
 		{
 			headerView.setHeader(a.header);
