@@ -52,6 +52,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 		setPreferredSize(size.getSize());
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		repaint_m();
 	}
 	
 	@Override
@@ -167,10 +168,17 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 				diag.setVisible(true);
 			}
 		}
-		updateSnippitPos();
-		repaint();
+		repaint_m();
 	}
 	
+	public void repaint_m() {
+		if(snippits != null && transitions != null)
+		{
+			updateSnippitArea();
+			updateSnippitPos();
+		}
+		repaint();
+	}
 
 	private int checkForTranitionHit(MouseEvent e) {
 		Point p = e.getPoint();
@@ -314,7 +322,7 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 					}
 				accesCtr --;
 				try {Thread.sleep(10);} catch (InterruptedException e) {}
-				repaint();
+				repaint_m();
 				}
 			}
 		}
@@ -329,7 +337,6 @@ public class Arranger extends JPanel implements MouseListener, MouseMotionListen
 	public void writeObject(java.io.ObjectOutputStream out)
 	throws IOException
 	{
-		System.out.println("Arranger Writing Objekt");
 		out.writeObject(snippits);
 		out.writeObject(transitions);
 		out.writeObject(new Integer(Snippit.idCtr));

@@ -148,8 +148,8 @@ public class ProjectPanel extends JPanel implements TreeSelectionListener {
 //		projectTreeScrollPane.add(projectTree);
 		buttonBar.setLayout(new FlowLayout());
 //		add(projectTreeScrollPane,BorderLayout.CENTER);
-		projectTreeScrollPane.setPreferredSize(new Dimension(300,500));
-		snippitsTreeScrollPane.setPreferredSize(new Dimension(300,500));
+		projectTreeScrollPane.setPreferredSize(new Dimension(330,500));
+		snippitsTreeScrollPane.setPreferredSize(new Dimension(330,500));
 	//	projectTreeScrollPane.add(projectTree);
 		tabsPane.add("Project",projectTreeScrollPane);
 		tabsPane.add("Snippits",snippitsTreeScrollPane);

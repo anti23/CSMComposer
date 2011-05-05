@@ -17,13 +17,13 @@ public abstract class Transition implements Serializable{
 	Polygon p;
 	protected int framecount = 0;
 	public static Map<String, Class<? extends Transition>> transitions = new HashMap<String, Class<? extends Transition>>();
+
 	public abstract Color getBackGroundColor();
-	
 	public abstract String getTranstionName();
 	public abstract String getTranstionShortName();
 	
 	public abstract CSMPoints[] getTransition(CSMPoints start, CSMPoints end);
-	
+	 
 	public Transition()
 	{
 		transitions.put(getTranstionName(), this.getClass());

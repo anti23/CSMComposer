@@ -270,8 +270,8 @@ public class Java3DCSMPlayer extends JPanel implements KeyListener,ChangeListene
 	      
 	      // Cameras
 	      
-	      float r = 30;
-	      float h = 22;
+	      float r = 40;
+	      float h = 25;
 
 	      Appearance black = StaticTools.createAppearance();
 	      StaticTools.makeBlendedTransparent(black, 0.2f);
